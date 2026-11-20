@@ -110,6 +110,7 @@ export const ResearchBranch = Schema.Struct({
   kind: Schema.Literals(["experiment", "lean", "hillclimb"]),
   status: BranchStatus,
   rung: ScaleRung,
+  spec: Schema.optional(Schema.suspend(() => ExperimentSpec)),
   gitBranch: Schema.optional(TrimmedNonEmptyString),
   threadId: Schema.optional(ThreadId),
   killRule: Schema.optional(Schema.String),
@@ -131,6 +132,9 @@ export const ExperimentSpec = Schema.Struct({
   command: TrimmedNonEmptyString,
   resources: Schema.suspend(() => ResourceRequest),
   stopRule: Schema.optional(Schema.String),
+  splitHash: Schema.optional(TrimmedNonEmptyString),
+  splitId: Schema.optional(TrimmedNonEmptyString),
+  baselineProtocol: Schema.optional(TrimmedNonEmptyString),
   frozenAt: Schema.optional(IsoDateTime),
   specHash: Schema.optional(TrimmedNonEmptyString),
 });
@@ -190,6 +194,8 @@ export const RunMetric = Schema.Struct({
 });
 export type RunMetric = typeof RunMetric.Type;
 
+const MetricReference = Schema.Struct({ runId: ResearchRunId, name: TrimmedNonEmptyString });
+
 export const Finding = Schema.Struct({
   id: FindingId,
   researchProjectId: ResearchProjectId,
@@ -209,6 +215,8 @@ export const Finding = Schema.Struct({
     Schema.Struct({ attack: Schema.String, response: Schema.String, landed: Schema.Boolean }),
   ),
   caveats: Schema.Array(Schema.String),
+  authorModelFamily: Schema.optional(Schema.Literals(["openai", "anthropic", "google"])),
+  ciMetricRefs: Schema.optional(Schema.Struct({ lower: MetricReference, upper: MetricReference })),
   criticModel: Schema.optional(TrimmedNonEmptyString),
 });
 export type Finding = typeof Finding.Type;
@@ -216,6 +224,7 @@ export type Finding = typeof Finding.Type;
 export const LeanClaim = Schema.Struct({
   name: TrimmedNonEmptyString,
   researchProjectId: ResearchProjectId,
+  formalStatement: Schema.optional(Schema.String),
   informal: Schema.String,
   statementApproved: Schema.Boolean,
   status: Schema.Literals(["open", "proven", "disproved", "rejected"]),
@@ -302,6 +311,14 @@ export const JobStatus = Schema.Struct({
   runId: Schema.optional(ResearchRunId),
   state: JobState,
   nativeId: Schema.optional(Schema.String),
+  estimatedStart: Schema.optional(Schema.String),
+  preempted: Schema.optional(Schema.Boolean),
+  step: Schema.optional(NonNegativeInt),
+  totalSteps: Schema.optional(NonNegativeInt),
+  seedIndex: Schema.optional(NonNegativeInt),
+  totalSeeds: Schema.optional(NonNegativeInt),
+  gpus: Schema.optional(NonNegativeInt),
+  etaMinutes: Schema.optional(NonNegativeInt),
   queuePosition: Schema.optional(NonNegativeInt),
   nodes: Schema.Array(Schema.String),
   startedAt: Schema.optional(IsoDateTime),
@@ -310,6 +327,36 @@ export const JobStatus = Schema.Struct({
 });
 export type JobStatus = typeof JobStatus.Type;
 
+const ResearchPaper = Schema.Struct({
+  id: TrimmedNonEmptyString,
+  title: Schema.String,
+  authors: Schema.Array(Schema.String),
+  abstract: Schema.optional(Schema.String),
+  year: Schema.optional(Schema.Int),
+  published: Schema.optional(Schema.String),
+  url: Schema.optional(Schema.String),
+  doi: Schema.optional(Schema.String),
+  arxivId: Schema.optional(Schema.String),
+  bibtex: Schema.optional(Schema.String),
+});
+const ResearchSweep = Schema.Struct({
+  title: Schema.String,
+  subtitle: Schema.optional(Schema.String),
+  metric: TrimmedNonEmptyString,
+  split: RunMetric.fields.split,
+  higherIsBetter: Schema.optional(Schema.Boolean),
+  unit: Schema.optional(Schema.String),
+  rows: Schema.Array(
+    Schema.Struct({
+      label: Schema.String,
+      metric: Schema.optional(TrimmedNonEmptyString),
+      treatmentRunIds: Schema.Array(ResearchRunId),
+      baselineRunIds: Schema.optional(Schema.Array(ResearchRunId)),
+      baselineValue: Schema.optional(Schema.Finite),
+      note: Schema.optional(Schema.String),
+    }),
+  ),
+});
 export const ResearchSnapshot = Schema.Struct({
   project: ResearchProject,
   nodes: Schema.Array(WorkflowNode),
@@ -318,6 +365,44 @@ export const ResearchSnapshot = Schema.Struct({
   findings: Schema.Array(Finding),
   gates: Schema.Array(Gate),
   leanClaims: Schema.Array(LeanClaim),
+  metrics: Schema.Array(RunMetric),
+  backends: Schema.Array(BackendDescription),
+  workflowStepCompleted: NonNegativeInt,
+  workflowStepTotal: NonNegativeInt,
+  literature: Schema.optional(Schema.Array(ResearchPaper)),
+  sweeps: Schema.optional(Schema.Array(ResearchSweep)),
   jobs: Schema.Array(JobStatus),
 });
 export type ResearchSnapshot = typeof ResearchSnapshot.Type;
+
+export const ResearchMetricsBody = Schema.Struct({
+  metrics: Schema.Array(
+    Schema.Struct({
+      name: RunMetric.fields.name,
+      value: Schema.Finite,
+      step: RunMetric.fields.step,
+      split: RunMetric.fields.split,
+    }),
+  ),
+});
+export const ResearchParamsBody = Schema.Struct({
+  params: Schema.Record(Schema.String, Schema.Json),
+});
+export const ResearchArtifactsBody = Schema.Struct({
+  artifact: Schema.Struct({
+    path: Schema.String,
+    name: Schema.String,
+    type: Schema.String,
+    sizeBytes: Schema.optional(NonNegativeInt),
+    sha256: Schema.optional(TrimmedNonEmptyString),
+  }),
+});
+export const ResearchFinishBody = Schema.Struct({
+  status: Schema.Literals(["finished", "failed", "cancelled"]),
+  trackerUrls: Schema.optional(Run.fields.trackerUrls),
+  exitCode: Schema.optional(Schema.Int),
+  codeHash: Run.fields.codeHash,
+  dataHash: Run.fields.dataHash,
+  error: Schema.optional(Schema.String),
+});
+export const ResearchStatusBody = Schema.Struct({ status: Schema.Literals(["running"]) });

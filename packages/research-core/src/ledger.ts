@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import * as NodeSqlite from "node:sqlite";
 import type {
   BranchId,
   Finding,
@@ -48,10 +48,10 @@ function metricRow(row: Record<string, unknown>): RunMetric {
 }
 
 export class ResearchLedger {
-  readonly #db: DatabaseSync;
+  readonly #db: NodeSqlite.DatabaseSync;
 
-  constructor(path: string) {
-    this.#db = new DatabaseSync(path);
+  constructor(path: string | NodeSqlite.DatabaseSync) {
+    this.#db = typeof path === "string" ? new NodeSqlite.DatabaseSync(path) : path;
     try {
       migrateLedger(this.#db);
     } catch (error) {
@@ -284,9 +284,16 @@ export class ResearchLedger {
         items.push(JSON.parse(String(r.payload)));
         attacks.set(id, items);
       }
+      const nodes = this.#all("workflow_nodes", project);
       return {
+        metrics: this.metricsForProject(project),
+        backends: [],
+        workflowStepTotal: nodes.length,
+        workflowStepCompleted: nodes.filter((node) =>
+          ["done", "pruned", "skipped", "failed"].includes(node.status),
+        ).length,
         project: JSON.parse(String(row.payload)),
-        nodes: this.#all("workflow_nodes", project),
+        nodes,
         branches: this.#all("branches", project),
         runs: this.#all("runs", project),
         findings: this.#all("findings", project).map((f) => ({
