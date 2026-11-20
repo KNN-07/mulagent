@@ -1,0 +1,24 @@
+{
+  "name": "@t3tools/research-agents",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./literature": "./src/literature.ts"
+  },
+  "scripts": {
+    "typecheck": "effect-tsgo tsrs --noEmit",
+    "test": "vp test run --config ../../vite.config.ts --dir ."
+  },
+  "dependencies": {
+    "@oh-my-pi/pi-ai": "16.3.9",
+    "@oh-my-pi/pi-catalog": "16.3.9",
+    "@t3tools/contracts": "workspace:*",
+    "effect": "catalog:",
+    "fast-xml-parser": "5.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
