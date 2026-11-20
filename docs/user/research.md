@@ -23,6 +23,25 @@ backends:
 
 Choose an absolute, writable `workRoot` outside the project checkout. Local jobs use `rsync` to stage the workspace. Install Python and the MulAgent SDK in the job environment. For workers on another host or inside a container, set `MULAGENT_LEDGER_URL` in the server environment to an HTTP(S) origin the worker can reach. The default uses the server’s loopback address and port. The server supplies each job with this URL, its run ID, its seed and a run-specific bearer token.
 
+## Configure role models
+
+Workflow roles run in native Claude Code, Codex or Gemini threads. Autonomous projects launch full-access threads in their branch worktree. Ask-risky allows routine edits and gates commands that require escalation. Ask-always requires approval.
+
+To override a role, place `research-routes.json` beside the environment’s `settings.json` and restart the server. Each entry specifies a native instance, its model family, a model ID and a `low` or `high` effort. Preflight uses the debug route. Experiment coding uses the coder route on the toy rung and hardCoder on the small and target rungs. Omitted entries use the defaults. Critic overrides are keyed by the author's family and must use a different family.
+
+```json
+{
+  "roles": {
+    "coder": {
+      "instanceId": "codex",
+      "family": "openai",
+      "model": "gpt-6.2-astra",
+      "effort": "high"
+    }
+  }
+}
+```
+
 ## Record evidence
 
 Log the frozen metric and its matched baseline on the `holdout` split. Log initial and final `loss` on the `train` split and record the training and test example IDs as `trainIds` and `testIds` parameters. When the spec freezes a split hash, include the measured `splitHash`. A pinned evaluation file must match its Git blob before and after the command. The server checks the SDK receipt and the process exit before publishing the result.
