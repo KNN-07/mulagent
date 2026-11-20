@@ -1,5 +1,4 @@
-// @effect-diagnostics-next-line nodeBuiltinImport:off - Markdown templates are package assets read outside an Effect runtime.
-import * as NodeFSP from "node:fs/promises";
+import { rolePrompt } from "./prompt.ts";
 import * as Schema from "effect/Schema";
 import { mergePapers, searchUntilSaturated } from "./literature.ts";
 import type { LiteratureSource } from "./literature.ts";
@@ -33,7 +32,7 @@ const codecs = new Map(
 export function createRoleRunner({
   router = new ModelRouter(),
   complete = createPiAiCompletion(),
-  promptDirectory = new URL("../prompts/", import.meta.url),
+  promptDirectory,
 }: {
   readonly router?: ModelRouter;
   readonly complete?: Complete;
@@ -45,7 +44,7 @@ export function createRoleRunner({
     const definition = codecs.get(role);
     if (!definition) throw new Error(`Unknown research role ${role}`);
     const decodedInput = definition.decodeInput(input) as RoleInput<R>;
-    const template = await NodeFSP.readFile(new URL(`${role}.md`, promptDirectory), "utf8");
+    const template = await rolePrompt(role, promptDirectory);
     const { text, ...usage } = await complete(
       {
         route,

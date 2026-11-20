@@ -1,16 +1,16 @@
 // @effect-diagnostics nodeBuiltinImport:off -- Reopen a real SQLite file to exercise migration and restart semantics.
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import { GateId, FindingId, ResearchProjectId } from "@t3tools/contracts";
 import { expect, it } from "vite-plus/test";
 import { ResearchLedger } from "./ledger.ts";
 import { migrateLedger } from "./migrations.ts";
 import { spec, run, branch, project } from "./fixtures.test-support.ts";
 it("migrates once, enforces run provenance, and reopens complete report and decision records", () => {
-  const dir = mkdtempSync(join(tmpdir(), "research-ledger-"));
-  const path = join(dir, "ledger");
+  const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "research-ledger-"));
+  const path = NodePath.join(dir, "ledger");
   let ledger = new ResearchLedger(path);
   try {
     ledger.putProject(project);
@@ -30,7 +30,7 @@ it("migrates once, enforces run provenance, and reopens complete report and deci
     ledger.putCost(run.id, { tokens: 20, gpuHours: 1, usd: 2 });
     const metric = { runId: run.id, name: "loss", split: "holdout", step: 1, value: 3 } as const;
     ledger.addMetric(metric);
-    ledger.addMetric({ ...metric, step: 0, value: 5 });
+    ledger.addMetric({ ...metric, step: 0, value: 1 });
     const finding = {
       id: FindingId.make("finding"),
       researchProjectId: project.id,
@@ -69,7 +69,7 @@ it("migrates once, enforces run provenance, and reopens complete report and deci
       findings: [finding],
       gates: [{ status: "answered" }],
     });
-    expect(ledger.metricSeries(run.id).map((m) => m.value)).toEqual([5, 3]);
+    expect(ledger.metricSeries(run.id).map((m) => m.value)).toEqual([1, 3]);
     expect(ledger.bestMetric(project.id, branch.id, "loss", "holdout", false)).toEqual(metric);
     expect(
       ledger.bestMetric(ResearchProjectId.make("other"), branch.id, "loss", "holdout", false),
@@ -101,11 +101,11 @@ it("migrates once, enforces run provenance, and reopens complete report and deci
     ]);
   } finally {
     ledger.close();
-    rmSync(dir, { recursive: true, force: true });
+    NodeFS.rmSync(dir, { recursive: true, force: true });
   }
 });
 it("leaves newer databases and failed migration transactions intact", () => {
-  const db = new DatabaseSync(":memory:");
+  const db = new NodeSqlite.DatabaseSync(":memory:");
   try {
     db.exec("PRAGMA user_version=50");
     expect(() => migrateLedger(db)).toThrow(/newer/);

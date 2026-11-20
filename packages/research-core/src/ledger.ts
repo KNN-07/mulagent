@@ -191,6 +191,7 @@ export class ResearchLedger {
       .prepare(`SELECT m.* FROM run_metrics m JOIN runs r ON r.id=m.run
       WHERE project=? AND branch=? AND name=? AND split IS ? AND json_extract(r.payload,'$.status')='finished'
       AND json_extract(r.payload,'$.integrity')!='rejected' AND json_extract(r.payload,'$.verdict') NOT IN ('checks-failed','crash')
+      AND m.rowid=(SELECT last.rowid FROM run_metrics last WHERE last.run=m.run AND last.name=m.name AND last.split IS m.split ORDER BY last.step DESC,last.rowid DESC LIMIT 1)
       ORDER BY value ${higherIsBetter ? "DESC" : "ASC"},m.rowid LIMIT 1`)
       .get(project, branch, name, split ?? null);
     return row ? metricRow(row) : undefined;

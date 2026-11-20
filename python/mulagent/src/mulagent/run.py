@@ -152,7 +152,7 @@ class MulagentRun:
     def _deliver_batch(self, batch: list[dict[str, Any]]) -> None:
         ok = self._post_with_retry(
             f"/api/research/runs/{self.run_id}/metrics",
-            {"metrics": batch},
+            {"batchId": uuid.uuid4().hex, "metrics": batch},
         )
         if ok:
             with self._lock:

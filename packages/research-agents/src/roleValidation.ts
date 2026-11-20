@@ -126,49 +126,8 @@ export const roleValidators: { [R in Role]?: Validator<R> } = {
   },
   analyst: (input, output) => {
     verifyRunCoverage(input.runs, output.runs);
-    const allMetrics = new Map(input.metrics.map((metric) => [metricKey(metric), metric.value]));
-    const runs = new Map(input.runs.map((run) => [run.id, run]));
-    for (const finding of output.findings) {
-      const ids = new Set(finding.evidenceRunIds);
-      if (ids.size === 0 || [...ids].some((id) => !runs.has(id)))
-        throw new Error("Finding evidence must refer to supplied runs");
-      const metrics = finiteMetricKeys(input.metrics.filter(({ runId }) => ids.has(runId)));
-      for (const prose of [finding.claim, finding.scope, ...finding.caveats])
-        verifyProse(prose, metrics);
-      let hasInterval = false;
-      if (finding.confidenceInterval) {
-        const { lower, upper } = finding.confidenceInterval;
-        const low = allMetrics.get(metricKey(lower));
-        const high = allMetrics.get(metricKey(upper));
-        if (
-          !metrics.has(metricKey(lower)) ||
-          !metrics.has(metricKey(upper)) ||
-          low === undefined ||
-          high === undefined ||
-          !Number.isFinite(low) ||
-          !Number.isFinite(high) ||
-          low > high
-        ) {
-          throw new Error(
-            "Confidence interval endpoints must be ordered ledger metrics from the finding's evidence",
-          );
-        }
-        hasInterval = true;
-      }
-      const seeds = new Set(
-        finding.evidenceRunIds.flatMap((id) => {
-          const run = runs.get(id);
-          return run?.status === "finished" && run.integrity === "trusted" && run.seed !== undefined
-            ? [run.seed]
-            : [];
-        }),
-      );
-      if (!finding.preliminary && (seeds.size < 3 || !hasInterval)) {
-        throw new Error(
-          "A finding needs three distinct trusted seeds and a confidence interval to leave preliminary status",
-        );
-      }
-    }
+    for (const finding of output.findings)
+      validateFindingEvidence(finding, input.runs, input.metrics);
     for (const { runId, summary } of output.runs) {
       verifyProse(
         summary,
@@ -201,3 +160,52 @@ export const roleValidators: { [R in Role]?: Validator<R> } = {
     }
   },
 };
+
+export function validateFindingEvidence(
+  finding: RoleOutput<"analyst">["findings"][number],
+  evidenceRuns: readonly Run[],
+  evidenceMetrics: readonly RunMetric[],
+) {
+  const allMetrics = new Map(evidenceMetrics.map((metric) => [metricKey(metric), metric.value]));
+  const runs = new Map(evidenceRuns.map((run) => [run.id, run]));
+
+  const ids = new Set(finding.evidenceRunIds);
+  if (ids.size === 0 || [...ids].some((id) => !runs.has(id)))
+    throw new Error("Finding evidence must refer to supplied runs");
+  const metrics = finiteMetricKeys(evidenceMetrics.filter(({ runId }) => ids.has(runId)));
+  for (const prose of [finding.claim, finding.scope, ...finding.caveats])
+    verifyProse(prose, metrics);
+  let hasInterval = false;
+  if (finding.confidenceInterval) {
+    const { lower, upper } = finding.confidenceInterval;
+    const low = allMetrics.get(metricKey(lower));
+    const high = allMetrics.get(metricKey(upper));
+    if (
+      !metrics.has(metricKey(lower)) ||
+      !metrics.has(metricKey(upper)) ||
+      low === undefined ||
+      high === undefined ||
+      !Number.isFinite(low) ||
+      !Number.isFinite(high) ||
+      low > high
+    ) {
+      throw new Error(
+        "Confidence interval endpoints must be ordered ledger metrics from the finding's evidence",
+      );
+    }
+    hasInterval = true;
+  }
+  const seeds = new Set(
+    finding.evidenceRunIds.flatMap((id) => {
+      const run = runs.get(id);
+      return run?.status === "finished" && run.integrity === "trusted" && run.seed !== undefined
+        ? [run.seed]
+        : [];
+    }),
+  );
+  if (!finding.preliminary && (seeds.size < 3 || !hasInterval)) {
+    throw new Error(
+      "A finding needs three distinct trusted seeds and a confidence interval to leave preliminary status",
+    );
+  }
+}

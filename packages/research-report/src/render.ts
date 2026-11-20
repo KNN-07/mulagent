@@ -629,6 +629,7 @@ function renderFindingsSection(
     <span class="badge ${badgeClassForFindingStatus(finding.status)}">${escapeHtml(finding.status)}</span>
     <span class="badge">approval: ${escapeHtml(approvalText)}</span>
     <span class="muted">scope: ${escapeHtml(finding.scope)}</span>
+    ${finding.preliminary ? '<span class="badge">Preliminary</span>' : ""}
     ${finding.criticModel ? `<span class="muted">critic: ${escapeHtml(finding.criticModel)}</span>` : ""}
     <span class="muted" style="margin-left:auto">${finding.critic.length} attacks · ${landedCount} landed</span>
   </div>

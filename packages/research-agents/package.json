@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./prompt": "./src/prompt.ts",
+    "./papers": "./src/papers.ts",
     "./literature": "./src/literature.ts",
+    "./roleValidation": "./src/roleValidation.ts",
     "./roles": "./src/roles.ts",
     "./modelRouter": "./src/modelRouter.ts",
     "./runner": "./src/runner.ts",

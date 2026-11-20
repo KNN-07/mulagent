@@ -22,15 +22,15 @@ export class Scheduler {
     db.exec(`CREATE TABLE IF NOT EXISTS backend_queue(id TEXT PRIMARY KEY,job TEXT NOT NULL,priority INTEGER NOT NULL,retries INTEGER NOT NULL,phase TEXT NOT NULL,backend TEXT,native TEXT);
     CREATE TABLE IF NOT EXISTS backend_attempt(ticket TEXT NOT NULL,backend TEXT NOT NULL,usd REAL NOT NULL,native TEXT,outcome TEXT);`);
   }
-  enqueue(job: Job, priority = 0, retries = 1) {
+  enqueue(job: Job, priority = 0, retries = 1, hold = false) {
     if (!Number.isFinite(priority) || !Number.isSafeInteger(retries) || retries < 0)
       throw Error("Invalid queue parameters");
     if (!this.backends.some((b) => this.withinBudget(b, job)))
       throw Error("No capable backend within remaining budget");
     const id = NodeCrypto.randomUUID();
     this.db
-      .prepare("INSERT INTO backend_queue VALUES(?,?,?,?,'waiting',NULL,NULL)")
-      .run(id, JSON.stringify(job), priority, retries);
+      .prepare("INSERT INTO backend_queue VALUES(?,?,?,?,?,NULL,NULL)")
+      .run(id, JSON.stringify(job), priority, retries, hold ? "held" : "waiting");
     return id;
   }
   private withinBudget(b: Backend, j: Job) {
@@ -51,7 +51,7 @@ export class Scheduler {
         return [];
       const usage = this.db
         .prepare(
-          "SELECT count(*) AS active FROM backend_queue WHERE backend=? AND phase IN ('submitting','active','uncertain')",
+          "SELECT count(*) AS active FROM backend_queue WHERE backend=? AND phase IN ('submitting','active','uncertain','cancel-requested')",
         )
         .get(d.id)!;
       if (Number(usage.active) >= b.config.maxConcurrent) return [];
@@ -102,8 +102,32 @@ export class Scheduler {
       throw e;
     }
   }
+  release(ticket: string) {
+    this.db
+      .prepare("UPDATE backend_queue SET phase='waiting' WHERE id=? AND phase='held'")
+      .run(ticket);
+  }
+  cancel(ticket: string) {
+    this.db
+      .prepare(
+        "UPDATE backend_queue SET phase=CASE WHEN native IS NULL OR phase='waiting' THEN 'cancelled' ELSE 'cancel-requested' END WHERE id=? AND phase IN ('held','waiting','active','submitting','uncertain')",
+      )
+      .run(ticket);
+  }
   async tick() {
     const failures: unknown[] = [];
+    for (const row of this.db
+      .prepare("SELECT * FROM backend_queue WHERE phase='cancel-requested'")
+      .all() as unknown as Ticket[]) {
+      const backend = this.backends.find((b) => b.describe().id === row.backend);
+      if (!row.native || !backend) continue;
+      try {
+        await backend.cancel(row.native);
+        this.db.prepare("UPDATE backend_queue SET phase='cancelled' WHERE id=?").run(row.id);
+      } catch (error) {
+        failures.push(error);
+      }
+    }
     const active = this.db
       .prepare("SELECT * FROM backend_queue WHERE phase IN ('active','submitting','uncertain')")
       .all() as unknown as Ticket[];
