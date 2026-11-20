@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { BranchId, FindingId, ResearchProjectId } from "@t3tools/contracts";
 import { Link, Outlet, useLocation, useNavigate, useParams } from "@tanstack/react-router";
 import { T, useGT } from "gt-react";
@@ -130,6 +131,7 @@ export function ResearchShell() {
     readonly findingId?: string;
   };
   const pathname = useLocation({ select: (location) => location.pathname });
+  const canOperate = useCanOperateResearch();
   const projectsResource = useResearchProjects();
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -205,7 +207,12 @@ export function ResearchShell() {
                   </span>
                 </Button>
               ) : null}
-              <Button size="xs" variant="outline" onClick={() => setDialogOpen(true)}>
+              <Button
+                size="xs"
+                variant="outline"
+                disabled={!canOperate}
+                onClick={() => setDialogOpen(true)}
+              >
                 <PlusIcon aria-hidden="true" />
                 <span className="max-sm:sr-only">
                   <T>New project</T>

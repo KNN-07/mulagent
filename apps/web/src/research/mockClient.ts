@@ -323,16 +323,11 @@ export class MockResearchClient implements ResearchClient {
     }
     const nowIso = new Date().toISOString();
     const { branch, node } = createForkedBranchRecord(source, snapshot.branches.length, title);
-    const sourceSpec = snapshot.specsByBranchId[source.id];
-    const specsByBranchId = sourceSpec
-      ? { ...snapshot.specsByBranchId, [branch.id]: sourceSpec }
-      : snapshot.specsByBranchId;
     this.emitSnapshot({
       ...snapshot,
       project: { ...snapshot.project, updatedAt: nowIso },
-      branches: [...snapshot.branches, branch],
+      branches: [...snapshot.branches, { ...branch, spec: source.spec }],
       nodes: [...snapshot.nodes, node],
-      specsByBranchId,
     });
     return branch;
   }

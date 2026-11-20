@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { BranchId, ResearchProjectId } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
 import { T, useGT, useMessages, Var } from "gt-react";
@@ -28,7 +29,7 @@ import {
   LINEAGE_LANE_BG,
   SCALE_RUNG_LABELS,
 } from "./researchPresentation";
-import { getResearchClient, useResearchSnapshot } from "./researchStore";
+import { reportMutationError, getResearchClient, useResearchSnapshot } from "./researchStore";
 
 interface LineageViewProps {
   readonly researchProjectId: ResearchProjectId;
@@ -53,6 +54,7 @@ const LANE_STROKE_CLASS: Record<LineageTone, string> = {
 function LineageBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapshot }) {
   const gt = useGT();
   const m = useMessages();
+  const canOperate = useCanOperateResearch();
   const client = getResearchClient();
 
   const [mode, setMode] = useState<LineageDisplayMode>("graph");
@@ -74,7 +76,7 @@ function LineageBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapsho
         selectedBranch,
         snapshot.runs,
         snapshot.metrics,
-        snapshot.specsByBranchId[selectedBranch.id],
+        selectedBranch.spec,
         snapshot.backends,
       )
     : null;
@@ -87,18 +89,28 @@ function LineageBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapsho
   const defaultFindingId = snapshot.findings[0]?.id;
 
   const handleFork = async () => {
-    if (!selectedBranch || mutating) return;
+    if (!canOperate || !selectedBranch || mutating) return;
     setMutating(true);
-    const forked = await client.forkBranch(selectedBranch.id);
-    setSelectedBranchId(forked.id);
-    setMutating(false);
+    try {
+      const forked = await client.forkBranch(selectedBranch.id);
+      setSelectedBranchId(forked.id);
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setMutating(false);
+    }
   };
 
   const handlePrune = async () => {
-    if (!selectedBranch || selectedBranch.status === "pruned" || mutating) return;
+    if (!canOperate || !selectedBranch || selectedBranch.status === "pruned" || mutating) return;
     setMutating(true);
-    await client.pruneBranch(selectedBranch.id);
-    setMutating(false);
+    try {
+      await client.pruneBranch(selectedBranch.id);
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setMutating(false);
+    }
   };
 
   return (
@@ -478,7 +490,7 @@ function LineageBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapsho
                     size="sm"
                     variant="ghost"
                     className="w-full justify-start"
-                    disabled={mutating}
+                    disabled={!canOperate || mutating}
                     onClick={() => void handleFork()}
                   >
                     <GitForkIcon aria-hidden="true" />
@@ -488,7 +500,7 @@ function LineageBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapsho
                     size="sm"
                     variant="ghost-destructive"
                     className="w-full justify-start"
-                    disabled={mutating || selectedBranch.status === "pruned"}
+                    disabled={!canOperate || mutating || selectedBranch.status === "pruned"}
                     onClick={() => void handlePrune()}
                   >
                     <MinusCircleIcon aria-hidden="true" />

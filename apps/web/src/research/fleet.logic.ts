@@ -148,16 +148,17 @@ export function groupFleetSessions(
     for (const branch of activeBranches) {
       const branchRuns = snapshot.runs.filter((run) => run.branchId === branch.id);
       const telemetry = snapshot.branchLiveTelemetry[branch.id];
-      const detail = telemetry
-        ? resolve(msg("run {run}/{total} · eta {eta}m"), {
-            run: telemetry.runIndex,
-            total: telemetry.totalBudgetRuns,
-            eta: telemetry.etaMinutes,
-          })
-        : resolve(msg("{rung} rung · {runs} runs"), {
-            rung: branch.rung,
-            runs: branchRuns.length,
-          });
+      const detail =
+        telemetry?.totalBudgetRuns !== undefined
+          ? resolve(msg("run {run}/{total} · eta {eta}m"), {
+              run: telemetry.runIndex,
+              total: telemetry.totalBudgetRuns,
+              eta: telemetry.etaMinutes,
+            })
+          : resolve(msg("{rung} rung · {runs} runs"), {
+              rung: branch.rung,
+              runs: branchRuns.length,
+            });
       const branchBackendId = branchRuns.find((run) => run.backendId !== undefined)?.backendId;
       const backendLabel =
         (branchBackendId

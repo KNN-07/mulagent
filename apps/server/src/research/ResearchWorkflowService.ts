@@ -287,6 +287,8 @@ const make = Effect.gen(function* () {
     const id = ResearchProjectId.make(NodeCrypto.randomUUID()),
       now = timestamp(),
       title = input.title?.trim() || input.goal.trim().slice(0, 80);
+    if (!input.goal.trim() || Object.values(input.budget).some((n) => !Number.isFinite(n) || n < 0))
+      return yield* new ResearchOperationError({ operation: "invalid project goal or budget" });
     const folder = yield* folders.createNamedProject({ name: title });
     const workflowPath = path.join(folder.workspaceRoot, "workflows", input.workflow + ".yaml");
     const source = (yield* fs.exists(workflowPath))

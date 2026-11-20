@@ -39,7 +39,7 @@ describe("lineage.logic", () => {
       branchA,
       snapshot.runs,
       snapshot.metrics,
-      snapshot.specsByBranchId[branchA.id],
+      branchA.spec,
       snapshot.backends,
     );
     expect(statsA.bestMetric).toBe(0.776);
@@ -57,7 +57,7 @@ describe("lineage.logic", () => {
       branchC,
       snapshot.runs,
       snapshot.metrics,
-      snapshot.specsByBranchId[branchC.id],
+      branchC.spec,
       snapshot.backends,
     );
     expect(statsC.rungs).toEqual([

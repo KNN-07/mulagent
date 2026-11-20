@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { Finding, FindingId, ResearchProjectId, RunMetric } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
 import { T, useGT, useMessages, Var } from "gt-react";
@@ -19,7 +20,7 @@ import {
   INTEGRITY_VERDICT_LABELS,
   LEAN_STATUS_LABELS,
 } from "./researchPresentation";
-import { getResearchClient, useResearchSnapshot } from "./researchStore";
+import { reportMutationError, getResearchClient, useResearchSnapshot } from "./researchStore";
 
 interface GateReviewViewProps {
   readonly researchProjectId: ResearchProjectId;
@@ -40,6 +41,7 @@ function GateReviewBody({
 }) {
   const gt = useGT();
   const m = useMessages();
+  const canOperate = useCanOperateResearch();
   const client = getResearchClient();
 
   const defaultNote =
@@ -63,17 +65,22 @@ function GateReviewBody({
       : "preliminary";
 
   const handleAction = async (action: "approve" | "send-back" | "reject") => {
-    if (submitting) return;
+    if (!canOperate || submitting) return;
     setSubmitting(true);
-    const trimmed = note.trim() || undefined;
-    if (action === "approve") {
-      await client.approveFinding(finding.id, trimmed);
-    } else if (action === "send-back") {
-      await client.sendBack(finding.id, trimmed);
-    } else {
-      await client.reject(finding.id, trimmed);
+    try {
+      const trimmed = note.trim() || undefined;
+      if (action === "approve") {
+        await client.approveFinding(finding.id, trimmed);
+      } else if (action === "send-back") {
+        await client.sendBack(finding.id, trimmed);
+      } else {
+        await client.reject(finding.id, trimmed);
+      }
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   const handleComposerSubmit = async (event: FormEvent) => {
@@ -237,7 +244,7 @@ function GateReviewBody({
             <Button
               size="sm"
               variant="default"
-              disabled={submitting}
+              disabled={!canOperate || submitting}
               onClick={() => void handleAction("approve")}
             >
               <T>Approve with note</T>
@@ -245,7 +252,7 @@ function GateReviewBody({
             <Button
               size="sm"
               variant="outline"
-              disabled={submitting}
+              disabled={!canOperate || submitting}
               onClick={() => void handleAction("send-back")}
             >
               <T>Send back for more runs</T>
@@ -253,7 +260,7 @@ function GateReviewBody({
             <Button
               size="sm"
               variant="destructive-outline"
-              disabled={submitting}
+              disabled={!canOperate || submitting}
               onClick={() => void handleAction("reject")}
             >
               <T>Reject</T>
@@ -284,7 +291,7 @@ function GateReviewBody({
                   size="icon-sm-pill"
                   variant="secondary"
                   aria-label={gt("Approve with note")}
-                  disabled={submitting}
+                  disabled={!canOperate || submitting}
                 >
                   <ArrowUpIcon aria-hidden="true" />
                 </Button>

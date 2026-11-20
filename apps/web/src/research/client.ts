@@ -2,7 +2,6 @@ import type {
   ApprovalMode,
   BackendDescription,
   BranchId,
-  ExperimentSpec,
   Finding,
   FindingId,
   Gate,
@@ -84,7 +83,7 @@ export interface BranchLiveTelemetry {
   readonly gpus: number;
   readonly etaMinutes: number;
   readonly runIndex: number;
-  readonly totalBudgetRuns: number;
+  readonly totalBudgetRuns?: number;
   readonly elapsedLabel: string;
 }
 
@@ -131,7 +130,6 @@ export interface VenueChecklistItem {
 }
 
 export interface ResearchWorkspaceSnapshot extends ResearchSnapshot {
-  readonly specsByBranchId: Readonly<Record<string, ExperimentSpec>>;
   readonly workedDurationLabel: string;
   readonly threadEvents: ReadonlyArray<ResearchThreadEvent>;
   readonly horizonSummary: ReadonlyArray<HorizonComparisonRow>;

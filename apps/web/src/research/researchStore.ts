@@ -2,7 +2,8 @@ import type { BackendDescription, ResearchProject, ResearchProjectId } from "@t3
 import { useSyncExternalStore } from "react";
 
 import type { ResearchClient, ResearchWorkspaceSnapshot } from "./client";
-import { MockResearchClient } from "./mockClient";
+import { toastManager } from "../components/ui/toast";
+import { RpcResearchClient } from "./rpcClient";
 
 interface AsyncResource<Value> {
   readonly status: "loading" | "ready" | "error";
@@ -42,6 +43,10 @@ const LOADING_REPORT: AsyncResource<string> = {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+export function reportMutationError(error: unknown) {
+  toastManager.add({ type: "error", title: errorMessage(error) });
 }
 
 class ResearchClientStore {
@@ -301,7 +306,7 @@ class ResearchClientStore {
   }
 }
 
-const researchStore = new ResearchClientStore(new MockResearchClient());
+const researchStore = new ResearchClientStore(new RpcResearchClient());
 
 export function getResearchClient(): ResearchClient {
   return researchStore.getClient();

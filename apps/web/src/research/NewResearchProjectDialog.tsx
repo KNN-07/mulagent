@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { ApprovalMode, ResearchProjectId } from "@t3tools/contracts";
 import { msg, T, useGT, useMessages } from "gt-react";
 import { useState, type FormEvent } from "react";
@@ -26,7 +27,7 @@ import {
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 
-import { getResearchClient } from "./researchStore";
+import { reportMutationError, getResearchClient } from "./researchStore";
 
 interface NewResearchProjectDialogProps {
   readonly open: boolean;
@@ -79,11 +80,6 @@ const APPROVAL_OPTIONS: ReadonlyArray<{
   },
 ];
 
-function parsePositiveBudget(raw: string, fallback: number): number {
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
 export function NewResearchProjectDialog({
   open,
   onOpenChange,
@@ -92,6 +88,7 @@ export function NewResearchProjectDialog({
   const gt = useGT();
   const m = useMessages();
 
+  const canOperate = useCanOperateResearch();
   const [title, setTitle] = useState("");
   const [goal, setGoal] = useState("");
   const [workflow, setWorkflow] = useState<string>("research.yaml");
@@ -107,25 +104,31 @@ export function NewResearchProjectDialog({
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const trimmedGoal = goal.trim();
-    if (!trimmedGoal || submitting) return;
+    if (!canOperate || !trimmedGoal || submitting) return;
     setSubmitting(true);
-    const client = getResearchClient();
-    const created = await client.startProject(
-      trimmedGoal,
-      workflow,
-      approvalMode,
-      {
-        gpuHours: parsePositiveBudget(gpuHours, 40),
-        usd: parsePositiveBudget(usdBudget, 150),
-        llmUsdPerWeek: parsePositiveBudget(llmUsdPerWeek, 45),
-      },
-      title.trim() || undefined,
-    );
-    setSubmitting(false);
-    setTitle("");
-    setGoal("");
-    onOpenChange(false);
-    onCreated(created.id);
+    try {
+      const client = getResearchClient();
+      const created = await client.startProject(
+        trimmedGoal,
+        workflow,
+        approvalMode,
+        {
+          gpuHours: Number(gpuHours),
+          usd: Number(usdBudget),
+          llmUsdPerWeek: Number(llmUsdPerWeek),
+        },
+        title.trim() || undefined,
+      );
+
+      setTitle("");
+      setGoal("");
+      onOpenChange(false);
+      onCreated(created.id);
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -234,8 +237,9 @@ export function NewResearchProjectDialog({
                 <Input
                   id="new-research-gpu-hours"
                   type="number"
-                  min={1}
-                  step="1"
+                  required
+                  min={0}
+                  step="any"
                   font="mono"
                   value={gpuHours}
                   onChange={(event) => setGpuHours(event.target.value)}
@@ -249,8 +253,9 @@ export function NewResearchProjectDialog({
                 <Input
                   id="new-research-usd"
                   type="number"
+                  required
                   min={0}
-                  step="5"
+                  step="any"
                   font="mono"
                   value={usdBudget}
                   onChange={(event) => setUsdBudget(event.target.value)}
@@ -264,8 +269,9 @@ export function NewResearchProjectDialog({
                 <Input
                   id="new-research-llm-usd"
                   type="number"
-                  min={1}
-                  step="5"
+                  required
+                  min={0}
+                  step="any"
                   font="mono"
                   value={llmUsdPerWeek}
                   onChange={(event) => setLlmUsdPerWeek(event.target.value)}
@@ -278,7 +284,10 @@ export function NewResearchProjectDialog({
             <DialogClose render={<Button variant="outline" type="button" />}>
               <T>Cancel</T>
             </DialogClose>
-            <DialogAction type="submit" disabled={submitting || goal.trim().length === 0}>
+            <DialogAction
+              type="submit"
+              disabled={!canOperate || submitting || goal.trim().length === 0}
+            >
               <T>Start research loop</T>
             </DialogAction>
           </DialogFooter>
