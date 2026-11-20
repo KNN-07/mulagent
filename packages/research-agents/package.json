@@ -8,7 +8,8 @@
     "./roles": "./src/roles.ts",
     "./modelRouter": "./src/modelRouter.ts",
     "./runner": "./src/runner.ts",
-    "./tournament": "./src/tournament.ts"
+    "./tournament": "./src/tournament.ts",
+    "./lean": "./src/lean.ts"
   },
   "scripts": {
     "typecheck": "effect-tsgo tsrs --noEmit",
