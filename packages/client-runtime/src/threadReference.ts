@@ -4,7 +4,7 @@ import type {
   ThreadPullRequestLink,
 } from "@t3tools/contracts";
 import { threadContextRecord } from "@t3tools/shared/composerContextReferences";
-import { hostedThreadLink, threadLinkHref } from "@t3tools/shared/threadLinks";
+import { formatThreadLink, hostedThreadLink } from "@t3tools/shared/threadLinks";
 
 import { resolveThreadCurrentPullRequestLink } from "./threadPullRequests.ts";
 import { mFallback, msg } from "gt-i18n";
@@ -37,7 +37,9 @@ export function threadChipCopyTarget(
   return {
     kind: "thread",
     value:
-      hostedAppUrl === null ? threadLinkHref(threadRef) : hostedThreadLink(threadRef, hostedAppUrl),
+      hostedAppUrl === null
+        ? formatThreadLink(threadRef)
+        : hostedThreadLink(threadRef, hostedAppUrl),
     description: record.title,
     fragment: { version: 1, source: { environmentId: threadRef.environmentId }, records: [record] },
     clipboardTarget: "thread",
