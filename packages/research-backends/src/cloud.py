@@ -77,9 +77,15 @@ def submit(root):
 
 def handle(action, root):
     info = json.loads((root / "provider.json").read_text())
+    if action == "status" and (root/"cloud-status.json").exists():
+        print((root/"cloud-status.json").read_text())
+        return
+    if action == "fetch" and (root/"cloud-fetched").exists():
+        return
     if info["provider"] == "modal":
         import modal
-        sb = modal.Sandbox.from_id(info["native"])
+        if action in ("status", "cancel"):
+            sb = modal.Sandbox.from_id(info["native"])
         if action == "cancel":
             sb.terminate()
             return
@@ -90,19 +96,30 @@ def handle(action, root):
                 save(root / "log", b"".join(vol.read_file("/log")))
             except FileNotFoundError:
                 pass
-            print(json.dumps({"state": "running" if code is None else "succeeded" if code == 0 else "failed"}))
+            status = {"state":"running"} if code is None else {"state":"succeeded" if code==0 else "failed","exitCode":code}
+            if code is not None:
+                save(root/"cloud-status.json",json.dumps(status).encode())
+            print(json.dumps(status))
         else:
             import subprocess
             for name in info["files"]:
                 path = root / "work" / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 subprocess.run(["modal", "volume", "get", "--force", info["volume"], "/work/"+name, str(path)], check=True)
+            (root/"cloud-fetched").touch()
+            subprocess.run(["modal", "volume", "delete", "--yes", "--allow-missing", info["volume"]], check=True)
     else:
         endpoint, native = info["endpoint"], info["native"]
         if action == "cancel":
             api(endpoint, "cancel/"+native, {})
             return
-        result = api(endpoint, "status/"+native)
+        cache = root/"runpod-result.json"
+        result = json.loads(cache.read_text()) if cache.exists() else api(endpoint, "status/"+native)
+        if result.get("status") in ("COMPLETED","FAILED","CANCELLED","TIMED_OUT") and not cache.exists():
+            save(cache,json.dumps(result).encode())
+        progress = result.get("progress")
+        if isinstance(progress, str):
+            save(root/"log",progress.encode())
         output = result.get("output") or {}
         if "log" in output:
             save(root / "log", output["log"].encode())
@@ -119,6 +136,8 @@ def handle(action, root):
                     raise ValueError("Unexpected artifact path")
                 path.parent.mkdir(parents=True, exist_ok=True)
                 save(path, base64.b64decode(data,validate=True))
+            if result.get("status") == "COMPLETED":
+                (root/"cloud-fetched").touch()
 
 
 if __name__ == "__main__":

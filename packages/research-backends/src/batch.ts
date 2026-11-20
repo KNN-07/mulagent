@@ -2,7 +2,7 @@ import type { BackendConfig, Job, Status } from "./model.ts";
 import type { JobState } from "@t3tools/contracts";
 import { quote, shell, type Execute } from "./transport.ts";
 
-export function workload(c: BackendConfig, j: Job, dir: string): string {
+export function workload(c: BackendConfig, j: Job, dir: string, name?: string): string {
   const env = Object.entries(j.env ?? {}).map(([k, v]) => k + "=" + v);
   const r = j.resources,
     n = r.nodes ?? 1,
@@ -21,6 +21,7 @@ export function workload(c: BackendConfig, j: Job, dir: string): string {
       c.containerRuntime,
       "run",
       "--rm",
+      ...(name ? ["--name", name] : []),
       "--network",
       j.network ?? "none",
       "-v",
@@ -29,7 +30,7 @@ export function workload(c: BackendConfig, j: Job, dir: string): string {
       "/work",
       ...(gpu
         ? c.containerRuntime === "podman"
-          ? ["--device", "nvidia.com/gpu=all"]
+          ? Array.from({ length: gpu }, (_, i) => ["--device", "nvidia.com/gpu=" + i]).flat()
           : ["--gpus", String(gpu)]
         : []),
       ...(n > 1 ? ["-e", "MASTER_ADDR", "-e", "MASTER_PORT", "-e", "SLURM_NODEID"] : []),

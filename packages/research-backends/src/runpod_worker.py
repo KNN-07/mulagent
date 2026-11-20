@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 
 import runpod
 
@@ -23,15 +24,30 @@ def handle(request):
             path = inside(root, name)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(base64.b64decode(data, validate=True))
-        result = subprocess.run(job["command"], cwd=root, env={"PATH": os.environ["PATH"], **job["env"]},
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        log = bytearray()
+        last_update = time.monotonic()
+        with subprocess.Popen(job["command"], cwd=root, env={"PATH": os.environ["PATH"], **job["env"]},
+                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
+            while chunk := proc.stdout.read1(32768):
+                log.extend(chunk)
+                if len(log) > 2_000_000:
+                    proc.kill()
+                    raise ValueError("RunPod inline log exceeds 2 MB")
+                if time.monotonic() - last_update >= 2:
+                    runpod.serverless.progress_update(request, log.decode(errors="replace"))
+                    last_update = time.monotonic()
+            code = proc.wait()
         files = {}
+        total = 0
         for name in job["artifacts"]:
             target = inside(root, name)
             for path in target.rglob("*") if target.is_dir() else [target]:
                 if path.is_file() and path.resolve().is_relative_to(root):
+                    total += path.stat().st_size
+                    if total > 5_000_000:
+                        raise ValueError("RunPod inline artifacts exceed 5 MB")
                     files[str(path.relative_to(root))] = base64.b64encode(path.read_bytes()).decode()
-        return {"exitCode":result.returncode, "log":result.stdout.decode(errors="replace"), "files":files}
+        return {"refresh_worker":True, "exitCode":code, "log":log.decode(errors="replace"), "files":files}
 
 
 if __name__ == "__main__":

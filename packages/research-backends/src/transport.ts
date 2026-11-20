@@ -6,8 +6,12 @@ export const shell = (argv: readonly string[]) => argv.map(quote).join(" ");
 export type Execute = (program: string, args: readonly string[], stdin?: string) => Promise<string>;
 export const execute: Execute = (program, args, stdin) =>
   new Promise((resolve, reject) => {
-    const child = NodeChildProcess.execFile(program, args, { maxBuffer: 16 * 1024 * 1024 }, (err, out, stderr) =>
-      err ? reject(new Error(stderr.trim() || err.message, { cause: err })) : resolve(out),
+    const child = NodeChildProcess.execFile(
+      program,
+      args,
+      { maxBuffer: 16 * 1024 * 1024 },
+      (err, out, stderr) =>
+        err ? reject(new Error(stderr.trim() || err.message, { cause: err })) : resolve(out),
     );
     child.stdin?.on("error", () => {}).end(stdin);
   });

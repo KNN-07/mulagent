@@ -8,7 +8,8 @@ import * as NodeURL from "node:url";
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- The backend boundary runs directly on Node and exposes a Promise API.
 import * as NodeTimersPromises from "node:timers/promises";
 import { JobId, type BackendDescription } from "@t3tools/contracts";
-import { batchScript, batchStatus, workload } from "./batch.ts";
+import { launchProcess } from "./process.ts";
+import { batchScript, batchStatus } from "./batch.ts";
 import { manifest } from "./kubernetes.ts";
 import {
   validateConfig,
@@ -19,7 +20,7 @@ import {
   type BackendConfig,
   type Status,
 } from "./model.ts";
-import { execute, quote, shell, transport, type Execute } from "./transport.ts";
+import { execute, quote, transport, type Execute } from "./transport.ts";
 
 export class ComputeBackend implements Backend {
   readonly config: BackendConfig;
@@ -114,34 +115,7 @@ export class ComputeBackend implements Backend {
         )
       ).trim();
     } else {
-      const script = [
-        "cd " + quote(work) + " || exit 1",
-        "mkdir -p .checkpoints",
-        shell([
-          "timeout",
-          "--foreground",
-          "--kill-after=5s",
-          Math.ceil(j.resources.hours * 3600) + "s",
-          "sh",
-          "-c",
-          workload(c, j, work),
-        ]),
-        'echo "$?" > ' + quote(dir + "/exit"),
-      ].join("\n");
-      native = (
-        await this.hostRun("sh", [
-          "-c",
-          "setsid env -i PATH=" +
-            quote("/usr/local/bin:/usr/bin:/bin") +
-            " MULAGENT_JOB_ID=" +
-            quote(id) +
-            " sh -c " +
-            quote(script) +
-            " </dev/null >" +
-            quote(dir + "/log") +
-            " 2>&1 & echo $!",
-        ])
-      ).trim();
+      native = await launchProcess(this.hostRun, c, j, dir, id);
       if (!/^\d+$/.test(native)) throw Error("Invalid process id");
     }
     await this.hostRun(
@@ -227,7 +201,7 @@ export class ComputeBackend implements Backend {
     else
       await this.hostRun("sh", [
         "-c",
-        this.ownsProcess(id, native) + " && /bin/kill -KILL -- -" + native,
+        this.ownsProcess(id, native) + " && /bin/kill -TERM -- " + native,
       ]);
     await this.hostRun("touch", [dir + "/cancelled"]);
   }
