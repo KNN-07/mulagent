@@ -44,10 +44,11 @@ export class Scheduler {
       .get(b.describe().id)!;
     return Number(usage.reserved) + cost(b, j) <= b.config.spendCapUsd;
   }
-  private choose(j: Job) {
+  private choose(j: Job, resumeBackend?: BackendId | null) {
     const eligible = this.backends.flatMap((b) => {
       const d = b.describe();
-      if (!d.healthy || !this.withinBudget(b, j)) return [];
+      if ((resumeBackend && resumeBackend !== d.id) || !d.healthy || !this.withinBudget(b, j))
+        return [];
       const usage = this.db
         .prepare(
           "SELECT count(*) AS active FROM backend_queue WHERE backend=? AND phase IN ('submitting','active','uncertain')",
@@ -69,9 +70,15 @@ export class Scheduler {
         .all() as unknown as Ticket[];
       for (const row of rows) {
         const j: Job = JSON.parse(row.job),
-          b = this.choose(j);
+          b = this.choose(j, row.backend);
         if (!b) {
-          if (!this.backends.some((candidate) => this.withinBudget(candidate, j))) {
+          if (
+            !this.backends.some(
+              (candidate) =>
+                (!row.backend || candidate.describe().id === row.backend) &&
+                this.withinBudget(candidate, j),
+            )
+          ) {
             this.db
               .prepare("UPDATE backend_queue SET phase='budget-exhausted' WHERE id=?")
               .run(row.id);
@@ -83,8 +90,8 @@ export class Scheduler {
           .prepare("UPDATE backend_queue SET backend=?,native=?,phase='submitting' WHERE id=?")
           .run(b.describe().id, jobId, row.id);
         const attempt = this.db
-          .prepare("INSERT INTO backend_attempt(ticket,backend,usd) VALUES(?,?,?)")
-          .run(row.id, b.describe().id, cost(b, j)).lastInsertRowid;
+          .prepare("INSERT INTO backend_attempt(ticket,backend,usd,native) VALUES(?,?,?,?)")
+          .run(row.id, b.describe().id, cost(b, j), jobId).lastInsertRowid;
         this.db.exec("COMMIT");
         return { row, j, b, attempt, jobId };
       }
@@ -96,13 +103,27 @@ export class Scheduler {
     }
   }
   async tick() {
+    const failures: unknown[] = [];
     const active = this.db
-      .prepare("SELECT * FROM backend_queue WHERE phase='active'")
+      .prepare("SELECT * FROM backend_queue WHERE phase IN ('active','submitting','uncertain')")
       .all() as unknown as Ticket[];
     for (const row of active) {
       const b = this.backends.find((b) => b.describe().id === row.backend);
       if (!b || !row.native) continue;
-      const s = await b.status(row.native);
+      let s;
+      try {
+        s = await b.status(row.native);
+      } catch (e) {
+        if (row.phase === "active") failures.push(e);
+        continue;
+      }
+      if (row.phase !== "active" && s.state !== "unknown") {
+        this.db
+          .prepare(
+            "UPDATE backend_queue SET phase='active' WHERE id=? AND native=? AND phase IN ('uncertain','submitting')",
+          )
+          .run(row.id, row.native);
+      }
       if (!["succeeded", "failed", "cancelled"].includes(s.state)) continue;
       const retry = s.preempted && row.retries > 0;
       this.db.exec("BEGIN IMMEDIATE");
@@ -124,13 +145,15 @@ export class Scheduler {
     for (let claim = this.claim(); claim; claim = this.claim()) {
       const { row, b, j, attempt, jobId } = claim;
       try {
-        const native = await b.submit(j, jobId);
+        const native = await b.submit(j, jobId, row.native ?? undefined);
         this.db.exec("BEGIN IMMEDIATE");
         try {
           this.db.prepare("UPDATE backend_attempt SET native=? WHERE rowid=?").run(native, attempt);
           this.db
-            .prepare("UPDATE backend_queue SET phase='active',native=? WHERE id=?")
-            .run(native, row.id);
+            .prepare(
+              "UPDATE backend_queue SET phase='active',native=? WHERE id=? AND native=? AND phase='submitting'",
+            )
+            .run(native, row.id, jobId);
           this.db.exec("COMMIT");
         } catch (e) {
           this.db.exec("ROLLBACK");
@@ -138,10 +161,15 @@ export class Scheduler {
         }
       } catch (e) {
         // A lost submit response may still have started a billed job.
-        this.db.prepare("UPDATE backend_queue SET phase='uncertain' WHERE id=?").run(row.id);
-        throw e;
+        this.db
+          .prepare(
+            "UPDATE backend_queue SET phase='uncertain' WHERE id=? AND native=? AND phase='submitting'",
+          )
+          .run(row.id, jobId);
+        failures.push(e);
       }
     }
+    if (failures.length) throw new AggregateError(failures, "Backend operations failed");
   }
   attempts(ticket: string) {
     return this.db

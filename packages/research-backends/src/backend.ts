@@ -20,7 +20,7 @@ import {
   type BackendConfig,
   type Status,
 } from "./model.ts";
-import { execute, quote, transport, type Execute } from "./transport.ts";
+import { execute, quote, shell, transport, type Execute } from "./transport.ts";
 
 export class ComputeBackend implements Backend {
   readonly config: BackendConfig;
@@ -62,7 +62,7 @@ export class ComputeBackend implements Backend {
   ): Promise<{ native: string; files: string[]; runId?: Job["runId"] }> {
     return JSON.parse(await this.hostRun("cat", [this.dir(id) + "/metadata"]));
   }
-  async submit(j: Job, id = JobId.make(NodeCrypto.randomUUID())) {
+  async submit(j: Job, id = JobId.make(NodeCrypto.randomUUID()), resumeFrom?: JobId) {
     const c = this.config,
       kind = c.description.kind;
     checkJob(c, j);
@@ -90,6 +90,17 @@ export class ComputeBackend implements Backend {
       src + "/",
       this.remote(work + "/"),
     ]);
+    if (resumeFrom) {
+      const previous = this.dir(resumeFrom) + "/work/.checkpoints";
+      await this.hostRun("sh", [
+        "-c",
+        "if test -d " +
+          quote(previous) +
+          "; then " +
+          shell(["rsync", "-rlt", "--safe-links", "--", previous + "/", work + "/.checkpoints/"]) +
+          "; fi",
+      ]);
+    }
     await this.hostRun("touch", [dir + "/log"]);
     let native: string;
     if (kind === "slurm" || kind === "pbs") {

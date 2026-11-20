@@ -77,7 +77,9 @@ export function batchScript(c: BackendConfig, j: Job, dir: string) {
               return ["--" + k + "=" + v];
             },
           ),
-          ...(r.preemptibleOk ? ["--requeue"] : []),
+          ...(r.preemptibleOk
+            ? [c.description.usdPerGpuHour || c.baseUsdPerHour ? "--no-requeue" : "--requeue"]
+            : []),
         ].map((v) => "#SBATCH " + v)
       : [
           "#PBS -l select=" +

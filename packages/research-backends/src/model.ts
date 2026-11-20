@@ -104,7 +104,7 @@ export interface Status extends JobStatus {
 export interface Backend {
   readonly config: BackendConfig;
   describe(): BackendDescription;
-  submit(job: Job, id?: JobId): Promise<JobId>;
+  submit(job: Job, id?: JobId, resumeFrom?: JobId): Promise<JobId>;
   status(id: JobId): Promise<Status>;
   logs(id: JobId, options: { follow: boolean }): AsyncIterable<string>;
   cancel(id: JobId): Promise<void>;

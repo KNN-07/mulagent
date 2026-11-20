@@ -57,6 +57,7 @@ def submit(root):
             gpu=f"{gpu}:{resources['gpus']}" if resources["gpus"] else None,
             cpu=resources.get("cpus"), memory=math.ceil(resources["memGb"]*1024) if "memGb" in resources else None,
         )
+        sandbox.set_tags({"backend":cfg["description"]["id"], "gpus":str(resources["gpus"])})
         info.update(native=sandbox.object_id, volume=volume_name)
     else:
         endpoint = cfg["endpoint"]
@@ -140,9 +141,26 @@ def handle(action, root):
                 (root/"cloud-fetched").touch()
 
 
+def monitor(config):
+    if config["cloudProvider"] == "runpod":
+        health = api(config["endpoint"], "health")
+        free = health["workers"].get("idle", 0) * config["description"]["gpusTotal"]
+        queued = health["jobs"].get("inQueue", 0)
+    else:
+        import modal
+        app = modal.App.lookup("mulagent", create_if_missing=True)
+        active = list(modal.Sandbox.list(app_id=app.app_id, tags={"backend":config["description"]["id"]}))
+        used = sum(int(sb.get_tags()["gpus"]) for sb in active)
+        free = max(0, config["description"]["gpusTotal"] - used)
+        queued = 0
+    print(json.dumps({"gpusFree":free,"queueDepth":queued}))
+
+
 if __name__ == "__main__":
     action, folder = sys.argv[1:]
-    if action == "submit":
+    if action == "monitor":
+        monitor(json.load(sys.stdin))
+    elif action == "submit":
         submit(Path(folder))
     else:
         handle(action, Path(folder))
