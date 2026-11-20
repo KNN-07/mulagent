@@ -46,7 +46,7 @@ describe("parseElicitationForm", () => {
   }
 
   it("asks each question once when a choice has a free-text companion field", () => {
-    // OMP's ask dialog follows each choice `q<n>` with a free-text `q<n>__other` field.
+    // The form follows each choice `q<n>` with a free-text `q<n>__other` field.
     const ask = (question: string, header: string) => ({
       type: "string",
       title: question,
