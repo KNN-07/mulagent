@@ -24,6 +24,8 @@ def handle(request):
             path = inside(root, name)
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(base64.b64decode(data, validate=True))
+            if name in job.get("executable", []):
+                path.chmod(0o700)
         log = bytearray()
         last_update = time.monotonic()
         with subprocess.Popen(job["command"], cwd=root, env={"PATH": os.environ["PATH"], **job["env"]},

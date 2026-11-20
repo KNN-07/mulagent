@@ -57,20 +57,28 @@ def submit(root):
             gpu=f"{gpu}:{resources['gpus']}" if resources["gpus"] else None,
             cpu=resources.get("cpus"), memory=math.ceil(resources["memGb"]*1024) if "memGb" in resources else None,
         )
-        sandbox.set_tags({"backend":cfg["description"]["id"], "gpus":str(resources["gpus"])})
+        try:
+            sandbox.set_tags({"backend":cfg["description"]["id"], "gpus":str(resources["gpus"])})
+        except Exception:
+            sandbox.terminate()
+            raise
         info.update(native=sandbox.object_id, volume=volume_name)
     else:
         endpoint = cfg["endpoint"]
         files = {}
+        executable = []
         size = 0
         for path in (root / "work").rglob("*"):
             if path.is_file() and not path.is_symlink():
                 size += path.stat().st_size
                 if size > 6_000_000:
                     raise ValueError("RunPod inline workspace exceeds 6 MB")
-                files[str(path.relative_to(root / "work"))] = base64.b64encode(path.read_bytes()).decode()
+                name = str(path.relative_to(root / "work"))
+                if path.stat().st_mode & 0o111:
+                    executable.append(name)
+                files[name] = base64.b64encode(path.read_bytes()).decode()
         result = api(endpoint, "run", {"input": {"command": job["command"], "env": job.get("env", {}),
-                     "files": files, "artifacts": info["files"]}, "policy": {"executionTimeout": seconds*1000}})
+                     "files": files, "executable": executable, "artifacts": info["files"]}, "policy": {"executionTimeout": seconds*1000}})
         info.update(endpoint=endpoint, native=result["id"])
     save(root / "provider.json", json.dumps(info).encode())
     print(info["native"])

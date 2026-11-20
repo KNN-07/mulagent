@@ -243,7 +243,12 @@ export class ComputeBackend implements Backend {
   async fetch(id: JobId, dest: string) {
     const dir = this.dir(id),
       { files } = await this.metadata(id);
-    if (this.config.description.kind === "cloud") await this.cloud("fetch", dir);
+    if (this.config.description.kind === "cloud") {
+      const { state } = await this.status(id);
+      if (!["succeeded", "failed", "cancelled"].includes(state))
+        throw Error("Cloud artifacts are available after the job finishes");
+      await this.cloud("fetch", dir);
+    }
     await NodeFSP.mkdir(dest, { recursive: true });
     if (files.length)
       await this.run(
