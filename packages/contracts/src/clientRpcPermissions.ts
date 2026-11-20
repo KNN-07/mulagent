@@ -17,6 +17,22 @@ import { WS_METHODS } from "./rpc.ts";
 
 /** Incremental client enforcement; the server still authorizes every request. */
 export const CLIENT_GUARDED_RPC_SCOPES = {
+  [WS_METHODS.researchListProjects]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchListBackends]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchGetSnapshot]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchSubscribeSnapshot]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchSubscribeProjects]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchGetReportHtml]: AuthOrchestrationReadScope,
+  [WS_METHODS.researchStartProject]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchAnswerGate]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchSkipGate]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchApproveFinding]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchSendBackFinding]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchRejectFinding]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchPruneBranch]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchForkBranch]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchPostMessage]: AuthOrchestrationOperateScope,
+  [WS_METHODS.researchResolvePendingEdit]: AuthOrchestrationOperateScope,
   [WS_METHODS.providerAuthRemoveMethod]: AuthProvidersManageScope,
   [WS_METHODS.previewClose]: AuthPreviewOperateScope,
   // Stopping a server signals its processes, as closing a terminal does.

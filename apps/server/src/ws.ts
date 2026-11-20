@@ -1,3 +1,8 @@
+import * as ResearchLedgerService from "./research/ResearchLedgerService.ts";
+import * as ResearchComputeService from "./research/ResearchComputeService.ts";
+import * as ResearchWorkflowService from "./research/ResearchWorkflowService.ts";
+import * as ResearchReportService from "./research/ResearchReportService.ts";
+import { ResearchOperationError } from "@t3tools/contracts";
 import { OrchestrationDispatchCommandError } from "@t3tools/contracts";
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- A synchronous digest inside the pure provider mapping.
 import * as NodeCrypto from "node:crypto";
@@ -1977,7 +1982,71 @@ export const layerWsRpc = (
         return yield* mutateProjectWithClone(projectService, projectCloneTracker, mutation);
       });
 
+      const researchStore = yield* ResearchLedgerService.ResearchLedgerService;
+      const compute = yield* ResearchComputeService.ResearchComputeService;
+      const workflow = yield* ResearchWorkflowService.ResearchWorkflowService;
+      const reports = yield* ResearchReportService.ResearchReportService;
+      const projects = Effect.try({
+        try: () => researchStore.ledger.projects(),
+        catch: () => new ResearchOperationError({ operation: "list projects" }),
+      });
+      const snapshot = (id: import("@t3tools/contracts").ResearchProjectId) =>
+        Effect.try({
+          try: () => ({ ...researchStore.snapshot(id), backends: compute.descriptions() }),
+          catch: () => new ResearchOperationError({ operation: "get snapshot" }),
+        });
       const handlers = ServerWsRpcGroup.of({
+        [WS_METHODS.researchListProjects]: () => projects,
+        [WS_METHODS.researchListBackends]: () => Effect.sync(compute.descriptions),
+        [WS_METHODS.researchGetSnapshot]: (i) => snapshot(i.researchProjectId),
+        [WS_METHODS.researchSubscribeSnapshot]: (i) =>
+          researchStore
+            .snapshotChanges(i.researchProjectId)
+            .pipe(Stream.mapEffect(() => snapshot(i.researchProjectId))),
+        [WS_METHODS.researchSubscribeProjects]: () =>
+          researchStore.projectChanges.pipe(Stream.mapEffect(() => projects)),
+        [WS_METHODS.researchGetReportHtml]: (i) => reports.html(i.researchProjectId),
+        [WS_METHODS.researchStartProject]: (i) =>
+          workflow
+            .startProject(i)
+            .pipe(
+              Effect.mapError(() => new ResearchOperationError({ operation: "start project" })),
+            ),
+        [WS_METHODS.researchAnswerGate]: (i) =>
+          workflow
+            .answer(i.gateId, { optionIds: i.optionIds, note: i.note })
+            .pipe(Effect.mapError(() => new ResearchOperationError({ operation: "answer gate" }))),
+        [WS_METHODS.researchSkipGate]: (i) =>
+          workflow
+            .answer(i.gateId, "skip")
+            .pipe(Effect.mapError(() => new ResearchOperationError({ operation: "skip gate" }))),
+        [WS_METHODS.researchApproveFinding]: (i) =>
+          workflow.finding(i.findingId, "approved", i.note),
+        [WS_METHODS.researchSendBackFinding]: (i) =>
+          workflow.finding(i.findingId, "sent-back", i.note),
+        [WS_METHODS.researchRejectFinding]: (i) =>
+          workflow.finding(i.findingId, "rejected", i.note),
+        [WS_METHODS.researchPruneBranch]: (i) =>
+          workflow
+            .branch(i.branchId, "prune", i.reason)
+            .pipe(Effect.mapError(() => new ResearchOperationError({ operation: "prune branch" }))),
+        [WS_METHODS.researchForkBranch]: (i) =>
+          workflow
+            .branch(i.branchId, "fork", i.title)
+            .pipe(Effect.mapError(() => new ResearchOperationError({ operation: "fork branch" }))),
+        [WS_METHODS.researchPostMessage]: (i) =>
+          workflow
+            .postMessage(i.researchProjectId, i.body, i.branchId)
+            .pipe(Effect.mapError(() => new ResearchOperationError({ operation: "send message" }))),
+        [WS_METHODS.researchResolvePendingEdit]: (i) =>
+          workflow
+            .resolvePendingEdit(i.researchProjectId, i.branchId, i.action)
+            .pipe(
+              Effect.mapError(
+                () => new ResearchOperationError({ operation: "resolve workspace edit" }),
+              ),
+            ),
+
         [WS_METHODS.issuesList]: (input) => issues.list(input),
         [WS_METHODS.issuesDetail]: (input) => issues.detail(input),
         [WS_METHODS.issuesComments]: (input) => issues.comments(input),
@@ -3608,6 +3677,12 @@ export const WS_RPC_SERVER_OPTIONS = {
 
 export const layer = Layer.unwrap(
   Effect.gen(function* () {
+    const researchContext = yield* Effect.context<
+      | ResearchLedgerService.ResearchLedgerService
+      | ResearchComputeService.ResearchComputeService
+      | ResearchWorkflowService.ResearchWorkflowService
+      | ResearchReportService.ResearchReportService
+    >();
     const serverBrowser = yield* ServerBrowser.ServerBrowser;
     const serverSelfUpdate = yield* ServerSelfUpdate.ServerSelfUpdate;
     const npmRelease = yield* NpmRelease.NpmRelease;
@@ -3694,6 +3769,7 @@ export const layer = Layer.unwrap(
               reportProfiles,
               readSettingsClient(url.value),
             ).pipe(
+              Layer.provide(Layer.succeedContext(researchContext)),
               Layer.provideMerge(RpcSerialization.layerJson),
               // Handler-context reporters see only request defects, not server-wide defects.
               Layer.provide(DefectReporter.layer),

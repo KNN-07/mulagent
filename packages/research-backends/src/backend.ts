@@ -4,7 +4,7 @@ import * as NodeCrypto from "node:crypto";
 import * as NodeFSP from "node:fs/promises";
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- The backend boundary runs directly on Node and exposes a Promise API.
 import * as NodePath from "node:path";
-import * as NodeURL from "node:url";
+import { cloudCommand } from "./cloudCommand.ts";
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- The backend boundary runs directly on Node and exposes a Promise API.
 import * as NodeTimersPromises from "node:timers/promises";
 import { JobId, type BackendDescription } from "@t3tools/contracts";
@@ -51,11 +51,7 @@ export class ComputeBackend implements Backend {
     return this.hostRun("kubectl", ["-n", this.config.namespace ?? "default", ...args], input);
   }
   private cloud(action: string, dir: string, input?: string) {
-    return this.run(
-      "python3",
-      [NodeURL.fileURLToPath(new URL("./cloud.py", import.meta.url)), action, dir],
-      input,
-    );
+    return this.run("python3", cloudCommand(action, dir), input);
   }
   private async metadata(
     id: JobId,

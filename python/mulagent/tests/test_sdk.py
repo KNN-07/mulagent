@@ -51,6 +51,8 @@ def test_init_reads_env_vars_and_logs_metrics_with_stdout_and_http(
     assert "http://127.0.0.1:9999/api/research/runs/run-env-42/finish" in urls
 
     metric_calls = [p for u, p, _ in posted if u.endswith("/metrics")]
+    assert len(metric_calls) == 1
+    assert len(metric_calls[0].pop("batchId")) == 32
     assert metric_calls == [
         {
             "metrics": [

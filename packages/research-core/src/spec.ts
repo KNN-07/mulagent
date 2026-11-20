@@ -1,5 +1,5 @@
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- Specs are hashed inside synchronous SQLite transactions.
-import { createHash } from "node:crypto";
+import * as NodeCrypto from "node:crypto";
 import type { ExperimentSpec } from "@t3tools/contracts";
 
 export function canonicalJson(value: unknown): string {
@@ -25,11 +25,11 @@ export function canonicalJson(value: unknown): string {
   throw new Error("Expected finite JSON data");
 }
 
-export type SpecWithSplit = ExperimentSpec & { readonly splitHash?: string };
+export type SpecWithSplit = ExperimentSpec;
 
 export function specHash(spec: SpecWithSplit): string {
   const { specHash: _hash, ...contents } = spec;
-  return createHash("sha256").update(canonicalJson(contents)).digest("hex");
+  return NodeCrypto.createHash("sha256").update(canonicalJson(contents)).digest("hex");
 }
 
 export function freezeSpec(spec: SpecWithSplit, frozenAt: string) {

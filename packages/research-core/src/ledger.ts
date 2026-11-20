@@ -1,4 +1,4 @@
-import { DatabaseSync } from "node:sqlite";
+import * as NodeSqlite from "node:sqlite";
 import type {
   BranchId,
   Finding,
@@ -48,10 +48,10 @@ function metricRow(row: Record<string, unknown>): RunMetric {
 }
 
 export class ResearchLedger {
-  readonly #db: DatabaseSync;
+  readonly #db: NodeSqlite.DatabaseSync;
 
-  constructor(path: string) {
-    this.#db = new DatabaseSync(path);
+  constructor(path: string | NodeSqlite.DatabaseSync) {
+    this.#db = typeof path === "string" ? new NodeSqlite.DatabaseSync(path) : path;
     try {
       migrateLedger(this.#db);
     } catch (error) {
@@ -191,6 +191,7 @@ export class ResearchLedger {
       .prepare(`SELECT m.* FROM run_metrics m JOIN runs r ON r.id=m.run
       WHERE project=? AND branch=? AND name=? AND split IS ? AND json_extract(r.payload,'$.status')='finished'
       AND json_extract(r.payload,'$.integrity')!='rejected' AND json_extract(r.payload,'$.verdict') NOT IN ('checks-failed','crash')
+      AND m.rowid=(SELECT last.rowid FROM run_metrics last WHERE last.run=m.run AND last.name=m.name AND last.split IS m.split ORDER BY last.step DESC,last.rowid DESC LIMIT 1)
       ORDER BY value ${higherIsBetter ? "DESC" : "ASC"},m.rowid LIMIT 1`)
       .get(project, branch, name, split ?? null);
     return row ? metricRow(row) : undefined;
@@ -284,9 +285,16 @@ export class ResearchLedger {
         items.push(JSON.parse(String(r.payload)));
         attacks.set(id, items);
       }
+      const nodes = this.#all("workflow_nodes", project);
       return {
+        metrics: this.metricsForProject(project),
+        backends: [],
+        workflowStepTotal: nodes.length,
+        workflowStepCompleted: nodes.filter((node) =>
+          ["done", "pruned", "skipped", "failed"].includes(node.status),
+        ).length,
         project: JSON.parse(String(row.payload)),
-        nodes: this.#all("workflow_nodes", project),
+        nodes,
         branches: this.#all("branches", project),
         runs: this.#all("runs", project),
         findings: this.#all("findings", project).map((f) => ({

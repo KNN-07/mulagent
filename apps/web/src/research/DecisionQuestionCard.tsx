@@ -1,3 +1,5 @@
+import { reportMutationError } from "./researchStore";
+import { useCanOperateResearch } from "./rpcClient";
 import type { Gate } from "@t3tools/contracts";
 import { T, useGT, Var } from "gt-react";
 import { useState } from "react";
@@ -25,6 +27,7 @@ function initialSelectedIds(gate: Gate): ReadonlyArray<string> {
 
 export function DecisionQuestionCard({ gate, onAnswer, onSkip }: DecisionQuestionCardProps) {
   const gt = useGT();
+  const canOperate = useCanOperateResearch();
   const [selectedIds, setSelectedIds] = useState<ReadonlyArray<string>>(() =>
     initialSelectedIds(gate),
   );
@@ -44,17 +47,27 @@ export function DecisionQuestionCard({ gate, onAnswer, onSkip }: DecisionQuestio
   };
 
   const handleContinue = async () => {
-    if (selectedIds.length === 0 || submitting) return;
+    if (!canOperate || selectedIds.length === 0 || submitting) return;
     setSubmitting(true);
-    await onAnswer(selectedIds, note.trim() || undefined);
-    setSubmitting(false);
+    try {
+      await onAnswer(selectedIds, note.trim() || undefined);
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleSkip = async () => {
-    if (submitting) return;
+    if (!canOperate || submitting) return;
     setSubmitting(true);
-    await onSkip();
-    setSubmitting(false);
+    try {
+      await onSkip();
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (gate.status !== "open") {
@@ -190,13 +203,18 @@ export function DecisionQuestionCard({ gate, onAnswer, onSkip }: DecisionQuestio
       </div>
 
       <div className="mt-3 flex items-center justify-end gap-2">
-        <Button size="sm" variant="ghost-muted" disabled={submitting} onClick={handleSkip}>
+        <Button
+          size="sm"
+          variant="ghost-muted"
+          disabled={!canOperate || submitting}
+          onClick={handleSkip}
+        >
           <T>Skip</T>
         </Button>
         <Button
           size="sm"
           variant="default"
-          disabled={submitting || selectedIds.length === 0}
+          disabled={!canOperate || submitting || selectedIds.length === 0}
           onClick={handleContinue}
         >
           <T>Continue</T>

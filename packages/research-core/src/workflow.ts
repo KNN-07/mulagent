@@ -1,5 +1,5 @@
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- Read bundled YAML before entering the synchronous state machine.
-import { readFileSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import { parse } from "yaml";
 import * as S from "effect/Schema";
 import {
@@ -57,8 +57,13 @@ export function parseWorkflow(source: string): Workflow {
 }
 
 export type DefaultWorkflow = "research" | "survey" | "prove" | "hillclimb" | "reproduce";
+declare const __MULAGENT_WORKFLOWS__: Record<DefaultWorkflow, string>;
+export function workflowSource(name: DefaultWorkflow) {
+  if (typeof __MULAGENT_WORKFLOWS__ !== "undefined") return __MULAGENT_WORKFLOWS__[name];
+  return NodeFS.readFileSync(new URL(`../workflows/${name}.yaml`, import.meta.url), "utf8");
+}
 export function loadWorkflow(name: DefaultWorkflow) {
-  return parseWorkflow(readFileSync(new URL(`../workflows/${name}.yaml`, import.meta.url), "utf8"));
+  return parseWorkflow(workflowSource(name));
 }
 
 export type WorkflowEvent =
@@ -272,7 +277,8 @@ export function advanceWorkflow(
         const stored = snapshot.gates.findLast((g) => g.nodeId === n.id);
         const current = staged?.type === "open-gate" ? staged.gateId : stored?.id;
         if (current !== event.gateId) break;
-        if (event.proceed && current === gateId(n, "overrun")) {
+        const midTurnQuestion = stored?.kind === "question" && current !== gateId(n, "question");
+        if (event.proceed && (current === gateId(n, "overrun") || midTurnQuestion)) {
           save({ ...n, status: "running" });
           actions.push({ type: "resume-node", nodeId: n.id });
         } else if (event.proceed && current === gateId(n, "budget")) start(n);

@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { BranchId, ResearchProjectId } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
 import { T, useGT, useMessages, Var } from "gt-react";
@@ -35,7 +36,7 @@ import {
   BRANCH_STATUS_LABELS,
   formatShortRelativeAge,
 } from "./researchPresentation";
-import { getResearchClient, useResearchSnapshot } from "./researchStore";
+import { reportMutationError, getResearchClient, useResearchSnapshot } from "./researchStore";
 
 interface ResearchThreadViewProps {
   readonly researchProjectId: ResearchProjectId;
@@ -55,6 +56,7 @@ function ThreadBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapshot
   const [composerText, setComposerText] = useState("");
   const [sending, setSending] = useState(false);
 
+  const canOperate = useCanOperateResearch();
   const client = getResearchClient();
   const projectId = snapshot.project.id;
   const referenceMs = Date.parse(snapshot.project.updatedAt);
@@ -69,11 +71,16 @@ function ThreadBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapshot
   const handleSend = async (event: FormEvent) => {
     event.preventDefault();
     const text = composerText.trim();
-    if (!text || sending) return;
+    if (!canOperate || !text || sending) return;
     setSending(true);
-    await client.postMessage(projectId, text);
-    setComposerText("");
-    setSending(false);
+    try {
+      await client.postMessage(projectId, text);
+      setComposerText("");
+    } catch (error) {
+      reportMutationError(error);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -318,7 +325,7 @@ function ThreadBody({ snapshot }: { readonly snapshot: ResearchWorkspaceSnapshot
                     size="icon-sm-pill"
                     variant="secondary"
                     aria-label={gt("Send message")}
-                    disabled={sending || composerText.trim().length === 0}
+                    disabled={!canOperate || sending || composerText.trim().length === 0}
                   >
                     <ArrowUpIcon aria-hidden="true" />
                   </Button>

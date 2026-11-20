@@ -1,6 +1,6 @@
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- The backend boundary runs directly on Node and exposes a Promise API.
 import * as NodeTimersPromises from "node:timers/promises";
-import * as NodeURL from "node:url";
+import { cloudCommand } from "./cloudCommand.ts";
 import type { ComputeBackend } from "./backend.ts";
 export interface NodeAvailability {
   name: string;
@@ -175,11 +175,7 @@ export class ClusterMonitor {
             const data = JSON.parse(
               await b.run(
                 "python3",
-                [
-                  NodeURL.fileURLToPath(new URL("./cloud.py", import.meta.url)),
-                  "monitor",
-                  b.config.workRoot,
-                ],
+                cloudCommand("monitor", b.config.workRoot),
                 JSON.stringify(b.config),
               ),
             );

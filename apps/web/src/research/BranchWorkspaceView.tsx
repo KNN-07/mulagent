@@ -1,3 +1,4 @@
+import { useCanOperateResearch } from "./rpcClient";
 import type { BranchId, ResearchProjectId } from "@t3tools/contracts";
 import { Link } from "@tanstack/react-router";
 import { T, useGT, useMessages, Var } from "gt-react";
@@ -38,7 +39,7 @@ import {
   RUN_VERDICT_LABELS,
   runVerdictBadgeVariant,
 } from "./researchPresentation";
-import { getResearchClient, useResearchSnapshot } from "./researchStore";
+import { reportMutationError, getResearchClient, useResearchSnapshot } from "./researchStore";
 
 interface BranchWorkspaceViewProps {
   readonly researchProjectId: ResearchProjectId;
@@ -47,16 +48,15 @@ interface BranchWorkspaceViewProps {
 
 type MobilePane = "doc" | "agent" | "files";
 
-function defaultWorkspaceExtras(branchLabel: string, branchTitle: string): BranchWorkspaceExtras {
-  const slug = `results/branch-${branchLabel.toLowerCase()}.md`;
+function defaultWorkspaceExtras(branchTitle: string): BranchWorkspaceExtras {
   return {
-    docPath: slug,
-    docUpdatedLabel: "agent",
+    docPath: "",
+    docUpdatedLabel: "",
     agentPrompt: branchTitle,
-    thoughtDurationLabel: "6s",
-    integritySummary: "All completed runs recorded with immutable spec hash.",
+    thoughtDurationLabel: "",
+    integritySummary: "",
     sessions: [],
-    files: [{ path: slug, name: `branch-${branchLabel.toLowerCase()}.md`, folder: "results" }],
+    files: [],
     pendingEdit: null,
     agentNotes: [],
   };
@@ -71,24 +71,17 @@ function BranchWorkspaceBody({
 }) {
   const gt = useGT();
   const m = useMessages();
+  const canOperate = useCanOperateResearch();
   const client = getResearchClient();
 
   const branch =
     snapshot.branches.find((candidate) => candidate.id === branchId) ?? snapshot.branches[0];
   const resolvedBranchId = branch?.id ?? branchId;
-  const spec = snapshot.specsByBranchId[resolvedBranchId] ?? {
-    hypothesis: snapshot.project.goal,
-    metric: "success_h32",
-    higherIsBetter: true,
-    baseline: undefined,
-    seeds: [0, 1, 2],
-    editable: ["models/main.py"],
-    command: "uv run train.py",
-    resources: { gpus: 1, hours: 4 },
-  };
+  const spec = branch?.spec;
   const extras =
     snapshot.branchWorkspaces[resolvedBranchId] ??
-    defaultWorkspaceExtras(branch?.label ?? "A", branch?.title ?? snapshot.project.title);
+    defaultWorkspaceExtras(branch?.title ?? snapshot.project.title);
+  const pendingEdit = snapshot.pendingEdits?.[resolvedBranchId] ?? extras.pendingEdit;
   const telemetry = snapshot.branchLiveTelemetry[resolvedBranchId];
 
   const [activeFilePath, setActiveFilePath] = useState(extras.docPath);
@@ -97,21 +90,10 @@ function BranchWorkspaceBody({
   const [constraintText, setConstraintText] = useState("");
   const [mobilePane, setMobilePane] = useState<MobilePane>("doc");
 
-  const metricValues = latestMetricValueByRun(snapshot.metrics, spec.metric);
-  const branchRuns = snapshot.runs
-    .filter(
-      (run) =>
-        run.branchId === resolvedBranchId &&
-        (metricValues.has(run.id) || run.verdict === "crash" || run.status === "running"),
-    )
+  const metricValues = latestMetricValueByRun(snapshot.metrics, spec?.metric ?? "");
+  const allBranchRuns = snapshot.runs
+    .filter((run) => run.branchId === resolvedBranchId)
     .sort((a, b) => b.number - a.number);
-  const allBranchRuns =
-    branchRuns.length > 0
-      ? branchRuns
-      : snapshot.runs
-          .filter((run) => run.branchId === resolvedBranchId)
-          .sort((a, b) => b.number - a.number);
-
   const visibleTableRuns = showAllRuns ? allBranchRuns : allBranchRuns.slice(0, 6);
   const activeFile = extras.files.find((file) => file.path === activeFilePath) ?? extras.files[0];
   const isResultsDoc = activeFilePath === extras.docPath;
@@ -127,9 +109,13 @@ function BranchWorkspaceBody({
   const handleSendConstraint = async (event: FormEvent) => {
     event.preventDefault();
     const trimmed = constraintText.trim();
-    if (!trimmed) return;
-    await client.postMessage(snapshot.project.id, trimmed, resolvedBranchId);
-    setConstraintText("");
+    if (!canOperate || !trimmed) return;
+    try {
+      await client.postMessage(snapshot.project.id, trimmed, resolvedBranchId);
+      setConstraintText("");
+    } catch (error) {
+      reportMutationError(error);
+    }
   };
 
   if (!branch) {
@@ -356,11 +342,11 @@ function BranchWorkspaceBody({
                     <T>
                       Edits only{" "}
                       <code className="font-mono text-foreground">
-                        <Var>{spec.editable.join(", ")}</Var>
+                        <Var>{spec?.editable.join(", ")}</Var>
                       </code>
                       .
                     </T>{" "}
-                    {spec.lockedEval ? (
+                    {spec?.lockedEval ? (
                       <T>
                         <code className="font-mono text-foreground">
                           <Var>{spec.lockedEval.path}</Var>
@@ -372,12 +358,12 @@ function BranchWorkspaceBody({
                         .
                       </T>
                     ) : null}{" "}
-                    {spec.baseline !== undefined ? (
+                    {spec?.baseline !== undefined ? (
                       <T>
                         Baseline <Var>{formatMetricValue(spec.baseline)}</Var>.
                       </T>
                     ) : null}{" "}
-                    {spec.stopRule ? spec.stopRule : null}
+                    {spec?.stopRule ? spec.stopRule : null}
                   </p>
                 </div>
 
@@ -391,7 +377,7 @@ function BranchWorkspaceBody({
                         <TableHead>
                           <T>Change</T>
                         </TableHead>
-                        <TableHead className="text-right">{spec.metric}</TableHead>
+                        <TableHead className="text-right">{spec?.metric ?? ""}</TableHead>
                         <TableHead className="w-24 text-right">
                           <T>Verdict</T>
                         </TableHead>
@@ -448,12 +434,14 @@ function BranchWorkspaceBody({
                   <h2 className="text-sm font-semibold text-foreground">
                     <T>Best so far</T>
                   </h2>
-                  <BestSoFarChart
-                    runs={allBranchRuns}
-                    metrics={snapshot.metrics}
-                    spec={spec}
-                    scopeLabel={branch.rung}
-                  />
+                  {spec ? (
+                    <BestSoFarChart
+                      runs={allBranchRuns}
+                      metrics={snapshot.metrics}
+                      spec={spec}
+                      scopeLabel={branch.rung}
+                    />
+                  ) : null}
                 </section>
               </article>
             ) : (
@@ -536,7 +524,7 @@ function BranchWorkspaceBody({
 
               <div className="flex items-center gap-2">
                 <TerminalIcon aria-hidden="true" className="size-3.5 shrink-0" />
-                <code className="truncate font-mono text-foreground">{spec.command}</code>
+                <code className="truncate font-mono text-foreground">{spec?.command}</code>
               </div>
             </div>
 
@@ -582,25 +570,28 @@ function BranchWorkspaceBody({
             ))}
           </div>
 
-          {extras.pendingEdit ? (
+          {pendingEdit ? (
             <div className="mx-3 mb-2 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
               <span>
                 <T>
-                  <Var>{extras.pendingEdit.filesChanged}</Var> file changed
+                  <Var>{pendingEdit.filesChanged}</Var> file changed
                 </T>
               </span>
               <span className="font-mono text-diff-addition-foreground tabular-nums">
-                +{extras.pendingEdit.additions}
+                +{pendingEdit.additions}
               </span>
               <span className="font-mono text-diff-deletion-foreground tabular-nums">
-                -{extras.pendingEdit.deletions}
+                -{pendingEdit.deletions}
               </span>
               <div className="ml-auto flex items-center gap-1.5">
                 <Button
                   size="xs"
                   variant="ghost-muted"
+                  disabled={!canOperate}
                   onClick={() =>
-                    void client.resolvePendingEdit(snapshot.project.id, resolvedBranchId, "undo")
+                    void client
+                      .resolvePendingEdit(snapshot.project.id, resolvedBranchId, "undo")
+                      .catch(reportMutationError)
                   }
                 >
                   <T>Undo</T>
@@ -608,8 +599,11 @@ function BranchWorkspaceBody({
                 <Button
                   size="xs"
                   variant="default"
+                  disabled={!canOperate}
                   onClick={() =>
-                    void client.resolvePendingEdit(snapshot.project.id, resolvedBranchId, "keep")
+                    void client
+                      .resolvePendingEdit(snapshot.project.id, resolvedBranchId, "keep")
+                      .catch(reportMutationError)
                   }
                 >
                   <T>Keep</T>
@@ -633,7 +627,7 @@ function BranchWorkspaceBody({
               />
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <span>{m(APPROVAL_MODE_LABELS[snapshot.project.approvalMode])}</span>
-                {telemetry ? (
+                {telemetry?.totalBudgetRuns !== undefined ? (
                   <span className="inline-flex items-center gap-1.5 font-mono tabular-nums">
                     <span className="size-1.5 rounded-full bg-success" aria-hidden="true" />
                     <T>
@@ -648,7 +642,7 @@ function BranchWorkspaceBody({
                   variant="secondary"
                   aria-label={gt("Send constraint")}
                   className="ml-auto"
-                  disabled={constraintText.trim().length === 0}
+                  disabled={!canOperate || constraintText.trim().length === 0}
                 >
                   <ArrowUpIcon aria-hidden="true" />
                 </Button>

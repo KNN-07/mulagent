@@ -2,7 +2,6 @@ import type {
   ApprovalMode,
   BackendDescription,
   BranchId,
-  ExperimentSpec,
   Finding,
   FindingId,
   Gate,
@@ -13,7 +12,6 @@ import type {
   ResearchProjectId,
   ResearchRunId,
   ResearchSnapshot,
-  RunMetric,
 } from "@t3tools/contracts";
 
 export interface ResearchProjectBudget {
@@ -85,7 +83,7 @@ export interface BranchLiveTelemetry {
   readonly gpus: number;
   readonly etaMinutes: number;
   readonly runIndex: number;
-  readonly totalBudgetRuns: number;
+  readonly totalBudgetRuns?: number;
   readonly elapsedLabel: string;
 }
 
@@ -132,12 +130,7 @@ export interface VenueChecklistItem {
 }
 
 export interface ResearchWorkspaceSnapshot extends ResearchSnapshot {
-  readonly metrics: ReadonlyArray<RunMetric>;
-  readonly backends: ReadonlyArray<BackendDescription>;
-  readonly specsByBranchId: Readonly<Record<string, ExperimentSpec>>;
   readonly workedDurationLabel: string;
-  readonly workflowStepCompleted: number;
-  readonly workflowStepTotal: number;
   readonly threadEvents: ReadonlyArray<ResearchThreadEvent>;
   readonly horizonSummary: ReadonlyArray<HorizonComparisonRow>;
   readonly branchLiveTelemetry: Readonly<Record<string, BranchLiveTelemetry>>;

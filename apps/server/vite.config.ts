@@ -1,4 +1,6 @@
 import "vite-plus/test/config";
+// @effect-diagnostics-next-line nodeBuiltinImport:off -- The CLI bundle embeds package assets at build time.
+import * as NodeFS from "node:fs";
 // @effect-diagnostics-next-line nodeBuiltinImport:off -- tsdown needs the asset path when it reads this config.
 import * as NodePath from "node:path";
 import { defineConfig, mergeConfig } from "vite-plus";
@@ -18,6 +20,17 @@ import {
 
 export { shouldBundleCliDependency };
 
+function textAssets(directory: string, extension: string) {
+  const root = NodePath.resolve(import.meta.dirname, "../../packages", directory);
+  return Object.fromEntries(
+    NodeFS.readdirSync(root)
+      .filter((name) => name.endsWith(extension))
+      .map((name) => [
+        NodePath.basename(name, extension),
+        NodeFS.readFileSync(NodePath.join(root, name), "utf8"),
+      ]),
+  );
+}
 const repoEnv = loadRepoEnv();
 const serverManifestPath = NodePath.join(import.meta.dirname, "package.json");
 // The desktop packager passes APP_VERSION; it can equal the manifest at a commit tagged otherwise.
@@ -145,6 +158,14 @@ export default mergeConfig(
         js: "#!/usr/bin/env node\n",
       },
       define: {
+        __MULAGENT_WORKFLOWS__: JSON.stringify(textAssets("research-core/workflows", ".yaml")),
+        __MULAGENT_ROLE_PROMPTS__: JSON.stringify(textAssets("research-agents/prompts", ".md")),
+        __MULAGENT_CLOUD_PY__: JSON.stringify(
+          NodeFS.readFileSync(
+            new URL("../../packages/research-backends/src/cloud.py", import.meta.url),
+            "utf8",
+          ),
+        ),
         __T3CODE_BUILD_CHANNEL__: JSON.stringify(cliBuildChannel),
         __T3CODE_TELEMETRY_CHANNEL__: JSON.stringify(telemetryChannel),
         __T3CODE_BUILD_RELAY_URL__: JSON.stringify(repoEnv.T3CODE_RELAY_URL?.trim() ?? ""),

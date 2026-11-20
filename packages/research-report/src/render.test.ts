@@ -199,6 +199,10 @@ const snapshot: ResearchSnapshot = {
       createdAt: "2026-01-01T05:00:00.000Z",
     },
   ],
+  metrics: [],
+  backends: [],
+  workflowStepTotal: 0,
+  workflowStepCompleted: 0,
   leanClaims: [
     {
       name: "rollout_error_le",

@@ -117,7 +117,7 @@ describe("chart.logic", () => {
       (s) => s.project.id === WORLD_MODEL_PROJECT_ID,
     )!;
     const branchA = worldModel.branches.find((b) => b.label === "A")!;
-    const spec = worldModel.specsByBranchId[branchA.id]!;
+    const spec = branchA.spec!;
     const metricIds = new Set(
       worldModel.metrics.filter((m) => m.name === spec.metric).map((m) => m.runId),
     );

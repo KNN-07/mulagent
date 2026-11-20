@@ -1119,7 +1119,7 @@ function buildWorldModelSnapshot(
   return {
     project,
     nodes,
-    branches,
+    branches: branches.map((branch) => ({ ...branch, spec: specsByBranchId[branch.id] })),
     runs,
     findings: [findingC1],
     gates,
@@ -1127,7 +1127,6 @@ function buildWorldModelSnapshot(
     jobs,
     metrics,
     backends,
-    specsByBranchId,
     workedDurationLabel: "8h 12m",
     workflowStepCompleted: 5,
     workflowStepTotal: 7,
@@ -1224,6 +1223,18 @@ function buildCreditAssignmentSnapshot(
     ],
     branches: [
       {
+        spec: {
+          hypothesis:
+            "Compare sparse-reward credit assignment baselines on delayed chain benchmarks.",
+          metric: "return_norm",
+          higherIsBetter: true,
+          baseline: 0.54,
+          seeds: [0, 1, 2],
+          editable: ["experiments/chain_eval.py"],
+          command: "uv run experiments/chain_eval.py",
+          resources: { gpus: 1, hours: 2 },
+          stopRule: "Complete all 12 benchmark reproductions.",
+        },
         id: branchMain,
         researchProjectId: projectId,
         label: "A",
@@ -1264,20 +1275,6 @@ function buildCreditAssignmentSnapshot(
     jobs: [],
     metrics,
     backends,
-    specsByBranchId: {
-      [branchMain]: {
-        hypothesis:
-          "Compare sparse-reward credit assignment baselines on delayed chain benchmarks.",
-        metric: "return_norm",
-        higherIsBetter: true,
-        baseline: 0.54,
-        seeds: [0, 1, 2],
-        editable: ["experiments/chain_eval.py"],
-        command: "uv run experiments/chain_eval.py",
-        resources: { gpus: 1, hours: 2 },
-        stopRule: "Complete all 12 benchmark reproductions.",
-      },
-    },
     workedDurationLabel: "3h 18m",
     workflowStepCompleted: 4,
     workflowStepTotal: 4,
@@ -1384,6 +1381,18 @@ function buildRuleWorldsSnapshot(
     ],
     branches: [
       {
+        spec: {
+          hypothesis: "Lower val_bpb within a fixed 5-minute training budget.",
+          metric: "val_bpb",
+          higherIsBetter: false,
+          baseline: 0.9979,
+          seeds: [0],
+          editable: ["train.py"],
+          lockedEval: { path: "eval.py", commit: "91c3a0f" },
+          command: "uv run train.py",
+          resources: { gpus: 1, hours: 0.1 },
+          stopRule: "Keep a change only if holdout val_bpb is lower.",
+        },
         id: branchHill,
         researchProjectId: projectId,
         label: "A",
@@ -1404,20 +1413,6 @@ function buildRuleWorldsSnapshot(
     jobs: [],
     metrics,
     backends,
-    specsByBranchId: {
-      [branchHill]: {
-        hypothesis: "Lower val_bpb within a fixed 5-minute training budget.",
-        metric: "val_bpb",
-        higherIsBetter: false,
-        baseline: 0.9979,
-        seeds: [0],
-        editable: ["train.py"],
-        lockedEval: { path: "eval.py", commit: "91c3a0f" },
-        command: "uv run train.py",
-        resources: { gpus: 1, hours: 0.1 },
-        stopRule: "Keep a change only if holdout val_bpb is lower.",
-      },
-    },
     workedDurationLabel: "11h 48m",
     workflowStepCompleted: 3,
     workflowStepTotal: 3,
@@ -1502,6 +1497,16 @@ export function createStartedProjectSnapshot(
     ],
     branches: [
       {
+        spec: {
+          hypothesis: input.goal,
+          metric: "primary_metric",
+          higherIsBetter: true,
+          seeds: [0, 1, 2],
+          editable: ["models/main.py"],
+          command: "uv run eval/run.py",
+          resources: { gpus: 1, hours: Math.min(4, input.budget.gpuHours) },
+          stopRule: "Keep a change only if holdout improves.",
+        },
         id: branchId,
         researchProjectId: input.id,
         label: "A",
@@ -1526,18 +1531,6 @@ export function createStartedProjectSnapshot(
     jobs: [],
     metrics: [],
     backends,
-    specsByBranchId: {
-      [branchId]: {
-        hypothesis: input.goal,
-        metric: "primary_metric",
-        higherIsBetter: true,
-        seeds: [0, 1, 2],
-        editable: ["models/main.py"],
-        command: "uv run eval/run.py",
-        resources: { gpus: 1, hours: Math.min(4, input.budget.gpuHours) },
-        stopRule: "Keep a change only if holdout improves.",
-      },
-    },
     workedDurationLabel: "0m",
     workflowStepCompleted: 0,
     workflowStepTotal: 7,

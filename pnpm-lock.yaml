@@ -910,6 +910,18 @@ importers:
       '@t3tools/provider-pi':
         specifier: workspace:*
         version: link:../../packages/provider-pi
+      '@t3tools/research-agents':
+        specifier: workspace:*
+        version: link:../../packages/research-agents
+      '@t3tools/research-backends':
+        specifier: workspace:*
+        version: link:../../packages/research-backends
+      '@t3tools/research-core':
+        specifier: workspace:*
+        version: link:../../packages/research-core
+      '@t3tools/research-report':
+        specifier: workspace:*
+        version: link:../../packages/research-report
       '@t3tools/source-control-azure-devops':
         specifier: workspace:*
         version: link:../../packages/source-control-azure-devops

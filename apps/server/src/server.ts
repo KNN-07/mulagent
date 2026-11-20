@@ -1,3 +1,10 @@
+import * as ResearchAgentService from "./research/ResearchAgentService.ts";
+import * as Schedule from "effect/Schedule";
+import * as ResearchLedgerService from "./research/ResearchLedgerService.ts";
+import * as ResearchComputeService from "./research/ResearchComputeService.ts";
+import * as ResearchWorkflowService from "./research/ResearchWorkflowService.ts";
+import * as ResearchReportService from "./research/ResearchReportService.ts";
+import * as ResearchHttp from "./research/http.ts";
 import * as ProviderEventLoggers from "@t3tools/provider-core/server/ProviderEventLoggers";
 import type { RelayManagedEndpointRuntimeConfig } from "@t3tools/contracts/relay";
 import * as Random from "effect/Random";
@@ -860,6 +867,30 @@ const layerMakeRoutes = Layer.mergeAll(
     ServerHttp.layerOtlpTracesProxyRoute,
     ServerHttp.layerAssetRoute,
     ServerHttp.layerAttachmentUploadRoute,
+    ResearchHttp.layer,
+    Layer.effectDiscard(
+      Effect.gen(function* () {
+        const compute = yield* ResearchComputeService.ResearchComputeService;
+        const workflow = yield* ResearchWorkflowService.ResearchWorkflowService;
+        yield* workflow.follow.pipe(
+          Effect.retry({ schedule: Schedule.spaced("5 seconds") }),
+          Effect.forkScoped,
+        );
+        yield* workflow
+          .retryPending()
+          .pipe(Effect.repeat({ schedule: Schedule.spaced("30 seconds") }), Effect.forkScoped);
+        if (compute.descriptions().length)
+          yield* compute
+            .sample()
+            .pipe(
+              Effect.andThen(compute.tick()),
+              Effect.tapError(Effect.logWarning),
+              Effect.ignore,
+              Effect.repeat({ schedule: Schedule.spaced("10 seconds") }),
+              Effect.forkScoped,
+            );
+      }),
+    ),
     GuestHttp.layer,
     DeviceHubProxy.layer,
     ServerBrowserStream.routeLayer,
@@ -880,6 +911,16 @@ const layerMakeRoutes = Layer.mergeAll(
 ).pipe(
   Layer.provide(
     PullRequestReviewGuideService.layer.pipe(Layer.provide(PullRequestReviewGuides.layer)),
+  ),
+  Layer.provide(
+    ResearchAgentService.layer.pipe(
+      Layer.provideMerge(
+        Layer.merge(ResearchWorkflowService.layer, ResearchReportService.layer).pipe(
+          Layer.provideMerge(ResearchComputeService.layer),
+        ),
+      ),
+      Layer.provideMerge(ResearchLedgerService.layer),
+    ),
   ),
   // delegate_task to a linked environment, from /mcp and the follower above.
   Layer.provide(RemoteDelegation.layer.pipe(Layer.provide(ProjectionStoreV2.layer))),
