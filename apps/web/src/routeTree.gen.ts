@@ -20,9 +20,11 @@ import { Route as ChatIndexRouteImport } from './routes/_chat.index'
 import { Route as ProjectsProjectKeyRouteImport } from './routes/projects.$projectKey'
 import { Route as ChatUsageRouteImport } from './routes/_chat.usage'
 import { Route as ChatSettingsRouteImport } from './routes/_chat.settings'
+import { Route as ChatResearchRouteImport } from './routes/_chat.research'
 import { Route as ChatPullRequestsRouteImport } from './routes/_chat.pull-requests'
 import { Route as ChatNewRouteImport } from './routes/_chat.new'
 import { Route as ChatIssuesRouteImport } from './routes/_chat.issues'
+import { Route as ChatResearchIndexRouteImport } from './routes/_chat.research.index'
 import { Route as ThreadsEnvironmentIdThreadIdRouteImport } from './routes/threads.$environmentId.$threadId'
 import { Route as ChatSettingsWorktreesRouteImport } from './routes/_chat.settings.worktrees'
 import { Route as ChatSettingsVoiceRouteImport } from './routes/_chat.settings.voice'
@@ -53,6 +55,11 @@ import { Route as ChatSettingsAccessRouteImport } from './routes/_chat.settings.
 import { Route as ChatSettingsAboutRouteImport } from './routes/_chat.settings.about'
 import { Route as ChatDraftDraftIdRouteImport } from './routes/_chat.draft.$draftId'
 import { Route as ChatEnvironmentIdThreadIdRouteImport } from './routes/_chat.$environmentId.$threadId'
+import { Route as ChatResearchResearchProjectIdIndexRouteImport } from './routes/_chat.research.$researchProjectId.index'
+import { Route as ChatResearchResearchProjectIdReportRouteImport } from './routes/_chat.research.$researchProjectId.report'
+import { Route as ChatResearchResearchProjectIdLineageRouteImport } from './routes/_chat.research.$researchProjectId.lineage'
+import { Route as ChatResearchResearchProjectIdGatesFindingIdRouteImport } from './routes/_chat.research.$researchProjectId.gates.$findingId'
+import { Route as ChatResearchResearchProjectIdBranchesBranchIdRouteImport } from './routes/_chat.research.$researchProjectId.branches.$branchId'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -108,6 +115,11 @@ const ChatSettingsRoute = ChatSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => ChatRoute,
 } as any)
+const ChatResearchRoute = ChatResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => ChatRoute,
+} as any)
 const ChatPullRequestsRoute = ChatPullRequestsRouteImport.update({
   id: '/pull-requests',
   path: '/pull-requests',
@@ -122,6 +134,11 @@ const ChatIssuesRoute = ChatIssuesRouteImport.update({
   id: '/issues',
   path: '/issues',
   getParentRoute: () => ChatRoute,
+} as any)
+const ChatResearchIndexRoute = ChatResearchIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ChatResearchRoute,
 } as any)
 const ThreadsEnvironmentIdThreadIdRoute =
   ThreadsEnvironmentIdThreadIdRouteImport.update({
@@ -279,6 +296,36 @@ const ChatEnvironmentIdThreadIdRoute =
     path: '/$environmentId/$threadId',
     getParentRoute: () => ChatRoute,
   } as any)
+const ChatResearchResearchProjectIdIndexRoute =
+  ChatResearchResearchProjectIdIndexRouteImport.update({
+    id: '/$researchProjectId/',
+    path: '/$researchProjectId/',
+    getParentRoute: () => ChatResearchRoute,
+  } as any)
+const ChatResearchResearchProjectIdReportRoute =
+  ChatResearchResearchProjectIdReportRouteImport.update({
+    id: '/$researchProjectId/report',
+    path: '/$researchProjectId/report',
+    getParentRoute: () => ChatResearchRoute,
+  } as any)
+const ChatResearchResearchProjectIdLineageRoute =
+  ChatResearchResearchProjectIdLineageRouteImport.update({
+    id: '/$researchProjectId/lineage',
+    path: '/$researchProjectId/lineage',
+    getParentRoute: () => ChatResearchRoute,
+  } as any)
+const ChatResearchResearchProjectIdGatesFindingIdRoute =
+  ChatResearchResearchProjectIdGatesFindingIdRouteImport.update({
+    id: '/$researchProjectId/gates/$findingId',
+    path: '/$researchProjectId/gates/$findingId',
+    getParentRoute: () => ChatResearchRoute,
+  } as any)
+const ChatResearchResearchProjectIdBranchesBranchIdRoute =
+  ChatResearchResearchProjectIdBranchesBranchIdRouteImport.update({
+    id: '/$researchProjectId/branches/$branchId',
+    path: '/$researchProjectId/branches/$branchId',
+    getParentRoute: () => ChatResearchRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ChatIndexRoute
@@ -291,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/issues': typeof ChatIssuesRoute
   '/new': typeof ChatNewRoute
   '/pull-requests': typeof ChatPullRequestsRoute
+  '/research': typeof ChatResearchRouteWithChildren
   '/settings': typeof ChatSettingsRouteWithChildren
   '/usage': typeof ChatUsageRoute
   '/projects/$projectKey': typeof ProjectsProjectKeyRoute
@@ -324,6 +372,12 @@ export interface FileRoutesByFullPath {
   '/settings/voice': typeof ChatSettingsVoiceRoute
   '/settings/worktrees': typeof ChatSettingsWorktreesRoute
   '/threads/$environmentId/$threadId': typeof ThreadsEnvironmentIdThreadIdRoute
+  '/research/': typeof ChatResearchIndexRoute
+  '/research/$researchProjectId/lineage': typeof ChatResearchResearchProjectIdLineageRoute
+  '/research/$researchProjectId/report': typeof ChatResearchResearchProjectIdReportRoute
+  '/research/$researchProjectId/': typeof ChatResearchResearchProjectIdIndexRoute
+  '/research/$researchProjectId/branches/$branchId': typeof ChatResearchResearchProjectIdBranchesBranchIdRoute
+  '/research/$researchProjectId/gates/$findingId': typeof ChatResearchResearchProjectIdGatesFindingIdRoute
 }
 export interface FileRoutesByTo {
   '/approve-agent': typeof ApproveAgentRoute
@@ -369,6 +423,12 @@ export interface FileRoutesByTo {
   '/settings/voice': typeof ChatSettingsVoiceRoute
   '/settings/worktrees': typeof ChatSettingsWorktreesRoute
   '/threads/$environmentId/$threadId': typeof ThreadsEnvironmentIdThreadIdRoute
+  '/research': typeof ChatResearchIndexRoute
+  '/research/$researchProjectId/lineage': typeof ChatResearchResearchProjectIdLineageRoute
+  '/research/$researchProjectId/report': typeof ChatResearchResearchProjectIdReportRoute
+  '/research/$researchProjectId': typeof ChatResearchResearchProjectIdIndexRoute
+  '/research/$researchProjectId/branches/$branchId': typeof ChatResearchResearchProjectIdBranchesBranchIdRoute
+  '/research/$researchProjectId/gates/$findingId': typeof ChatResearchResearchProjectIdGatesFindingIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -382,6 +442,7 @@ export interface FileRoutesById {
   '/_chat/issues': typeof ChatIssuesRoute
   '/_chat/new': typeof ChatNewRoute
   '/_chat/pull-requests': typeof ChatPullRequestsRoute
+  '/_chat/research': typeof ChatResearchRouteWithChildren
   '/_chat/settings': typeof ChatSettingsRouteWithChildren
   '/_chat/usage': typeof ChatUsageRoute
   '/projects/$projectKey': typeof ProjectsProjectKeyRoute
@@ -416,6 +477,12 @@ export interface FileRoutesById {
   '/_chat/settings/voice': typeof ChatSettingsVoiceRoute
   '/_chat/settings/worktrees': typeof ChatSettingsWorktreesRoute
   '/threads/$environmentId/$threadId': typeof ThreadsEnvironmentIdThreadIdRoute
+  '/_chat/research/': typeof ChatResearchIndexRoute
+  '/_chat/research/$researchProjectId/lineage': typeof ChatResearchResearchProjectIdLineageRoute
+  '/_chat/research/$researchProjectId/report': typeof ChatResearchResearchProjectIdReportRoute
+  '/_chat/research/$researchProjectId/': typeof ChatResearchResearchProjectIdIndexRoute
+  '/_chat/research/$researchProjectId/branches/$branchId': typeof ChatResearchResearchProjectIdBranchesBranchIdRoute
+  '/_chat/research/$researchProjectId/gates/$findingId': typeof ChatResearchResearchProjectIdGatesFindingIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -430,6 +497,7 @@ export interface FileRouteTypes {
     | '/issues'
     | '/new'
     | '/pull-requests'
+    | '/research'
     | '/settings'
     | '/usage'
     | '/projects/$projectKey'
@@ -463,6 +531,12 @@ export interface FileRouteTypes {
     | '/settings/voice'
     | '/settings/worktrees'
     | '/threads/$environmentId/$threadId'
+    | '/research/'
+    | '/research/$researchProjectId/lineage'
+    | '/research/$researchProjectId/report'
+    | '/research/$researchProjectId/'
+    | '/research/$researchProjectId/branches/$branchId'
+    | '/research/$researchProjectId/gates/$findingId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/approve-agent'
@@ -508,6 +582,12 @@ export interface FileRouteTypes {
     | '/settings/voice'
     | '/settings/worktrees'
     | '/threads/$environmentId/$threadId'
+    | '/research'
+    | '/research/$researchProjectId/lineage'
+    | '/research/$researchProjectId/report'
+    | '/research/$researchProjectId'
+    | '/research/$researchProjectId/branches/$branchId'
+    | '/research/$researchProjectId/gates/$findingId'
   id:
     | '__root__'
     | '/_chat'
@@ -520,6 +600,7 @@ export interface FileRouteTypes {
     | '/_chat/issues'
     | '/_chat/new'
     | '/_chat/pull-requests'
+    | '/_chat/research'
     | '/_chat/settings'
     | '/_chat/usage'
     | '/projects/$projectKey'
@@ -554,6 +635,12 @@ export interface FileRouteTypes {
     | '/_chat/settings/voice'
     | '/_chat/settings/worktrees'
     | '/threads/$environmentId/$threadId'
+    | '/_chat/research/'
+    | '/_chat/research/$researchProjectId/lineage'
+    | '/_chat/research/$researchProjectId/report'
+    | '/_chat/research/$researchProjectId/'
+    | '/_chat/research/$researchProjectId/branches/$branchId'
+    | '/_chat/research/$researchProjectId/gates/$findingId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -647,6 +734,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatSettingsRouteImport
       parentRoute: typeof ChatRoute
     }
+    '/_chat/research': {
+      id: '/_chat/research'
+      path: '/research'
+      fullPath: '/research'
+      preLoaderRoute: typeof ChatResearchRouteImport
+      parentRoute: typeof ChatRoute
+    }
     '/_chat/pull-requests': {
       id: '/_chat/pull-requests'
       path: '/pull-requests'
@@ -667,6 +761,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/issues'
       preLoaderRoute: typeof ChatIssuesRouteImport
       parentRoute: typeof ChatRoute
+    }
+    '/_chat/research/': {
+      id: '/_chat/research/'
+      path: '/'
+      fullPath: '/research/'
+      preLoaderRoute: typeof ChatResearchIndexRouteImport
+      parentRoute: typeof ChatResearchRoute
     }
     '/threads/$environmentId/$threadId': {
       id: '/threads/$environmentId/$threadId'
@@ -878,8 +979,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatEnvironmentIdThreadIdRouteImport
       parentRoute: typeof ChatRoute
     }
+    '/_chat/research/$researchProjectId/': {
+      id: '/_chat/research/$researchProjectId/'
+      path: '/$researchProjectId'
+      fullPath: '/research/$researchProjectId/'
+      preLoaderRoute: typeof ChatResearchResearchProjectIdIndexRouteImport
+      parentRoute: typeof ChatResearchRoute
+    }
+    '/_chat/research/$researchProjectId/report': {
+      id: '/_chat/research/$researchProjectId/report'
+      path: '/$researchProjectId/report'
+      fullPath: '/research/$researchProjectId/report'
+      preLoaderRoute: typeof ChatResearchResearchProjectIdReportRouteImport
+      parentRoute: typeof ChatResearchRoute
+    }
+    '/_chat/research/$researchProjectId/lineage': {
+      id: '/_chat/research/$researchProjectId/lineage'
+      path: '/$researchProjectId/lineage'
+      fullPath: '/research/$researchProjectId/lineage'
+      preLoaderRoute: typeof ChatResearchResearchProjectIdLineageRouteImport
+      parentRoute: typeof ChatResearchRoute
+    }
+    '/_chat/research/$researchProjectId/gates/$findingId': {
+      id: '/_chat/research/$researchProjectId/gates/$findingId'
+      path: '/$researchProjectId/gates/$findingId'
+      fullPath: '/research/$researchProjectId/gates/$findingId'
+      preLoaderRoute: typeof ChatResearchResearchProjectIdGatesFindingIdRouteImport
+      parentRoute: typeof ChatResearchRoute
+    }
+    '/_chat/research/$researchProjectId/branches/$branchId': {
+      id: '/_chat/research/$researchProjectId/branches/$branchId'
+      path: '/$researchProjectId/branches/$branchId'
+      fullPath: '/research/$researchProjectId/branches/$branchId'
+      preLoaderRoute: typeof ChatResearchResearchProjectIdBranchesBranchIdRouteImport
+      parentRoute: typeof ChatResearchRoute
+    }
   }
 }
+
+interface ChatResearchRouteChildren {
+  ChatResearchIndexRoute: typeof ChatResearchIndexRoute
+  ChatResearchResearchProjectIdLineageRoute: typeof ChatResearchResearchProjectIdLineageRoute
+  ChatResearchResearchProjectIdReportRoute: typeof ChatResearchResearchProjectIdReportRoute
+  ChatResearchResearchProjectIdIndexRoute: typeof ChatResearchResearchProjectIdIndexRoute
+  ChatResearchResearchProjectIdBranchesBranchIdRoute: typeof ChatResearchResearchProjectIdBranchesBranchIdRoute
+  ChatResearchResearchProjectIdGatesFindingIdRoute: typeof ChatResearchResearchProjectIdGatesFindingIdRoute
+}
+
+const ChatResearchRouteChildren: ChatResearchRouteChildren = {
+  ChatResearchIndexRoute: ChatResearchIndexRoute,
+  ChatResearchResearchProjectIdLineageRoute:
+    ChatResearchResearchProjectIdLineageRoute,
+  ChatResearchResearchProjectIdReportRoute:
+    ChatResearchResearchProjectIdReportRoute,
+  ChatResearchResearchProjectIdIndexRoute:
+    ChatResearchResearchProjectIdIndexRoute,
+  ChatResearchResearchProjectIdBranchesBranchIdRoute:
+    ChatResearchResearchProjectIdBranchesBranchIdRoute,
+  ChatResearchResearchProjectIdGatesFindingIdRoute:
+    ChatResearchResearchProjectIdGatesFindingIdRoute,
+}
+
+const ChatResearchRouteWithChildren = ChatResearchRoute._addFileChildren(
+  ChatResearchRouteChildren,
+)
 
 interface ChatSettingsRouteChildren {
   ChatSettingsAboutRoute: typeof ChatSettingsAboutRoute
@@ -949,6 +1112,7 @@ interface ChatRouteChildren {
   ChatIssuesRoute: typeof ChatIssuesRoute
   ChatNewRoute: typeof ChatNewRoute
   ChatPullRequestsRoute: typeof ChatPullRequestsRoute
+  ChatResearchRoute: typeof ChatResearchRouteWithChildren
   ChatSettingsRoute: typeof ChatSettingsRouteWithChildren
   ChatUsageRoute: typeof ChatUsageRoute
   ChatIndexRoute: typeof ChatIndexRoute
@@ -960,6 +1124,7 @@ const ChatRouteChildren: ChatRouteChildren = {
   ChatIssuesRoute: ChatIssuesRoute,
   ChatNewRoute: ChatNewRoute,
   ChatPullRequestsRoute: ChatPullRequestsRoute,
+  ChatResearchRoute: ChatResearchRouteWithChildren,
   ChatSettingsRoute: ChatSettingsRouteWithChildren,
   ChatUsageRoute: ChatUsageRoute,
   ChatIndexRoute: ChatIndexRoute,
