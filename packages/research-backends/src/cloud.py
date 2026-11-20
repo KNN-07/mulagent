@@ -1,0 +1,129 @@
+"""Provider-side resource lifetime is bounded even if the scheduler disconnects."""
+import base64
+import json
+import math
+import os
+from pathlib import Path
+import shlex
+import sqlite3
+import sys
+import tempfile
+import urllib.request
+
+
+def api(endpoint, operation, body=None):
+    req = urllib.request.Request(
+        f"https://api.runpod.ai/v2/{endpoint}/{operation}",
+        data=None if body is None else json.dumps(body).encode(),
+        headers={"Authorization": f"Bearer {os.environ['RUNPOD_API_KEY']}", "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=60) as response:
+        return json.load(response)
+
+
+def save(path, content):
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as tmp:
+        tmp.write(content)
+    os.replace(tmp.name, path)
+
+
+def submit(root):
+    req = json.load(sys.stdin)
+    cfg, job = req["config"], req["job"]
+    resources = job["resources"]
+    with sqlite3.connect(root.parent / "cloud-budget.sqlite") as db:
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("CREATE TABLE IF NOT EXISTS reservations (job TEXT PRIMARY KEY, backend TEXT NOT NULL, usd REAL NOT NULL)")
+        spent, = db.execute("SELECT coalesce(sum(usd),0) FROM reservations WHERE backend=?", (cfg["description"]["id"],)).fetchone()
+        if spent + req["maximumCost"] > cfg["spendCapUsd"]:
+            raise ValueError("Cloud spend cap exhausted")
+        db.execute("INSERT INTO reservations VALUES (?,?,?)", (root.name,cfg["description"]["id"],req["maximumCost"]))
+    seconds = math.ceil(resources["hours"] * 3600)
+    image = resources.get("image", cfg.get("defaultImage"))
+    provider = cfg["cloudProvider"]
+    info = {"provider": provider, "files": job["artifacts"] + job.get("metrics", [])}
+    if provider == "modal":
+        import modal
+        volume_name = "mulagent-" + root.name
+        vol = modal.Volume.from_name(volume_name, create_if_missing=True)
+        with vol.batch_upload() as upload:
+            upload.put_directory(root / "work", "/work")
+        app = modal.App.lookup("mulagent", create_if_missing=True)
+        gpu = cfg["description"].get("accelerator")
+        sandbox = modal.Sandbox.create(
+            "sh", "-c", "exec "+shlex.join(job["command"])+" > /data/log 2>&1",
+            workdir="/data/work", image=modal.Image.from_registry(image), app=app,
+            volumes={"/data": vol}, timeout=seconds, env=job.get("env", {}),
+            gpu=f"{gpu}:{resources['gpus']}" if resources["gpus"] else None,
+            cpu=resources.get("cpus"), memory=math.ceil(resources["memGb"]*1024) if "memGb" in resources else None,
+        )
+        info.update(native=sandbox.object_id, volume=volume_name)
+    else:
+        endpoint = cfg["endpoint"]
+        files = {}
+        size = 0
+        for path in (root / "work").rglob("*"):
+            if path.is_file() and not path.is_symlink():
+                size += path.stat().st_size
+                if size > 6_000_000:
+                    raise ValueError("RunPod inline workspace exceeds 6 MB")
+                files[str(path.relative_to(root / "work"))] = base64.b64encode(path.read_bytes()).decode()
+        result = api(endpoint, "run", {"input": {"command": job["command"], "env": job.get("env", {}),
+                     "files": files, "artifacts": info["files"]}, "policy": {"executionTimeout": seconds*1000}})
+        info.update(endpoint=endpoint, native=result["id"])
+    save(root / "provider.json", json.dumps(info).encode())
+    print(info["native"])
+
+
+def handle(action, root):
+    info = json.loads((root / "provider.json").read_text())
+    if info["provider"] == "modal":
+        import modal
+        sb = modal.Sandbox.from_id(info["native"])
+        if action == "cancel":
+            sb.terminate()
+            return
+        vol = modal.Volume.from_name(info["volume"])
+        if action == "status":
+            code = sb.poll()
+            try:
+                save(root / "log", b"".join(vol.read_file("/log")))
+            except FileNotFoundError:
+                pass
+            print(json.dumps({"state": "running" if code is None else "succeeded" if code == 0 else "failed"}))
+        else:
+            import subprocess
+            for name in info["files"]:
+                path = root / "work" / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                subprocess.run(["modal", "volume", "get", "--force", info["volume"], "/work/"+name, str(path)], check=True)
+    else:
+        endpoint, native = info["endpoint"], info["native"]
+        if action == "cancel":
+            api(endpoint, "cancel/"+native, {})
+            return
+        result = api(endpoint, "status/"+native)
+        output = result.get("output") or {}
+        if "log" in output:
+            save(root / "log", output["log"].encode())
+        if action == "status":
+            state = {"IN_QUEUE":"queued", "IN_PROGRESS":"running","COMPLETED":"succeeded",
+                     "FAILED":"failed","CANCELLED":"cancelled","TIMED_OUT":"failed"}.get(result.get("status"), "unknown")
+            if state == "succeeded" and output.get("exitCode") != 0:
+                state = "failed"
+            print(json.dumps({"state":state}))
+        else:
+            for name, data in output.get("files", {}).items():
+                path = (root / "work" / name).resolve()
+                if not path.is_relative_to((root / "work").resolve()) or not any(name==a or name.startswith(a+"/") for a in info["files"]):
+                    raise ValueError("Unexpected artifact path")
+                path.parent.mkdir(parents=True, exist_ok=True)
+                save(path, base64.b64decode(data,validate=True))
+
+
+if __name__ == "__main__":
+    action, folder = sys.argv[1:]
+    if action == "submit":
+        submit(Path(folder))
+    else:
+        handle(action, Path(folder))
