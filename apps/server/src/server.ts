@@ -114,7 +114,7 @@ import * as Keybindings from "./keybindings.ts";
 import * as ServerRuntimeStartup from "./serverRuntimeStartup.ts";
 import * as ServerOwnership from "./serverOwnership.ts";
 import * as AgentAwarenessRelay from "./relay/AgentAwarenessRelay.ts";
-import { hasCloudPublicConfig } from "./cloud/publicConfig.ts";
+import { cloudConnectEnabled, hasCloudPublicConfig } from "./cloud/publicConfig.ts";
 import * as ServerSettings from "./serverSettings.ts";
 import * as ManagedLimits from "./policy/managedLimits.ts";
 import * as ManagedPolicy from "./policy/ManagedPolicy.ts";
@@ -1129,7 +1129,10 @@ const layerMakeServer = Layer.unwrap(
       Effect.gen(function* () {
         const cloudLink = yield* CloudLink.CloudLink;
         // CloudLink unlinks on startup when the policy turns Connect off; nothing to restore.
-        if (!ManagedLimits.allowsConnect(yield* ManagedPolicy.ManagedPolicy)) {
+        if (
+          !cloudConnectEnabled ||
+          !ManagedLimits.allowsConnect(yield* ManagedPolicy.ManagedPolicy)
+        ) {
           yield* Deferred.succeed(cloudLinkParked, undefined).pipe(Effect.orDie);
           return;
         }
