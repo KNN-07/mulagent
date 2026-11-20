@@ -61,17 +61,18 @@ export class ComputeBackend implements Backend {
   ): Promise<{ native: string; files: string[]; runId?: Job["runId"] }> {
     return JSON.parse(await this.hostRun("cat", [this.dir(id) + "/metadata"]));
   }
-  async submit(j: Job) {
+  async submit(j: Job, id = JobId.make(NodeCrypto.randomUUID())) {
     const c = this.config,
       kind = c.description.kind;
     checkJob(c, j);
-    const id = JobId.make(NodeCrypto.randomUUID()),
-      dir = this.dir(id),
+    const dir = this.dir(id),
       work = dir + "/work",
       src = NodePath.resolve(j.cwd);
     if (!c.host && (dir.startsWith(src + "/") || src === "/"))
       throw Error("workRoot must be outside the source tree");
-    await this.hostRun("mkdir", ["-p", "-m", "700", work]);
+    await this.hostRun("mkdir", ["-p", c.workRoot]);
+    await this.hostRun("mkdir", ["-m", "700", dir]);
+    await this.hostRun("mkdir", [work]);
     await this.run("rsync", [
       "-rlt",
       "--safe-links",
