@@ -992,7 +992,6 @@ function PhoneSection({ environmentId }: { readonly environmentId: EnvironmentId
                 <PhoneConnectLink environmentId={environmentId} />
               </PhoneStep>
             </ol>
-            {/* One code for both stores: the link opens the store that matches the phone. */}
             <div className="shrink-0 rounded-lg bg-white p-1.5">
               <QRCodeSvg
                 value={MOBILE_APP_URL}

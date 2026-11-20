@@ -41,7 +41,9 @@ Your agents run wherever MulAgent runs: your desktop, a server, a VPS. You conne
 
 ## How do I use MulAgent on my phone?
 
-Get the [iOS](https://apps.apple.com/us/app/t3-code-remote-claude-more/id6787819824) or [Android](https://play.google.com/store/apps/details?id=com.t3tools.t3code) app, then connect it to your computer with T3 Connect or a pairing link. The phone is a remote. Your computer does the work and needs to stay on. [Mobile setup](./install.md#mobile-app) · [Remote access](./remote-access.md)
+Build the [mobile client](./install.md#mobile-app) and pair it with your
+MulAgent environment. The machine hosting the environment runs the agents and
+needs to stay on. [Remote access](./remote-access.md)
 
 ## Why does T3 Connect keep disconnecting?
 
