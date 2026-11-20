@@ -1,3 +1,7 @@
+import * as ResearchLedgerService from "./research/ResearchLedgerService.ts";
+import * as ResearchComputeService from "./research/ResearchComputeService.ts";
+import * as ResearchReportService from "./research/ResearchReportService.ts";
+import * as ResearchWorkflowService from "./research/ResearchWorkflowService.ts";
 import * as SecretResolver from "@t3tools/secret-provider-core/server/SecretResolver";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import { WebSocket } from "@effect/platform-node/NodeWS";
@@ -814,6 +818,19 @@ it.effect("shell snapshots omit idle children and older settled threads only on 
 
 // Build the production RPC layer; unrelated capabilities fail if this test calls them.
 const layerUnusedConfigRpcServices = Layer.mergeAll(
+  ResearchLedgerService.layer.pipe(
+    Layer.provide(ServerConfigModule.layerTest(".", { prefix: "t3-rpc-research-" })),
+    Layer.provide(NodeServices.layer),
+  ),
+  Layer.mock(ResearchComputeService.ResearchComputeService)({
+    descriptions: () => [],
+    authorize: () => false,
+    resolveGate: () => {},
+    cancelBranch: () => {},
+  }),
+  Layer.mock(ResearchReportService.ResearchReportService)({}),
+  Layer.mock(ResearchWorkflowService.ResearchWorkflowService)({}),
+
   Layer.mock(DocumentText.DocumentText)({}),
   Layer.mock(ServerSecretStore.ServerSecretStore)({}),
   Layer.mock(SecretCheck.SecretCheck)({}),

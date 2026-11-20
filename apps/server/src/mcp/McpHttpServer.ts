@@ -1,3 +1,4 @@
+import * as ResearchMcp from "../research/mcp.ts";
 import * as Cache from "effect/Cache";
 import * as Cause from "effect/Cause";
 import * as Clock from "effect/Clock";
@@ -1424,6 +1425,7 @@ export const layerTools = Layer.mergeAll(
   layerWorktreeToolkitRegistration,
   layerPullRequestsToolkit,
   layerIssuesToolkit,
+  toolkitRegistration(ResearchMcp.toolkit, ResearchMcp.handlers),
   layerDeviceToolkit,
   layerHtmlToolkit,
   layerMessageToolkit,
