@@ -2,12 +2,17 @@ import { rolePrompt } from "./prompt.ts";
 import * as Schema from "effect/Schema";
 import { mergePapers, searchUntilSaturated } from "./literature.ts";
 import type { LiteratureSource } from "./literature.ts";
-import { createPiAiCompletion, ModelRouter } from "./modelRouter.ts";
-import type { Complete, ModelFamily } from "./modelRouter.ts";
+import { ModelRouter } from "./modelRouter.ts";
+import type { ModelRoute, ModelFamily } from "./modelRouter.ts";
 import { roleValidators } from "./roleValidation.ts";
 import { roleSchemas } from "./roles.ts";
 import type { IdeaCard, Role, RoleInput, RoleOutput } from "./roles.ts";
 import { rankIdeas, shortlistIdeas } from "./tournament.ts";
+
+export type Complete = (
+  request: { route: ModelRoute; systemPrompt: string; userPrompt: string },
+  signal?: AbortSignal,
+) => Promise<{ text: string }>;
 
 interface RoleRunOptions {
   readonly authorFamily?: ModelFamily;
@@ -31,13 +36,13 @@ const codecs = new Map(
 
 export function createRoleRunner({
   router = new ModelRouter(),
-  complete = createPiAiCompletion(),
+  complete,
   promptDirectory,
 }: {
   readonly router?: ModelRouter;
-  readonly complete?: Complete;
+  readonly complete: Complete;
   readonly promptDirectory?: URL;
-} = {}) {
+}) {
   return async <R extends Role>(role: R, input: RoleInput<R>, options: RoleRunOptions = {}) => {
     options.signal?.throwIfAborted();
     const route = router.select(role, options.authorFamily);
@@ -45,7 +50,7 @@ export function createRoleRunner({
     if (!definition) throw new Error(`Unknown research role ${role}`);
     const decodedInput = definition.decodeInput(input) as RoleInput<R>;
     const template = await rolePrompt(role, promptDirectory);
-    const { text, ...usage } = await complete(
+    const { text } = await complete(
       {
         route,
         systemPrompt: [
@@ -60,7 +65,7 @@ export function createRoleRunner({
     );
     const output = definition.decodeOutput(JSON.parse(text)) as RoleOutput<R>;
     roleValidators[role]?.(decodedInput, output);
-    return { output, model: { id: route.model.id, family: route.family }, ...usage };
+    return { output, model: { id: route.model, family: route.family } };
   };
 }
 

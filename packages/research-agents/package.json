@@ -19,8 +19,6 @@
     "test": "vp test run --config ../../vite.config.ts --dir ."
   },
   "dependencies": {
-    "@oh-my-pi/pi-ai": "16.3.9",
-    "@oh-my-pi/pi-catalog": "16.3.9",
     "@t3tools/contracts": "workspace:*",
     "effect": "catalog:",
     "fast-xml-parser": "5.7.3"
