@@ -133,8 +133,8 @@ export function NewResearchProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup>
-        <form onSubmit={handleSubmit}>
+      <DialogPopup className="max-h-[calc(100dvh-3rem)]">
+        <form className="flex min-h-0 flex-col" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>
               <T>New research project</T>
