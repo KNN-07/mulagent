@@ -4,3 +4,4 @@ export * from "./spec.ts";
 export * from "./gates.ts";
 export * from "./integrity.ts";
 export * from "./ladder.ts";
+export * from "./workflow.ts";

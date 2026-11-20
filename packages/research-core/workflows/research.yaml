@@ -1,0 +1,14 @@
+name: research
+nodes:
+  search: { agent: scout, out: sources }
+  survey: { agent: surveyor, needs: [search], out: survey }
+  ideas: { agent: ideator, needs: [survey], mode: tournament, gate: pick-ideas, out: ranked-ideas }
+  plan: { agent: planner, needs: [ideas], out: specs }
+  repro: { agent: experimenter, needs: [plan] }
+  preflight: { agent: experimenter, needs: [repro] }
+  experiment: { agent: experimenter, needs: [preflight], mode: fanout }
+  prove: { agent: prover, needs: [plan] }
+  analyze: { agent: analyst, needs: [experiment], mode: join, k: 1 }
+  merge: { agent: analyst, needs: [analyze, prove], mode: join }
+  review: { agent: critic, needs: [merge] }
+  report: { agent: writer, needs: [review], gate: claims, out: report }
