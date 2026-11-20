@@ -29,8 +29,8 @@ configuration changes. OpenCode stores "always" approval grants for the whole pr
 full-access replies use `once` so they cannot widen a supervised thread's permissions on a shared
 server. On 2.x, a session-wide approval also replies `once` and becomes T3's own rule on that session.
 
-Pi runs the user's own `pi` install in RPC mode and owns native extension, package, and project
-trust discovery. T3 injects only its namespaced MCP bridge, so a Pi session behaves as it does in
+Pi runs the user's own `pi` install in RPC mode and owns native extension and package
+discovery. T3 injects only its namespaced MCP bridge, so a Pi session behaves as it does in
 the Pi TUI. Pi session files back native resume, rollback, and same-instance thread forks.
 Forks use Pi's CLI in the destination directory because RPC session switching retains the source
 session's cwd. Provider switches still use portable handoff summaries.
@@ -89,8 +89,8 @@ Native installer layouts and the global directories of pnpm, Bun, Yarn, and Vite
 either the resolved path or its real target, since those installers place real files or their own
 symlinks there. Volta is proven by the package's image directory plus either its `volta-shim` link
 or, on Windows, the exact cmd or bash forwarding script Volta generates; a custom script that merely
-calls `volta run` does not qualify. When nothing is proven, Pi's and Grok's own updaters
-(`pi update --self`, `grok update`) run instead, because each detects its installer itself; the
+calls `volta run` does not qualify. When nothing is proven, Grok's own updater
+(`grok update`) runs instead because it detects its installer; the
 runner's version check catches an updater that exits 0 without updating. Claude, Codex, and OpenCode updaters only act on their own native layout, so
 those providers stay manual-only unless that layout is proven. Mise is checked
 first, since a `mise x` wrapper can sit at a native installer's path, and `MISE_DATA_DIR` can put

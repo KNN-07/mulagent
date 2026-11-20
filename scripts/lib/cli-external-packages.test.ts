@@ -245,7 +245,7 @@ describe("findEsmImportsOfExternalPackages", () => {
 
   it("ignores imports inside generated extension source and comments", () => {
     const source = [
-      'const extension = `import { Type } from "typebox";\nimport type { ExtensionAPI } from "@earendil-works/pi-coding-agent";`;',
+      'const extension = `import { Type } from "typebox";\nimport type { ExtensionAPI } from "@mariozechner/pi-coding-agent";`;',
       '// import "comment-only";',
       "const example = 'import(\"string-only\")';",
       'const interpolated = `source ${import("real-package")}`;',

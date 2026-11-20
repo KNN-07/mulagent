@@ -102,14 +102,14 @@
     {
       "driver": "pi",
       "t3CodeRange": ">=0.0.46",
-      "recommendedRange": ">=1.0.0",
+      "recommendedRange": ">=0.73.1",
       "ranges": [
         {
-          "range": ">=0.84.3",
+          "range": ">=0.73.1",
           "status": "supported"
         },
         {
-          "range": "<0.84.3",
+          "range": "<0.73.1",
           "status": "broken"
         }
       ]

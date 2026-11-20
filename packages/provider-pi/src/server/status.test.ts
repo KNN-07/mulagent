@@ -19,14 +19,6 @@ const decodeRpcRequest = Schema.decodeSync(
   Schema.fromJsonString(Schema.Struct({ id: Schema.String, type: Schema.String })),
 );
 const encodeJsonLine = Schema.encodeSync(Schema.fromJsonString(Schema.Unknown));
-const STARTUP_DIALOG = `${encodeJsonLine({
-  type: "extension_ui_request",
-  id: "ui-1",
-  method: "select",
-  title: "Allow project MCP server “github”?",
-  options: ["Don't allow", "Allow"],
-})}\n`;
-
 function processHandle(input: {
   readonly stdout?: string;
   readonly stderr?: string;
@@ -124,11 +116,6 @@ const piDiscoverySpawner = (
   options: {
     readonly version?: string;
     readonly state?: unknown;
-    readonly authCheck?: string | undefined;
-    /** Without `--no-approve`, print a project-trust dialog and exit 0 as Pi 1.x does. */
-    readonly startupDialog?: boolean;
-    /** What `--no-approve` lists once project-local extensions are skipped. */
-    readonly declinedProjectInventory?: unknown;
   } = {},
 ) =>
   Effect.succeed(
@@ -137,30 +124,13 @@ const piDiscoverySpawner = (
       if (args.includes("--version")) {
         return Effect.succeed(processHandle({ stdout: `pi ${options.version ?? "0.84.3"}\n` }));
       }
-      if (args[0] === "auth") {
-        const expected = ["auth", "check", "--provider", "openai", "--json", "--no-refresh"];
-        return options.authCheck === undefined || args.join(" ") !== expected.join(" ")
-          ? Effect.die(`Unexpected pi ${args.join(" ")}`)
-          : Effect.succeed(processHandle({ stdout: options.authCheck, exitCode: 1 }));
-      }
-      if (
-        options.startupDialog === true &&
-        !args.includes("--no-extensions") &&
-        !args.includes("--no-approve")
-      ) {
-        return Effect.succeed(processHandle({ stdout: STARTUP_DIALOG }));
-      }
       if (args.includes("--no-extensions") && extensionFreeInventory === exitsWithoutExtensions) {
         return Effect.succeed(
           processHandle({ stderr: 'Error: Unknown provider "demo".', exitCode: 1 }),
         );
       }
       return piRpcProcess(
-        args.includes("--no-extensions")
-          ? extensionFreeInventory
-          : args.includes("--no-approve") && options.declinedProjectInventory !== undefined
-            ? options.declinedProjectInventory
-            : inventory,
+        args.includes("--no-extensions") ? extensionFreeInventory : inventory,
         args.includes("--no-extensions") ? onExtensionFreeModelRequest : Effect.void,
         options.state,
       );
@@ -272,36 +242,25 @@ describe("PiProvider", () => {
       label: "a pinned model without credentials",
       version: "1.4.0",
       activeModel: { provider: "openai", id: "gpt-5" },
-      authCheck: '{"status":"not_ready","provider":"openai","reason":"credentials_not_configured"}',
-      message: "Pi default (openai/gpt-5) has no credentials configured for openai.",
+      message: "Pi default (openai/gpt-5) uses openai, which has no available models in Pi.",
     },
     {
       label: "a pinned model with a runtime --api-key",
       version: "1.4.0",
       launchArgs: "--provider openai --model gpt-5 --api-key fake-key",
       activeModel: { provider: "openai", id: "gpt-5" },
-      authCheck: undefined,
-      message: "Pi default (openai/gpt-5) uses openai, which has no available models in Pi.",
-    },
-    {
-      label: "a pinned model whose provider auth check cannot find",
-      version: "1.4.0",
-      activeModel: { provider: "openai", id: "gpt-5" },
-      authCheck: '{"status":"not_ready","provider":"openai","reason":"provider_not_found"}',
       message: "Pi default (openai/gpt-5) uses openai, which has no available models in Pi.",
     },
     {
       label: "an uncatalogued model id of a provider with credentials",
       version: "1.4.0",
       activeModel: { provider: "anthropic", id: "claude-next" },
-      authCheck: undefined,
       message: undefined,
     },
     {
       label: "an extension model Pi lists as available",
       version: "1.4.0",
       activeModel: { provider: "router", id: "auto" },
-      authCheck: undefined,
       message: undefined,
     },
   ])("diagnoses Pi's active model readiness for $label", (row) =>
@@ -315,7 +274,7 @@ describe("PiProvider", () => {
         },
         undefined,
         Effect.void,
-        { version: row.version, state: { model: row.activeModel }, authCheck: row.authCheck },
+        { version: row.version, state: { model: row.activeModel } },
       );
       const snapshot = yield* checkPiProviderStatus({
         ...settings,
@@ -452,43 +411,6 @@ describe("PiProvider", () => {
         ["thinking"],
       );
     }).pipe(Effect.provide(NodeServices.layer)),
-  );
-
-  it.effect.each([
-    { launchArgs: "", startupDialog: true, models: ["default", "anthropic/claude-opus"] },
-    { launchArgs: "--approve", startupDialog: true, models: ["default"] },
-    {
-      launchArgs: "",
-      startupDialog: false,
-      models: ["default", "anthropic/claude-opus", "project/local-model"],
-    },
-  ])(
-    "keeps project trust unless a startup dialog blocks discovery (dialog: $startupDialog, launch args '$launchArgs')",
-    (row) =>
-      Effect.gen(function* () {
-        const spawner = yield* piDiscoverySpawner(
-          {
-            models: [
-              { provider: "anthropic", id: "claude-opus" },
-              { provider: "project", id: "local-model" },
-            ],
-          },
-          undefined,
-          undefined,
-          {
-            startupDialog: row.startupDialog,
-            declinedProjectInventory: { models: [{ provider: "anthropic", id: "claude-opus" }] },
-          },
-        );
-        const snapshot = yield* checkPiProviderStatus({
-          ...settings,
-          launchArgs: row.launchArgs,
-        }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
-        assert.deepEqual(
-          snapshot.models.map((model) => model.slug),
-          row.models,
-        );
-      }).pipe(Effect.provide(NodeServices.layer)),
   );
 
   // regression: #18498 a malformed model inventory must not restore stale Pi models
