@@ -93,7 +93,7 @@ function BranchWorkspaceBody({
   const metricValues = latestMetricValueByRun(snapshot.metrics, spec?.metric ?? "");
   const allBranchRuns = snapshot.runs
     .filter((run) => run.branchId === resolvedBranchId)
-    .sort((a, b) => b.number - a.number);
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt) || b.number - a.number);
   const visibleTableRuns = showAllRuns ? allBranchRuns : allBranchRuns.slice(0, 6);
   const activeFile = extras.files.find((file) => file.path === activeFilePath) ?? extras.files[0];
   const isResultsDoc = activeFilePath === extras.docPath;
@@ -398,7 +398,7 @@ function BranchWorkspaceBody({
                             </TableCell>
                             <TableCell className="text-right">
                               <span className="font-mono tabular-nums">
-                                {run.verdict === "crash" ? "-" : formatMetricValue(metricVal)}
+                                {formatMetricValue(metricVal)}
                               </span>
                             </TableCell>
                             <TableCell className="text-right">

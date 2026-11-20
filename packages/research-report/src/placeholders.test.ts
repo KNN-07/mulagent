@@ -6,7 +6,7 @@ const r1 = "run-1" as ResearchRunId;
 const r2 = "run-2" as ResearchRunId;
 
 const sampleMetrics: RunMetric[] = [
-  { runId: r1, name: "success", value: 0.71, step: 100, split: "train" },
+  { runId: r1, name: "success", value: 0.71, step: 1000000, split: "train" },
   { runId: r1, name: "success", value: 0.742, step: 100, split: "val" },
   { runId: r1, name: "success", value: 0.776, step: 200, split: "holdout" },
   { runId: r2, name: "success", value: 0.654, split: "holdout" },

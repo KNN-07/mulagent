@@ -13,7 +13,6 @@ import {
 
 import type { ResearchClient, ResearchProjectBudget, ResearchWorkspaceSnapshot } from "./client";
 import {
-  buildPlaceholderReportHtml,
   createForkedBranchRecord,
   createInitialSeedSnapshots,
   createPrunedNodeRecord,
@@ -375,7 +374,13 @@ export class MockResearchClient implements ResearchClient {
 
   async getReportHtml(researchProjectId: ResearchProjectId): Promise<string> {
     const snapshot = await this.getSnapshot(researchProjectId);
-    return buildPlaceholderReportHtml(snapshot);
+    const { renderReport } = await import("@t3tools/research-report");
+    return renderReport(snapshot, snapshot.metrics, {
+      sweeps: snapshot.sweeps,
+      branchSpecs: Object.fromEntries(
+        snapshot.branches.flatMap((branch) => (branch.spec ? [[branch.id, branch.spec]] : [])),
+      ),
+    });
   }
 
   async postMessage(

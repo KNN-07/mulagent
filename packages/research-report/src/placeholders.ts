@@ -69,22 +69,21 @@ export function selectMetricForRun(
   }
 
   let best: RunMetric | undefined;
-  let bestScore = -1;
+  let bestSplitRank = -1;
 
-  for (let i = 0; i < metrics.length; i += 1) {
-    const row = metrics[i];
-    if (!row || row.runId !== runId || row.name !== candidateName) {
+  for (const row of metrics) {
+    if (row.runId !== runId || row.name !== candidateName) {
       continue;
     }
     if (requestedSplit !== undefined && row.split !== requestedSplit) {
       continue;
     }
     const splitRank = row.split !== undefined ? (SPLIT_PRIORITY[row.split] ?? 0) : 0;
-    const stepRank = row.step ?? -1;
-    // Prefer higher split priority (holdout > test > val > train), then higher step, then later row.
-    const score = splitRank * 1_000_000_000 + (stepRank + 1) * 10_000 + i;
-    if (score >= bestScore) {
-      bestScore = score;
+    if (
+      splitRank > bestSplitRank ||
+      (splitRank === bestSplitRank && (row.step ?? -1) >= (best?.step ?? -1))
+    ) {
+      bestSplitRank = splitRank;
       best = row;
     }
   }

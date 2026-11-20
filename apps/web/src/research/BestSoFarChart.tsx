@@ -190,8 +190,8 @@ export function BestSoFarChart({ runs, metrics, spec, scopeLabel }: BestSoFarCha
 
         <g fontSize="9" fill="currentColor" textAnchor="middle" className="text-muted-foreground">
           {model.ticks.map((tick) => (
-            <text key={tick.runNumber} x={tick.x} y={DEFAULT_CHART_GEOMETRY.height - 8}>
-              {tick.runNumber}
+            <text key={tick.ordinal} x={tick.x} y={DEFAULT_CHART_GEOMETRY.height - 8}>
+              {tick.ordinal}
             </text>
           ))}
         </g>
