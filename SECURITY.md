@@ -1,9 +1,9 @@
 # Security
 
-Report vulnerabilities to [security@t3.codes](mailto:security@t3.codes). The
-[security policy](.github/SECURITY.md) covers disclosure and safe harbor.
+Report vulnerabilities privately using the instructions in the
+[MulAgent security policy](.github/SECURITY.md).
 
-The rest of this file is for agents and maintainers auditing T3 Code or triaging
+The rest of this file is for agents and maintainers auditing MulAgent or triaging
 a report. It says who is trusted with what, which boundaries a real finding
 crosses, and what is intended. The reasoning behind each boundary lives in
 [environment auth](docs/internals/environment-auth.md),

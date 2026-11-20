@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         Use this form for broken behavior, regressions, crashes, or reliability problems.
-        Feature requests belong in [Discussions](https://github.com/pingdotgg/t3code/discussions/categories/ideas).
+        Feature requests belong in [Discussions](https://github.com/KNN-07/mulagent/discussions).
         Search existing issues first and keep the report focused on one problem.
 
   - type: checkboxes
@@ -28,6 +28,7 @@ body:
       label: Area
       description: Which part of the project is affected?
       options:
+        - Research workflows, compute backends or Python SDK
         - apps/web
         - apps/server
         - apps/desktop

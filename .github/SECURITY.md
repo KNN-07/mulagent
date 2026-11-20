@@ -1,8 +1,10 @@
-# Security policy
+# Reporting a vulnerability
 
-Report security vulnerabilities affecting T3 Code or T3 Tools-operated infrastructure to
-[security@t3.codes](mailto:security@t3.codes). Please do not disclose them publicly until we have had
-a reasonable opportunity to investigate and remediate them.
+Use **Report a vulnerability** in the MulAgent repository's Security tab when
+available. If private reporting is unavailable, open an issue asking a maintainer
+for a private contact channel. Keep technical details private until you have
+that channel.
 
-See the [full security policy](https://t3.codes/security-policy) for reporting details, scope,
-and safe harbor terms for good-faith research.
+Include the affected commit, configuration, permissions required and observed
+impact. Redact credentials, personal data and private hostnames from attachments.
+The [trust model](../SECURITY.md) describes the environment and client boundaries.
