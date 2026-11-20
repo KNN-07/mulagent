@@ -1,3 +1,4 @@
+import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import {
   IsoDateTime,
@@ -111,6 +112,7 @@ export const ResearchBranch = Schema.Struct({
   status: BranchStatus,
   rung: ScaleRung,
   spec: Schema.optional(Schema.suspend(() => ExperimentSpec)),
+  parentBranchId: Schema.optional(BranchId),
   gitBranch: Schema.optional(TrimmedNonEmptyString),
   threadId: Schema.optional(ThreadId),
   killRule: Schema.optional(Schema.String),
@@ -215,6 +217,7 @@ export const Finding = Schema.Struct({
     Schema.Struct({ attack: Schema.String, response: Schema.String, landed: Schema.Boolean }),
   ),
   caveats: Schema.Array(Schema.String),
+  preliminary: Schema.optional(Schema.Boolean),
   authorModelFamily: Schema.optional(Schema.Literals(["openai", "anthropic", "google"])),
   ciMetricRefs: Schema.optional(Schema.Struct({ lower: MetricReference, upper: MetricReference })),
   criticModel: Schema.optional(TrimmedNonEmptyString),
@@ -365,10 +368,35 @@ export const ResearchSnapshot = Schema.Struct({
   findings: Schema.Array(Finding),
   gates: Schema.Array(Gate),
   leanClaims: Schema.Array(LeanClaim),
-  metrics: Schema.Array(RunMetric),
-  backends: Schema.Array(BackendDescription),
-  workflowStepCompleted: NonNegativeInt,
-  workflowStepTotal: NonNegativeInt,
+  pendingEdits: Schema.optional(
+    Schema.Record(
+      Schema.String,
+      Schema.Struct({
+        checkpointId: Schema.String,
+        filesChanged: NonNegativeInt,
+        additions: NonNegativeInt,
+        deletions: NonNegativeInt,
+        summary: Schema.String,
+      }),
+    ),
+  ),
+  workflowYaml: Schema.optional(Schema.String),
+  messages: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        id: Schema.String,
+        body: Schema.String,
+        createdAt: IsoDateTime,
+        branchId: Schema.optional(Schema.String),
+      }),
+    ),
+  ),
+  metrics: Schema.Array(RunMetric).pipe(Schema.withDecodingDefaultKey(Effect.succeed([]))),
+  backends: Schema.Array(BackendDescription).pipe(
+    Schema.withDecodingDefaultKey(Effect.succeed([])),
+  ),
+  workflowStepCompleted: NonNegativeInt.pipe(Schema.withDecodingDefaultKey(Effect.succeed(0))),
+  workflowStepTotal: NonNegativeInt.pipe(Schema.withDecodingDefaultKey(Effect.succeed(0))),
   literature: Schema.optional(Schema.Array(ResearchPaper)),
   sweeps: Schema.optional(Schema.Array(ResearchSweep)),
   jobs: Schema.Array(JobStatus),
@@ -376,6 +404,7 @@ export const ResearchSnapshot = Schema.Struct({
 export type ResearchSnapshot = typeof ResearchSnapshot.Type;
 
 export const ResearchMetricsBody = Schema.Struct({
+  batchId: Schema.optional(TrimmedNonEmptyString),
   metrics: Schema.Array(
     Schema.Struct({
       name: RunMetric.fields.name,
@@ -405,4 +434,14 @@ export const ResearchFinishBody = Schema.Struct({
   dataHash: Run.fields.dataHash,
   error: Schema.optional(Schema.String),
 });
-export const ResearchStatusBody = Schema.Struct({ status: Schema.Literals(["running"]) });
+export const ResearchStatusBody = Schema.Struct({
+  status: Schema.Literals(["running"]),
+  step: JobStatus.fields.step,
+  totalSteps: JobStatus.fields.totalSteps,
+  seedIndex: JobStatus.fields.seedIndex,
+  totalSeeds: JobStatus.fields.totalSeeds,
+  gpus: JobStatus.fields.gpus,
+  etaMinutes: JobStatus.fields.etaMinutes,
+  codeHash: Run.fields.codeHash,
+  dataHash: Run.fields.dataHash,
+});

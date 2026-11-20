@@ -15,6 +15,7 @@ import {
   AuthOrchestrationOperateScope,
   AuthOrchestrationReadScope,
   AuthSourceControlWriteScope,
+  clientRpcRequiredScopes,
   AuthTerminalReadScope,
   AuthTerminalOperateScope,
   CommandId,
@@ -83,6 +84,16 @@ describe("RPC authorization scopes", () => {
 
   it("still lets readers load settings the way installed Swift clients ask", () => {
     expect(requiredScopeForRpcMethod("server.getSettings")).toBe(AuthOrchestrationReadScope);
+  });
+
+  it("guards project observations and research operations on both sides of the connection", () => {
+    for (const tag of Object.values(WS_METHODS).filter((tag) => tag.startsWith("research."))) {
+      const scope = /^research\.(list|get|subscribe)/.test(tag)
+        ? AuthOrchestrationReadScope
+        : AuthOrchestrationOperateScope;
+      expect(requiredScopeForRpcMethod(tag)).toBe(scope);
+      expect(clientRpcRequiredScopes(tag, {})).toEqual([scope]);
+    }
   });
 
   it("rejects unknown RPC method names", () => {
