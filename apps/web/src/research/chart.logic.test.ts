@@ -46,12 +46,16 @@ describe("chart.logic", () => {
     const metrics: ReadonlyArray<RunMetric> = [
       { runId: r1, name: "success_h32", value: 0.61, step: 100 },
       { runId: r1, name: "success_h32", value: 0.72, step: 500 },
+      { runId: r1, name: "acc", split: "holdout", step: 10, value: 0.8 },
+      { runId: r1, name: "acc", split: "train", step: 50, value: 1 },
       { runId: r1, name: "other_metric", value: 0.99, step: 900 },
       { runId: r2, name: "success_h32", value: 0.68 },
     ];
     const resolved = latestMetricValueByRun(metrics, "success_h32");
     expect(resolved.get(r1)).toBe(0.72);
     expect(resolved.get(r2)).toBe(0.68);
+    expect(latestMetricValueByRun(metrics, "acc:holdout").get(r1)).toBe(0.8);
+    expect(latestMetricValueByRun(metrics, "acc").get(r1)).toBe(0.8);
     expect(resolved.size).toBe(2);
   });
 
@@ -61,13 +65,13 @@ describe("chart.logic", () => {
       makeRun(1, "keep"),
       makeRun(2, "discard"),
       makeRun(4, "keep"),
-      makeRun(5, "pending"),
+      makeRun(105, "pending"),
     ];
     const metrics: ReadonlyArray<RunMetric> = [
       { runId: ResearchRunId.make("r-1"), name: "acc", value: 0.7 },
       { runId: ResearchRunId.make("r-2"), name: "acc", value: 0.68 },
       { runId: ResearchRunId.make("r-4"), name: "acc", value: 0.78 },
-      { runId: ResearchRunId.make("r-5"), name: "acc", value: 0.75 },
+      { runId: ResearchRunId.make("r-105"), name: "acc", value: 0.75 },
     ];
     const model = computeBestSoFarChart(runs, metrics, {
       metric: "acc",
@@ -75,7 +79,8 @@ describe("chart.logic", () => {
       baseline: 0.65,
     });
 
-    expect(model.points.map((p) => p.runNumber)).toEqual([1, 2, 3, 4, 5]);
+    expect(model.points.map((p) => p.runNumber)).toEqual([1, 2, 3, 4, 105]);
+    expect(model.ticks.map((tick) => tick.ordinal)).toEqual([1, 2, 3, 4, 5]);
     expect(model.points.map((p) => p.kind)).toEqual([
       "kept",
       "discarded",

@@ -1,5 +1,7 @@
 import type { ExperimentSpec, ResearchRunId, Run, RunMetric } from "@t3tools/contracts";
 
+import { selectMetricForRun } from "@t3tools/research-report/placeholders";
+
 export interface ChartGeometry {
   readonly width: number;
   readonly height: number;
@@ -32,7 +34,7 @@ export interface BestSoFarPoint {
 }
 
 export interface BestSoFarTick {
-  readonly runNumber: number;
+  readonly ordinal: number;
   readonly x: number;
 }
 
@@ -62,18 +64,17 @@ export function latestMetricValueByRun(
   metrics: ReadonlyArray<RunMetric>,
   metricName: string,
 ): ReadonlyMap<ResearchRunId, number> {
-  const byRun = new Map<ResearchRunId, { readonly step: number; readonly value: number }>();
+  const byRun = new Map<ResearchRunId, RunMetric[]>();
   for (const row of metrics) {
-    if (row.name !== metricName || !Number.isFinite(row.value)) continue;
-    const step = row.step ?? -1;
-    const existing = byRun.get(row.runId);
-    if (!existing || step >= existing.step) {
-      byRun.set(row.runId, { step, value: row.value });
-    }
+    if (!Number.isFinite(row.value)) continue;
+    const rows = byRun.get(row.runId);
+    if (rows) rows.push(row);
+    else byRun.set(row.runId, [row]);
   }
   const result = new Map<ResearchRunId, number>();
-  for (const [runId, entry] of byRun) {
-    result.set(runId, entry.value);
+  for (const [runId, rows] of byRun) {
+    const metric = selectMetricForRun(rows, runId, metricName);
+    if (metric) result.set(runId, metric.value);
   }
   return result;
 }
@@ -92,19 +93,10 @@ function classifyPoint(run: Run, value: number | null): ChartPointKind {
 }
 
 function computeTicks(points: ReadonlyArray<BestSoFarPoint>): ReadonlyArray<BestSoFarTick> {
-  if (points.length === 0) return [];
-  const step = points.length <= 6 ? 1 : points.length <= 20 ? 5 : Math.ceil(points.length / 4);
-  const ticks: BestSoFarTick[] = [];
-  for (let i = 0; i < points.length; i += 1) {
-    const point = points[i];
-    if (!point) continue;
-    const isFirst = i === 0;
-    const isMultiple = point.runNumber % step === 0;
-    if (isFirst || isMultiple) {
-      ticks.push({ runNumber: point.runNumber, x: point.x });
-    }
-  }
-  return ticks;
+  const stride = Math.max(1, Math.ceil((points.length - 1) / 5));
+  return points.flatMap((point, index) =>
+    index % stride === 0 ? [{ ordinal: index + 1, x: point.x }] : [],
+  );
 }
 
 export function computeBestSoFarChart(
