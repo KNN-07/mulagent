@@ -115,13 +115,11 @@ const withRoutes = <A, E>(
   Effect.gen(function* () {
     const random = yield* SecureRandom.SecureRandom;
     const config = yield* ConfigProvider.ConfigProvider;
-    const context = Context.make(SecureRandom.SecureRandom, random).pipe(
-      Context.add(ConfigProvider.ConfigProvider, config),
-    );
+    const context = Context.make(SecureRandom.SecureRandom, random);
     let routerAuth: EnvironmentAuth.EnvironmentAuth["Service"] | undefined;
     const layerRoutes = makeLayerRoutes((auth) => {
       routerAuth = auth;
-    }, linkState);
+    }, linkState).pipe(Layer.provide(ConfigProvider.layer(config)));
     return yield* Effect.acquireUseRelease(
       Effect.sync(() => HttpRouter.toWebHandler(layerRoutes, { disableLogger: true })),
       (web) =>
