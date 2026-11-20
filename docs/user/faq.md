@@ -49,9 +49,8 @@ T3 Connect is our built-in alternative to Tailscale for remote connections. If i
 
 ## Will I get banned for using my subscription?
 
-No. We work with all of the labs and MulAgent is within the TOS of Claude Code, Codex, and Google Antigravity. We worked directly with [SpaceXAI](https://x.com/SpaceXSI/status/2070195830192320600) to collaborate on the Grok Build and Cursor integrations. Everything else uses official ACP bindings.
-
-If it works in MulAgent, you can trust it is safe.
+MulAgent uses the provider's installed CLI, managed runtime, or ACP interface. Your
+provider's account terms govern how you can use your subscription.
 
 ## Can I add a bunch of accounts for one provider?
 

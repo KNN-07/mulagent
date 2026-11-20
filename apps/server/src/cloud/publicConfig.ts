@@ -129,9 +129,11 @@ const NIGHTLY_HOSTED_APP_URL = "https://nightly.app.t3.codes";
  */
 export const agentApprovalAppUrlConfig = makePublicValueConfig(
   "T3CODE_HOSTED_APP_URL",
-  typeof __T3CODE_BUILD_CHANNEL__ !== "undefined" && __T3CODE_BUILD_CHANNEL__ === "nightly"
-    ? NIGHTLY_HOSTED_APP_URL
-    : DEFAULT_HOSTED_APP_URL,
+  !cloudConnectEnabled
+    ? ""
+    : typeof __T3CODE_BUILD_CHANNEL__ !== "undefined" && __T3CODE_BUILD_CHANNEL__ === "nightly"
+      ? NIGHTLY_HOSTED_APP_URL
+      : DEFAULT_HOSTED_APP_URL,
 ).pipe(Config.mapEffect(validateHostedAppUrl));
 
 function validateHostedAppUrl(value: string) {

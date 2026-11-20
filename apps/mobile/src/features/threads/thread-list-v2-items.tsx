@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import * as Dialog from "../../components/ui/Dialog";
 import type { ThreadRowProviderInstance } from "./thread-provider-instance";
 import {
@@ -1232,7 +1233,7 @@ export const ThreadListV2Row = memo(function ThreadListV2Row(props: {
         const target = threadChipCopyTarget(
           { environmentId: thread.environmentId, threadId: thread.id },
           thread.title,
-          undefined,
+          Constants.expoConfig?.extra?.hostedAppLinksEnabled === true ? undefined : null,
           m,
         );
         void copyThreadReference(target).then((didCopy) => {

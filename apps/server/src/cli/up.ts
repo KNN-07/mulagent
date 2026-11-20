@@ -168,7 +168,7 @@ const formatSetup = (setup: Setup, hints: Hints) => {
           [
             "T3 Connect",
             setup.connect
-              ? "on · your T3 account"
+              ? "on · your MulAgent account"
               : setup.connectRevoked
                 ? `off · link revoked. Run \`${hints.connect}\`.`
                 : "off",
@@ -459,7 +459,7 @@ export const upCommand = Command.make("up", {
   ...projectLocationFlags,
   connect: Flag.Boolean("connect").pipe(
     Flag.withDescription(
-      "Allow access through T3 Connect with your T3 account. Turn off with --no-connect.",
+      "Allow access through T3 Connect with your MulAgent account. Turn off with --no-connect.",
     ),
     Flag.optional,
   ),

@@ -1,5 +1,10 @@
+import Constants from "expo-constants";
 import * as Dialog from "../../components/ui/Dialog";
-import { buildNewThreadLink, type LinkedPrompt } from "@t3tools/shared/promptLinks";
+import {
+  buildNewThreadLink,
+  promptLinkDeepLink,
+  type LinkedPrompt,
+} from "@t3tools/shared/promptLinks";
 import { msg } from "gt-react-native";
 
 import { m } from "../../i18n/messages";
@@ -46,7 +51,11 @@ export async function applyLinkedPromptToThreadDraft(
 }
 
 export async function copyPromptLink(prompt: string): Promise<void> {
-  if (!(await tryCopyTextWithHaptic(buildNewThreadLink({ prompt }), { target: "prompt link" }))) {
+  const link =
+    Constants.expoConfig?.extra?.hostedAppLinksEnabled === true
+      ? buildNewThreadLink({ prompt })
+      : promptLinkDeepLink(`/new?${new URLSearchParams({ prompt })}`);
+  if (!(await tryCopyTextWithHaptic(link, { target: "prompt link" }))) {
     Dialog.alert(m(msg("Could not copy")), m(msg("Try again.")));
   }
 }
