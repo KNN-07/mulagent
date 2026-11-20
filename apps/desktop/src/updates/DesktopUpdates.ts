@@ -481,7 +481,10 @@ export const make = Effect.gen(function* () {
         platform: environment.platform,
         appImage: Option.getOrUndefined(config.appImagePath),
         isDebPackage,
-        disabledByEnv: config.disableAutoUpdate && !mockUpdates && policy.feedUrl === undefined,
+        disabledByEnv: Option.getOrElse(
+          config.disableAutoUpdate,
+          () => !mockUpdates && policy.feedUrl === undefined,
+        ),
         hasUpdateFeedConfig: hasFeedConfig,
       }),
     );

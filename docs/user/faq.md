@@ -6,7 +6,7 @@ No. A harness is what turns an LLM into an agent: it gives the model tools, a wa
 
 Chef = LLM. Kitchen = harness. MulAgent = the restaurant that lets you bring whatever kitchen you want. Our MCP is a cookbook we hand the kitchen, but the chef won't open it unless you tell them to :) I wrote the long version here: [What is a harness?](https://t3.gg/blog/post/what-is-a-harness)
 
-Bring your own: Claude Code, Codex, Cursor, Grok Build, OpenCode, Google Antigravity, Kiro, Pi, Muse Code, or fx. [Provider setup](./install.md#providers)
+Bring your own agent through Claude Code, Codex, Antigravity, Pi, or ACP Registry. [Provider setup](./install.md#providers)
 
 ## Why use MulAgent instead of Claude Code or the Codex app?
 
@@ -67,7 +67,7 @@ Yes. Add another provider instance in Settings and give it its own keys and endp
 
 No. MulAgent is a serious developer tool. Locally runnable models are not capable of meaningful engineering work.
 
-## Does my code go to T3 servers?
+## Does my code go to MulAgent servers?
 
 No. Your code and prompts go from your machine to your provider (Anthropic, OpenAI, etc.), not to us. With T3 Connect, traffic rides a Cloudflare tunnel (`cloudflared` on your machine). Our relay sets up the link. It does not proxy your HTTP or WebSocket sessions. MulAgent does send basic product usage events (provider, model, token totals, that kind of thing). No prompts, no file contents. That is the same on Tailscale, LAN, or T3 Connect. Set `T3CODE_TELEMETRY_ENABLED=false` if you want it off. [Product usage data](./telemetry.md)
 

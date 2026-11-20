@@ -5,7 +5,7 @@ MulAgent can run installed ACP commands or coding agents from the official
 own models, tools, and sign-in, while MulAgent provides projects, threads, checkpoints, and task
 delegation.
 
-Agents that MulAgent supports as their own providers, such as Codex, Claude, Cursor, Grok, OpenCode,
+Agents that MulAgent supports as their own providers, such as Codex, Claude,
 Pi, and [Antigravity](./providers-antigravity.md), don't appear in the Registry list. Enable them in
 **Settings → Providers** instead.
 
@@ -44,11 +44,11 @@ without expanding shell expressions.
 Registry agents always run on the machine that hosts your MulAgent server. That stays true when you
 connect through `app.t3.codes`, T3 Connect, or a relay.
 
-Agents install under `tools/<agent-id>/<version>/` inside T3 home. MulAgent verifies SHA-256 when the Registry entry
+Agents install under `tools/<agent-id>/<version>/` inside MulAgent home. MulAgent verifies SHA-256 when the Registry entry
 provides one; entries without a checksum retain the Registry's HTTPS distribution guarantee.
-Registry `npx` and `uvx` packages use T3-owned npm prefixes and Python tool directories at the exact
+Registry `npx` and `uvx` packages use MulAgent-owned npm prefixes and Python tool directories at the exact
 version published by the Registry. Their commands are available in a new server terminal for
-sign-in and direct use. Removing an agent's last provider instance removes T3-managed binary files
+sign-in and direct use. Removing an agent's last provider instance removes MulAgent-managed binary files
 but keeps package installs. To use an existing local binary, set **Executable override** explicitly.
 
 ## Signing in
@@ -73,8 +73,7 @@ are kept. ACP does not describe account isolation, so adding another instance do
 a separate account; use the agent's own configuration to isolate accounts when supported.
 
 If an agent cannot complete its advertised flow remotely, its CLI remains available on the
-server. For example, Codex supports `codex login --device-auth`, and Grok Build supports
-`grok login --device-auth`.
+server. For example, Codex supports `codex login --device-auth`.
 
 ## Models and options
 
@@ -93,7 +92,7 @@ running. Commands the agent names with a `$` prefix appear in MulAgent's `$` ski
 ## Native sessions
 
 When an agent advertises ACP session listing and import support, expand its provider card,
-choose a project, and select **List sessions**. Importing one creates a deterministic T3 thread
+choose a project, and select **List sessions**. Importing one creates a deterministic MulAgent thread
 backed by that native session. Importing the same agent session again returns the existing thread,
 including when another client performs the import.
 
@@ -121,7 +120,7 @@ Devin runs its commands through MulAgent's terminals, and those commands follow 
 permission mode. For other agents, MulAgent shows the command, output, and exit status the agent
 reports but does not run or stop their terminals.
 
-Registry agents can schedule work and use T3's MCP tools. Child-task presentation depends on what
+Registry agents can schedule work and use MulAgent's MCP tools. Child-task presentation depends on what
 the agent exposes: ACP has no portable native subagent-lineage contract, so richer delegation views
 remain agent-specific.
 
@@ -131,7 +130,7 @@ Checkpoint rollback restores your files as usual. ACP agents cannot rewind their
 so the next turn after a rollback starts a fresh agent session and MulAgent sends it the kept
 conversation, without the turns you rolled back.
 
-Registry instances are not used for T3's app-owned text generation, such as thread titles, commit
+Registry instances are not used for MulAgent's app-owned text generation, such as thread titles, commit
 messages, branch names, or pull request descriptions. Configure a text-generation-capable provider
 for those actions.
 

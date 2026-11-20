@@ -5,6 +5,5 @@
 *.bat text eol=crlf
 # GitHub's, Linear's and Expo's GraphQL schemas and the operations graphqlgen writes from them.
 packages/source-control-github/schema/** linguist-generated
-packages/issue-tracker-linear/schema/** linguist-generated
 apps/server/schema/** linguist-generated
 **/*.graphql.ts linguist-generated

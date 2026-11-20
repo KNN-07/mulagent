@@ -2509,7 +2509,7 @@ export function AboutSettingsPanel() {
           {...setting("privacy-policy")}
           description={
             telemetryOff === undefined
-              ? gt("How we handle your data, including the anonymous usage data MulAgent collects.")
+              ? undefined
               : gt("How we handle your data. {telemetryOff}", { telemetryOff })
           }
           control={

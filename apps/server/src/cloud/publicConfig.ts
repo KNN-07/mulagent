@@ -118,7 +118,7 @@ export const relayUrlConfig = cloudConnectEnabled
 
 export const hostedAppUrlConfig = makePublicValueConfig(
   "T3CODE_HOSTED_APP_URL",
-  DEFAULT_HOSTED_APP_URL,
+  cloudConnectEnabled ? DEFAULT_HOSTED_APP_URL : "",
 ).pipe(Config.mapEffect(validateHostedAppUrl));
 
 const NIGHTLY_HOSTED_APP_URL = "https://nightly.app.t3.codes";

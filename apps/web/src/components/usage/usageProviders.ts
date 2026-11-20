@@ -49,7 +49,12 @@ export const PROVIDER_PRESENTATION = {
   },
 } satisfies Record<UsageProviderKind, UsageProviderPresentation>;
 
-export const PROVIDER_ORDER = Object.keys(PROVIDER_PRESENTATION) as UsageProviderKind[];
+export const PROVIDER_ORDER: readonly UsageProviderKind[] = [
+  "codex",
+  "claude",
+  "antigravity",
+  "pi",
+];
 
 export function providersWithUsage(
   totals: readonly {

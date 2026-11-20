@@ -199,7 +199,7 @@ function namedProjectReadme(name: string): string {
     "",
     `# ${name}`,
     "",
-    "Created in [MulAgent](https://t3.codes).",
+    "Created in [MulAgent](https://github.com/KNN-07/mulagent).",
     "",
   ].join("\n");
 }

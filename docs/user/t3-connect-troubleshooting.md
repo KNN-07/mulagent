@@ -127,7 +127,7 @@ an active link between your account and the host.
   that is already connected, or run `t3 auth connect-device approve <code>` on
   the host. See [Approve new devices](./remote-access.md#approve-new-devices).
 - **Your account reached its tunnel limit.** Remove an environment you do not
-  use from your T3 account's T3 Connect page, or
+  use from your MulAgent account's T3 Connect page, or
   [link a paid T3 Chat account](./remote-access.md#more-machines-with-t3-chat)
   for a higher limit. Then restart MulAgent on the host.
 

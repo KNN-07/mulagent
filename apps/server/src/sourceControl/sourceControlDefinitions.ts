@@ -1,21 +1,11 @@
-import * as AzureDevOpsDriver from "@t3tools/source-control-azure-devops/server/driver";
-import * as BitbucketDriver from "@t3tools/source-control-bitbucket/server/driver";
-import * as CursorOriginDriver from "@t3tools/source-control-cursor-origin/server/driver";
 import { builtInSourceControlDefinitions } from "@t3tools/source-control-definitions/registry";
-import * as ForgejoDriver from "@t3tools/source-control-forgejo/server/driver";
-import * as GitCafeDriver from "@t3tools/source-control-gitcafe/server/driver";
 import * as GitHubDriver from "@t3tools/source-control-github/server/driver";
 import * as GitLabDriver from "@t3tools/source-control-gitlab/server/driver";
 
 /** In the shared registry's order, which is the order hosts are listed and probed in. */
 export const BUILT_IN_SOURCE_CONTROL_DRIVER_LIST = [
   GitHubDriver.driver,
-  CursorOriginDriver.driver,
   GitLabDriver.driver,
-  GitCafeDriver.driver,
-  ForgejoDriver.driver,
-  BitbucketDriver.driver,
-  AzureDevOpsDriver.driver,
 ] as const;
 
 export const sourceControlDefinitions = builtInSourceControlDefinitions;
@@ -41,7 +31,6 @@ export function changeRequestsClosedBy(command: string): ReadonlySet<number> | "
   for (const { changeRequestCloseCommand: close } of sourceControlDefinitions.definitions) {
     if (close === undefined) continue;
     for (const match of command.matchAll(new RegExp(close.source, `${close.flags}g`))) {
-      // From the match's start, since Azure's match runs through `--id` to `--status`.
       const args = command.slice(match.index).split(/[;&|\n]/u, 1)[0] ?? "";
       // Every host's merge and close takes one change request, so any later one is option text.
       let target: string | undefined;

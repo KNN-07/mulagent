@@ -197,48 +197,10 @@ const PACKAGE_FIELD_TEXT: ReadonlyMap<string, string> = new Map([
       "Optional ACP authentication method ID. By default, the first agent-managed method is selected.",
     ),
   ],
-  [
-    "Path to the fx binary. All fx instances on this machine share its fx login.",
-    msg("Path to the fx binary. All fx instances on this machine share its fx login."),
-  ],
-  ["Path to the Grok CLI binary.", msg("Path to the Grok CLI binary.")],
-  ["Path to the Kiro CLI binary.", msg("Path to the Kiro CLI binary.")],
-  [
-    "Path to the Muse Code binary on this environment. Sign in with muse login on that host.",
-    msg("Path to the Muse Code binary on this environment. Sign in with muse login on that host."),
-  ],
-  ["Path to the OpenCode binary.", msg("Path to the OpenCode binary.")],
-  [
-    "Leave blank to let MulAgent spawn the server when needed.",
-    msg("Leave blank to let MulAgent spawn the server when needed."),
-  ],
-  ["Stored separately on the host.", msg("Stored separately on the host.")],
   ["Path to the Pi coding agent binary.", msg("Path to the Pi coding agent binary.")],
   [
     "Additional CLI arguments passed to pi --mode rpc on session start.",
     msg("Additional CLI arguments passed to pi --mode rpc on session start."),
-  ],
-  [
-    "Scoped to one repository, project, or workspace. Create it in that item's Bitbucket settings.",
-    msg(
-      "Scoped to one repository, project, or workspace. Create it in that item's Bitbucket settings.",
-    ),
-  ],
-  [
-    "With an API token instead of an access token.",
-    msg("With an API token instead of an access token."),
-  ],
-  [
-    "Reaches every repository your Atlassian account can. Give it read and write access to repositories and pull requests, plus read:user:bitbucket and read:workspace:bitbucket.",
-    msg(
-      "Reaches every repository your Atlassian account can. Give it read and write access to repositories and pull requests, plus read:user:bitbucket and read:workspace:bitbucket.",
-    ),
-  ],
-  [
-    "A git.cafe token, used before CAFE_TOKEN and the cafe login, so GitCafe works without the CLI signed in.",
-    msg(
-      "A git.cafe token, used before CAFE_TOKEN and the cafe login, so GitCafe works without the CLI signed in.",
-    ),
   ],
   ["e.g. --chrome", msg("e.g. --chrome")],
   ["e.g. 300000", msg("e.g. 300000")],

@@ -1,5 +1,7 @@
 # Updating MulAgent
 
+Desktop automatic updates are off by default. Set `T3CODE_DISABLE_AUTO_UPDATE=false` to use a configured desktop feed. Mobile builds enable OTA updates with `T3CODE_MOBILE_UPDATES_ENABLED=1`.
+
 The app you use and the server running your agents can be on different machines.
 When a server is behind your web or desktop app, the update button at the bottom
 of the sidebar and **Settings → Environments** offer to update it.
@@ -137,7 +139,7 @@ update can roll back to the previous version. If the update still fails:
 2. Check that you updated the server's machine, not only the device you are using.
 3. For a command-line server, stop it and relaunch the exact version shown in the notice.
 
-Only one server can use a T3 home directory at a time. If startup reports that
+Only one server can use a MulAgent home directory at a time. If startup reports that
 another server owns it, stop that server before retrying, or use a separate home
 directory and pair with the running server.
 

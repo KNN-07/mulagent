@@ -36,32 +36,6 @@ export const PROVIDER_CHIP_ICONS: Readonly<
     source: require("../../assets/context-chip-icons/provider-codex.png"),
     tintsIcon: true,
   },
-  cursor: {
-    source: require("../../assets/context-chip-icons/provider-cursor.png"),
-    tintsIcon: true,
-  },
-  fx: {
-    source: require("../../assets/context-chip-icons/provider-fx.png"),
-    tintsIcon: true,
-  },
-  grok: {
-    source: require("../../assets/context-chip-icons/provider-grok.png"),
-    tintsIcon: true,
-  },
-  kiro: {
-    source: require("../../assets/context-chip-icons/provider-kiro.png"),
-    tintsIcon: false,
-    accent: "#9046FF",
-  },
-  muse: {
-    source: require("../../assets/context-chip-icons/provider-muse.png"),
-    tintsIcon: false,
-    accent: "#0081fb",
-  },
-  opencode: {
-    source: require("../../assets/context-chip-icons/provider-opencode.png"),
-    tintsIcon: true,
-  },
   pi: {
     source: require("../../assets/context-chip-icons/provider-pi.png"),
     tintsIcon: true,

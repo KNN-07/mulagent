@@ -8,49 +8,38 @@ On mobile, choose **Usage** in the workspace navigation.
 
 ## Understand your usage
 
-**Usage** combines Codex, Claude Code, Grok Build, OpenCode, Antigravity, Pi, Muse Code, and Cursor history
+**Usage** combines Codex, Claude Code, Antigravity, and Pi history
 from your connected environments. It shows token use, cache savings, model breakdowns, and estimated API-equivalent
 cost, split by token type and by speed. These estimates are not your subscription bill.
 **Premium** is what Fast and Ultrafast requests cost above standard rates. Cost that cannot be
 split, such as a provider-reported cost for a model without public rates, shows as **Other**.
 Select a model under **Breakdown** to see its trend, cache hit rate, and cost per million tokens.
 
-Totals depend on the history available on each server. Grok turns without a saved completed-turn
-record are missing from the totals.
+Totals depend on the history available on each server.
 Text generation (thread titles, commit messages, PR text, branch names and review guides) is not in
 the totals for Codex or Claude Code 2.0.63 and newer, because those runs save no session history.
 
 The server keeps scanned usage history for 92 days by default. Claude Code deletes its own
 transcripts after 30 days, so for older Claude usage this history is the only record left. To keep
-it longer, set `usageHistoryRetentionDays` in `<T3 home>/userdata/settings.json` to a number of days
+it longer, set `usageHistoryRetentionDays` in `<MulAgent home>/userdata/settings.json` to a number of days
 such as `365`, or to `"unlimited"`. Usage views still show at most 90 days. Lowering the value
 prunes older history on the next refresh, and raising it again does not bring pruned history back.
 While `settings.json` cannot be read, nothing is pruned.
 
-OpenCode reads its SQLite database and older JSON history. Antigravity reads local conversation
-databases, including T3-managed profiles. Set `OPENCODE_DATA_DIR` or `ANTIGRAVITY_DATA_DIR` on the
-server to read a different data directory; comma-separated paths read multiple directories.
-
-Cursor reads account usage from Cursor's API for the account you signed in with in T3 or set as
-`CURSOR_API_KEY`. This includes headless T3 sessions and desktop usage across machines; the same
-account counts once across connected environments. T3 does not estimate missing tokens from
-conversation text.
-
 Usage includes each configured account's history, including disabled accounts. Custom homes follow
-the account's home setting or its `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, or `GROK_HOME` environment
+the account's home setting or its `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, or `ANTIGRAVITY_DATA_DIR` environment
 variable. Pi reads `~/.pi/agent/sessions`, or the `sessions` directory under
 `PI_CODING_AGENT_DIR`. Set `PI_CODING_AGENT_SESSION_DIR` to read a different session directory.
 To include sessions saved through `--session-dir` or Pi's `sessionDir` setting, set this environment
 variable to the same directory. Pi includes recorded tool and summary costs under `Tools/summaries`.
-Muse Code reads native session history, including child sessions, from the home reported by the
-configured Muse CLI. Its environment settings, including `XDG_DATA_HOME`, apply. Models without
+Models without
 known prices still contribute tokens and appear as unpriced; set custom prices to estimate their cost.
 Use absolute paths or `~/` paths in the account's environment settings; relative environment paths
 depend on each project's working directory and cannot be reliably discovered by Usage. Accounts
 sharing a history directory count once.
 
-The server saves its first hostname in `<T3 home>/usage-host-id`, so a recreated container keeps
-its usage identity when T3 home is persisted. Set `T3CODE_HOST_ID` to choose the identity
+The server saves its first hostname in `<MulAgent home>/usage-host-id`, so a recreated container keeps
+its usage identity when MulAgent home is persisted. Set `T3CODE_HOST_ID` to choose the identity
 explicitly.
 
 When your app and server support different providers, usage totals may cover only the providers
@@ -58,8 +47,7 @@ your app understands. Update the app to include newly supported providers.
 
 On web and desktop, use the environment dropdown to filter costs, tokens, and limits. All
 environments are selected by default. The dropdown shows which environments are still scanning;
-results appear as each one responds, and figures still updating are dimmed. Cursor shows its last
-saved totals first, then updates them when Cursor's API responds.
+results appear as each one responds, and figures still updating are dimmed.
 
 If recent work is missing or a new model shows no cost, refresh to rescan session history and
 update model pricing.
@@ -106,7 +94,7 @@ To count only some models, or to leave some out, add `usageModelFilter` to the s
 ```
 
 `include` keeps only the listed models and `exclude` leaves the listed models out. `provider` is
-one of `claude`, `codex`, `cursor`, `grok`, `opencode`, `antigravity`, `pi`, or `muse`; omit it
+one of `claude`, `codex`, `antigravity`, or `pi`; omit it
 to match a model ID from any provider. Use the model ID that Usage shows without **Map to**, such
 as a provider-prefixed ID for Pi. Filters apply before **Map to**, so a model you leave out is not
 counted under its mapped name. Usage applies each environment's own filter. Remove the setting to
@@ -157,24 +145,6 @@ row to see when it resets and your pace. Turn on **Context window** to also show
 context use against the model's limit. A tick on the bar marks where the provider compacts
 automatically, when it reports that point.
 
-OpenCode Go reports its session, weekly, and monthly allowance when OpenCode runs locally in
-the environment. T3 cannot report limits for external OpenCode servers because their credentials
-belong to the remote server. Limits need an OpenCode Go API key, or an OpenCode Console connected
-in OpenCode with an API key. A Console browser sign-in alone does not report them. You can also add
-your Go API key as `OPENCODE_API_KEY` in the OpenCode instance's **Environment variables**, then
-refresh provider status. Cursor reports
-its monthly allowance, including separate Auto and API usage, for `CURSOR_AUTH_TOKEN` when it is set,
-otherwise for the account you signed in with in T3 or set as `CURSOR_API_KEY`.
-Sign-in and API keys report limits only with Cursor's default API endpoint. If you configure a custom
-Cursor endpoint, use an explicit `CURSOR_AUTH_TOKEN` for limits.
-
-Grok reports the remaining subscription allowance and reset time for its current billing period
-after signing in with `grok login`. Explicit `XAI_API_KEY` connections and custom authentication
-or endpoint configurations do not report subscription limits.
-
-Muse Code reports its session and weekly windows and its tier once the Muse CLI has run in a thread.
-Until then it shows no limits. Readings are not kept across a server restart.
-
 API-key accounts may not report subscription limits. This also applies to Claude connections
 using a proxy through `ANTHROPIC_AUTH_TOKEN`.
 
@@ -183,7 +153,7 @@ using a proxy through `ANTHROPIC_AUTH_TOKEN`.
 To see pooled accounts, open **Settings → Providers → Usage providers → Add hub**. Choose the
 environment that will connect to the hub and enter its URL and management key.
 
-The hub's Codex, Claude, xAI (shown as Grok) and Antigravity accounts appear under **Usage → Limits**;
+The hub's Codex, Claude, and Antigravity accounts appear under **Usage → Limits**;
 accounts for other providers are not read. Codex accounts show banked reset credits; select an
 account and choose **Use reset** to redeem one. No hub plugin is required.
 
@@ -194,9 +164,9 @@ settings section when you no longer need it.
 ## Subscription usage widget
 
 Add **Subscription usage** from your iOS or Android widget gallery to see remaining Codex and
-Claude quotas. Tap it to open **Usage → Limits**; on Android this works while T3 is running in
+Claude quotas. Tap it to open **Usage → Limits**; on Android this works while MulAgent is running in
 the background, otherwise open the app from the launcher. On iOS, use **Edit Widget** to choose
-Session, Weekly, or both for each provider. Reopen T3 to refresh expired readings.
+Session, Weekly, or both for each provider. Reopen MulAgent to refresh expired readings.
 
 ## Keyboard shortcuts
 

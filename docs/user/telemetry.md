@@ -1,6 +1,6 @@
 # Product usage data
 
-The MulAgent server sends product usage events to MulAgent's own endpoint at `ingest.t3.codes`,
+Product telemetry is off by default. Set `T3CODE_TELEMETRY_ENABLED=true` to send product usage events to the upstream endpoint at `ingest.t3.codes`,
 associated with a hashed account or installation identifier. To count how many installations one person
 uses, the server also sends hashed account identifiers: your T3 Connect account, your OpenAI and
 Claude accounts when you are signed in, and a random identifier for each device that connects. The endpoint keeps a copy of each
@@ -14,7 +14,7 @@ raw provider events, or child-agent output.
 
 ## Relay connection diagnostics
 
-MulAgent sends relay connection traces to Axiom to diagnose T3 Connect connectivity. These are
+When configured, MulAgent sends relay connection traces to Axiom to diagnose T3 Connect connectivity. These are
 separate from product events. Depending on the client version, traces can include connection
 timings, environment identifiers and the connected machine's name. Failed spans can include error
 messages and stack traces; error text can quote a value the app was handling.

@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { CollapsibleUserMessageBody } from "./CollapsibleUserMessageBody";
 import { msg, T, useGT, useLocale, useMessages } from "gt-react-native";
 import { m } from "../../i18n/messages";
@@ -85,7 +86,11 @@ import {
 } from "@t3tools/contracts";
 import type { ToolCallVisibility } from "@t3tools/contracts/settings";
 import { encodeComposerContextFragment } from "@t3tools/shared/composerContextClipboard";
-import { hostedThreadLink, parseThreadLinkHref } from "@t3tools/shared/threadLinks";
+import {
+  formatThreadLink,
+  hostedThreadLink,
+  parseThreadLinkHref,
+} from "@t3tools/shared/threadLinks";
 import { PROMPT_LINK_MAX_PROMPT_LENGTH } from "@t3tools/shared/promptLinks";
 import {
   parseComposerContextHref,
@@ -3587,7 +3592,12 @@ export const ThreadFeed = memo(function ThreadFeed(props: ThreadFeedProps) {
       const thread = resolveLinkedThread(href);
       if (thread) {
         if (actionId === "open-thread") onMarkdownLinkPress(href);
-        else if (actionId === "copy-thread-link") copyTextWithHaptic(hostedThreadLink(thread));
+        else if (actionId === "copy-thread-link")
+          copyTextWithHaptic(
+            Constants.expoConfig?.extra?.hostedAppLinksEnabled === true
+              ? hostedThreadLink(thread)
+              : formatThreadLink(thread),
+          );
         return;
       }
       const deviceUrl = deviceLoopbackUrl(href);

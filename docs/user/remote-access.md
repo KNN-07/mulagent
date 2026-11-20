@@ -5,6 +5,11 @@ machine. That machine must stay running and reachable while you work.
 
 ## T3 Connect
 
+T3 Connect is off by default. To use it with an existing cloud configuration, set
+`T3CODE_CLOUD_CONNECT_ENABLED=1` on the host and build the clients with the same flag.
+Set `VITE_HOSTED_APP_URL` when building the web client to use a separate hosted site.
+Mobile builds opt into upstream thread-link associations with `T3CODE_HOSTED_APP_LINKS_ENABLED=1`.
+
 T3 Connect makes an environment available to your other devices without setting
 up router forwarding. In the desktop app on the host, open **Settings →
 Sharing & access**, sign in, and enable **T3 Connect** for that environment.
@@ -338,7 +343,7 @@ anyone who can use the host's browser tabs can still view its `localhost` pages
 there. An administrator can also turn it off with a
 [managed policy](./managed-policy.md#other-capabilities).
 
-The first tab downloads a headless Chrome, about 120 MB, into the T3 home. It
+The first tab downloads a headless Chrome, about 120 MB, into the MulAgent home. It
 is the same browser [HTML renders](html-renders.md) use, so a host downloads it
 only once. Some Linux hosts need [setup](#browser-host-setup) before it can
 start.
@@ -392,11 +397,11 @@ host restored from an image or snapshot, where the profile can be on disk
 without being loaded. Without `sudo`, it only reports what it would change.
 
 The browser runs in Chrome's sandbox by default. Chrome cannot start that sandbox
-as root. If your T3 server runs as root, run it as a nonroot user to keep
+as root. If your MulAgent server runs as root, run it as a nonroot user to keep
 sandboxing enabled. `t3 browser setup` does not fix this root restriction.
 
 If you need to run as root, or cannot enable the sandbox on your host, set
-`T3CODE_SERVER_BROWSER_SANDBOX=0` in the **T3 server's environment** and restart
+`T3CODE_SERVER_BROWSER_SANDBOX=0` in the **MulAgent server's environment** and restart
 the server. This disables Chrome's sandbox. For a manual launch:
 
 ```sh
@@ -405,8 +410,8 @@ T3CODE_SERVER_BROWSER_SANDBOX=0 t3 serve
 
 For a systemd service, add `Environment=T3CODE_SERVER_BROWSER_SANDBOX=0` under
 `[Service]` in its configuration, run `sudo systemctl daemon-reload`, then restart
-your T3 service. Setting the variable in an agent's terminal does not change the
-environment of an already running T3 server.
+your MulAgent service. Setting the variable in an agent's terminal does not change the
+environment of an already running MulAgent server.
 
 ## Connect an outside agent
 
@@ -593,7 +598,7 @@ desktop app, open **Settings → Environments** and switch off **Local
 environment**. MulAgent restarts without a local server: no local agents or terminals run, WSL
 backends stay off, and other devices can no longer connect to this computer. Your projects,
 history, and saved connections are kept, and you keep working through pairing, T3 Connect, or SSH.
-If a [background service](./background-service.md) on this computer uses the same T3 home, the
+If a [background service](./background-service.md) on this computer uses the same MulAgent home, the
 app still treats it as this computer: **Open in** and file reveal for its projects run here,
 whichever connection you reach it through.
 
