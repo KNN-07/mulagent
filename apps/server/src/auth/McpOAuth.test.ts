@@ -114,7 +114,10 @@ const withRoutes = <A, E>(
 ) =>
   Effect.gen(function* () {
     const random = yield* SecureRandom.SecureRandom;
-    const context = Context.make(SecureRandom.SecureRandom, random);
+    const config = yield* ConfigProvider.ConfigProvider;
+    const context = Context.make(SecureRandom.SecureRandom, random).pipe(
+      Context.add(ConfigProvider.ConfigProvider, config),
+    );
     let routerAuth: EnvironmentAuth.EnvironmentAuth["Service"] | undefined;
     const layerRoutes = makeLayerRoutes((auth) => {
       routerAuth = auth;

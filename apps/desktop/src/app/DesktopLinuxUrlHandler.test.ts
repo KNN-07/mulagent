@@ -292,7 +292,7 @@ describe("DesktopLinuxUrlHandler", () => {
         environment: { desktopLauncherPath: Option.some("/opt/MulAgent/t3code") },
       });
 
-      assert.include(recorded.files[0]?.content, 'Exec="/opt/MulAgent/t3code" %U');
+      assert.include(recorded.files[0]?.content, "Exec=/opt/MulAgent/t3code %U");
     });
   });
 

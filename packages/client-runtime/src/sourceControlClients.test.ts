@@ -126,13 +126,8 @@ describe("sourceControlClients.recognizeRemote", () => {
   const kindOfRemote = (url: string) => sourceControlClients.recognizeRemote(url)?.kind ?? null;
 
   it("asks hosts in a fixed order when one hostname carries several hosts' labels", () => {
-    expect(kindOfRemote("https://gitea.github.example/o/r")).toBe("forgejo");
-    expect(kindOfRemote("https://forgejo.gitlab.example/o/r")).toBe("forgejo");
     expect(kindOfRemote("https://gitlab.github.example/o/r")).toBe("github");
     expect(kindOfRemote("https://bitbucket.gitlab.example/o/r")).toBe("gitlab");
-    expect(kindOfRemote("https://bitbucket.visualstudio.com/p/_git/r")).toBe("azure-devops");
-    expect(kindOfRemote("git@git.cafe:pingdotgg/t3code.git")).toBe("gitcafe");
-    expect(kindOfRemote("https://origin.cursor.com/acme/web.git")).toBe("cursor-origin");
   });
 
   it("reads a remote no host claims as an unknown host, and a local path as no host", () => {

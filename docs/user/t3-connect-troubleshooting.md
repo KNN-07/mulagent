@@ -55,6 +55,8 @@ host and this device are on the same Tailscale network, add the host's
 Tailscale address as a direct route. See
 [Reach one machine several ways](./remote-access.md#reach-one-machine-several-ways).
 
+<a id="the-tunnel-works-but-t3-code-does-not-answer"></a>
+
 ## The tunnel works, but MulAgent does not answer
 
 The host's tunnel is up, but it cannot reach MulAgent on the host. Common causes:
@@ -136,6 +138,8 @@ an active link between your account and the host.
 T3 Connect signs requests with short-lived proofs. When the clock on this
 device or the host is a few minutes wrong, T3 Connect rejects them. Turn on
 automatic date and time on both devices, then retry.
+
+<a id="the-host-runs-an-older-t3-code"></a>
 
 ## The host runs an older MulAgent
 

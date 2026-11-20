@@ -464,6 +464,9 @@ describe("T3 Connect troubleshooting links", () => {
           .replace(/ /g, "-"),
       ),
     );
+    for (const [, anchor] of guide.matchAll(/<a id="([^"]+)"><\/a>/g)) {
+      anchors.add(anchor!);
+    }
     for (const section of T3_CONNECT_TROUBLESHOOTING_SECTIONS) {
       expect(anchors, section).toContain(section);
     }
