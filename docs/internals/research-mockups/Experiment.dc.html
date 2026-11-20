@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Branch workspace</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: #000;
+            color: #ededed;
+          }
+          a {
+            color: #ededed;
+          }
+          a:hover {
+            color: #ffffff;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          background: #000000;
+          color: #ededed;
+          font-size: 14px;
+        "
+      >
+        <header
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-bottom: 1px solid #1a1a1a;
+            flex-wrap: wrap;
+          "
+        >
+          <a
+            href="Main.dc.html"
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              text-decoration: none;
+              color: #8a8a8a;
+            "
+            ><svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path d="M15 18l-6-6 6-6"></path></svg
+            >Threads</a
+          >
+          <div
+            style="
+              margin: 0 auto;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 5px 14px;
+              border: 1px solid #222222;
+              border-radius: 8px;
+              background: #0a0a0a;
+              color: #a3a3a3;
+              font-size: 13px;
+            "
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path
+                d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+              ></path></svg
+            ><span style="color: #ededed">world-model-planning</span>branch/latent-rollouts<span
+              style="color: #555555"
+              >⌘K</span
+            >
+          </div>
+          <span style="font-size: 13px; color: #a3a3a3">Experiment log</span>
+          <span style="font-size: 13px; color: #a3a3a3">Compute</span>
+        </header>
+
+        <div style="flex: 1; display: flex; flex-wrap: wrap; min-height: 0">
+          <nav
+            aria-label="Sessions and files"
+            style="
+              flex: 1 1 230px;
+              border-right: 1px solid #1a1a1a;
+              padding: 12px 8px;
+              box-sizing: border-box;
+              font-size: 13px;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: 0 8px 8px;
+                color: #8a8a8a;
+                font-size: 12px;
+              "
+            >
+              <span>Sessions</span><span>+</span>
+            </div>
+            <div style="padding: 8px 10px; border-radius: 8px; background: #161616">
+              <div style="display: flex; justify-content: space-between">
+                <span style="color: #ffffff">Target rung</span
+                ><span style="color: #8a8a8a; font-size: 12px">2h</span>
+              </div>
+              <div style="font-size: 12px; color: #6ea8fe; margin-top: 2px">
+                Running · run 16 of 40
+              </div>
+            </div>
+            <div style="padding: 8px 10px">
+              <div style="display: flex; justify-content: space-between">
+                <span>Small rung</span><span style="color: #8a8a8a; font-size: 12px">5h</span>
+              </div>
+              <div style="font-size: 12px; color: #8a8a8a; margin-top: 2px">
+                Done · +12.2 pp at h = 32
+              </div>
+            </div>
+            <div style="padding: 8px 10px">
+              <div style="display: flex; justify-content: space-between">
+                <span>Baseline repro</span><span style="color: #8a8a8a; font-size: 12px">8h</span>
+              </div>
+              <div style="font-size: 12px; color: #8a8a8a; margin-top: 2px">
+                Done · within 0.5 pp of paper
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                padding: 18px 8px 8px;
+                color: #8a8a8a;
+                font-size: 12px;
+              "
+            >
+              <span>Files</span><span>+</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; color: #a3a3a3">
+              <div style="padding: 5px 10px">› configs</div>
+              <div style="padding: 5px 10px">⌄ models</div>
+              <div
+                style="padding: 5px 10px 5px 26px; display: flex; justify-content: space-between"
+              >
+                <span style="color: #ededed">latent.py</span
+                ><span style="color: #e3b341; font-size: 12px">M</span>
+              </div>
+              <div
+                style="padding: 5px 10px 5px 26px; display: flex; justify-content: space-between"
+              >
+                <span>recurrent.py</span>
+              </div>
+              <div style="padding: 5px 10px">⌄ eval</div>
+              <div
+                style="padding: 5px 10px 5px 26px; display: flex; justify-content: space-between"
+              >
+                <span>ood_suite.py</span><span style="font-size: 12px; color: #8a8a8a">locked</span>
+              </div>
+              <div style="padding: 5px 10px">⌄ results</div>
+              <div
+                style="
+                  padding: 5px 10px 5px 26px;
+                  border-radius: 6px;
+                  background: #161616;
+                  color: #ffffff;
+                "
+              >
+                branch-a.md
+              </div>
+              <div style="padding: 5px 10px">GOAL.md</div>
+            </div>
+          </nav>
+
+          <main
+            style="
+              flex: 999 1 480px;
+              min-width: 0;
+              border-right: 1px solid #1a1a1a;
+              display: flex;
+              flex-direction: column;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                gap: 2px;
+                padding: 8px 10px;
+                border-bottom: 1px solid #1a1a1a;
+                font-size: 13px;
+              "
+            >
+              <span
+                style="padding: 5px 12px; border-radius: 6px; background: #161616; color: #ffffff"
+                >branch-a.md</span
+              >
+              <span style="padding: 5px 12px; color: #8a8a8a">latent.py</span>
+              <span style="padding: 5px 12px; color: #8a8a8a">ood_suite.py</span>
+            </div>
+            <article
+              style="padding: 28px 36px; max-width: 760px; box-sizing: border-box; line-height: 1.6"
+            >
+              <div style="font-size: 12px; color: #8a8a8a">
+                results › branch-a.md · agent · just now
+              </div>
+              <h1 style="margin: 10px 0 6px; font-size: 24px; font-weight: 600; color: #ffffff">
+                Branch A · latent rollouts
+              </h1>
+              <p style="margin: 0 0 22px; color: #a3a3a3; font-size: 13px">
+                Edits only
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    color: #ededed;
+                  "
+                  >models/latent.py</span
+                >.
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    color: #ededed;
+                  "
+                  >eval/ood_suite.py</span
+                >
+                locked at
+                <span
+                  style="
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                    font-size: 12px;
+                    color: #ededed;
+                  "
+                  >4e1c9a2</span
+                >. Baseline 0.654. Keep a change only if the holdout improves.
+              </p>
+
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+                <thead>
+                  <tr style="color: #8a8a8a; text-align: left">
+                    <th style="font-weight: 400; padding: 6px 0; width: 40px">Run</th>
+                    <th style="font-weight: 400; padding: 6px 0">Change</th>
+                    <th style="font-weight: 400; padding: 6px 0; text-align: right">
+                      Success @ 32
+                    </th>
+                    <th style="font-weight: 400; padding: 6px 0; text-align: right; width: 90px">
+                      Verdict
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-top: 1px solid #1a1a1a">
+                    <td style="padding: 9px 0; color: #8a8a8a">15</td>
+                    <td style="padding: 9px 0">Rollout-horizon curriculum</td>
+                    <td
+                      style="
+                        padding: 9px 0;
+                        text-align: right;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                      "
+                    >
+                      0.776
+                    </td>
+                    <td style="padding: 9px 0; text-align: right; color: #3fb950">keep</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #1a1a1a">
+                    <td style="padding: 9px 0; color: #8a8a8a">14</td>
+                    <td style="padding: 9px 0">Value head on the latent</td>
+                    <td
+                      style="
+                        padding: 9px 0;
+                        text-align: right;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                      "
+                    >
+                      0.745
+                    </td>
+                    <td style="padding: 9px 0; text-align: right; color: #8a8a8a">discard</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #1a1a1a">
+                    <td style="padding: 9px 0; color: #8a8a8a">13</td>
+                    <td style="padding: 9px 0">Double latent width</td>
+                    <td style="padding: 9px 0; text-align: right; color: #8a8a8a">—</td>
+                    <td style="padding: 9px 0; text-align: right; color: #f85149">crash</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #1a1a1a">
+                    <td style="padding: 9px 0; color: #8a8a8a">12</td>
+                    <td style="padding: 9px 0">Stochastic latent, 2 samples</td>
+                    <td
+                      style="
+                        padding: 9px 0;
+                        text-align: right;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                      "
+                    >
+                      0.750
+                    </td>
+                    <td style="padding: 9px 0; text-align: right; color: #3fb950">keep</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h2 style="margin: 28px 0 8px; font-size: 15px; font-weight: 600; color: #ffffff">
+                Best so far
+              </h2>
+              <svg
+                viewBox="0 0 400 170"
+                width="100%"
+                role="img"
+                aria-label="Best success at horizon 32 rises from 0.66 to 0.776 over 16 runs, above the 0.654 baseline"
+                style="display: block; max-width: 560px"
+              >
+                <line x1="20" y1="150" x2="380" y2="150" stroke="#262626"></line>
+                <line
+                  x1="20"
+                  y1="112"
+                  x2="380"
+                  y2="112"
+                  stroke="#555555"
+                  stroke-dasharray="3 3"
+                ></line>
+                <text
+                  x="380"
+                  y="106"
+                  text-anchor="end"
+                  font-size="9"
+                  fill="#8A8A8A"
+                  font-family="Inter"
+                >
+                  baseline 0.654
+                </text>
+                <path
+                  d="M20 108 H44 V94 H116 V80 H164 V66 H236 V59 H284 V45 H356 V27 H380"
+                  fill="none"
+                  stroke="#6EA8FE"
+                  stroke-width="1.5"
+                ></path>
+                <g fill="#6EA8FE">
+                  <circle cx="20" cy="108" r="2.5"></circle>
+                  <circle cx="44" cy="94" r="2.5"></circle>
+                  <circle cx="116" cy="80" r="2.5"></circle>
+                  <circle cx="164" cy="66" r="2.5"></circle>
+                  <circle cx="236" cy="59" r="2.5"></circle>
+                  <circle cx="284" cy="45" r="2.5"></circle>
+                  <circle cx="356" cy="27" r="2.5"></circle>
+                </g>
+                <g fill="none" stroke="#8A8A8A">
+                  <circle cx="68" cy="101" r="2.5"></circle>
+                  <circle cx="92" cy="97" r="2.5"></circle>
+                  <circle cx="140" cy="87" r="2.5"></circle>
+                  <circle cx="212" cy="70" r="2.5"></circle>
+                  <circle cx="260" cy="62" r="2.5"></circle>
+                  <circle cx="332" cy="48" r="2.5"></circle>
+                  <circle cx="380" cy="31" r="2.5" stroke-dasharray="1.5 1.5"></circle>
+                </g>
+                <g stroke="#F85149" stroke-width="1.4">
+                  <path d="M185 137l6 6M191 137l-6 6"></path>
+                  <path d="M305 137l6 6M311 137l-6 6"></path>
+                </g>
+                <text
+                  x="356"
+                  y="20"
+                  text-anchor="middle"
+                  font-size="9"
+                  fill="#EDEDED"
+                  font-family="Inter"
+                >
+                  0.776
+                </text>
+                <g font-size="9" fill="#8A8A8A" font-family="Inter" text-anchor="middle">
+                  <text x="20" y="164">1</text>
+                  <text x="116" y="164">5</text>
+                  <text x="236" y="164">10</text>
+                  <text x="356" y="164">15</text>
+                </g>
+              </svg>
+              <p style="margin: 6px 0 0; font-size: 12px; color: #8a8a8a">
+                Best success at h = 32 after each run · 16 runs, 7 kept, 2 crashed · scope: small
+                scale
+              </p>
+            </article>
+          </main>
+
+          <aside
+            aria-label="Agent"
+            style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column"
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 14px;
+                border-bottom: 1px solid #1a1a1a;
+                font-size: 13px;
+              "
+            >
+              <span style="width: 7px; height: 7px; border-radius: 4px; background: #6ea8fe"></span
+              >Target rung
+            </div>
+            <div
+              style="
+                flex: 1;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                font-size: 13px;
+                line-height: 1.55;
+              "
+            >
+              <div
+                style="background: #161616; border-radius: 12px; padding: 10px 12px; color: #d4d4d4"
+              >
+                Push success at h = 32 on the target rung. Edit only
+                <span style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 12px"
+                  >models/latent.py</span
+                >. Log every run to
+                <span style="font-family: &quot;JetBrains Mono&quot;, monospace; font-size: 12px"
+                  >branch-a.md</span
+                >.
+              </div>
+              <div style="color: #8a8a8a">⌄ Thought for 9s</div>
+              <div style="display: flex; flex-direction: column; gap: 8px; color: #a3a3a3">
+                <div>
+                  Run 14 · value head on the latent ·
+                  <span style="color: #8a8a8a">discard 0.745</span>
+                </div>
+                <div>
+                  Run 15 · rollout-horizon curriculum ·
+                  <span style="color: #3fb950">keep 0.776</span>
+                </div>
+                <div style="display: flex; gap: 8px">
+                  Edited <span style="color: #ededed">models/latent.py</span
+                  ><span style="color: #3fb950">+9</span><span style="color: #f85149">−2</span>
+                </div>
+                <div style="display: flex; gap: 8px">
+                  Ran
+                  <span
+                    style="
+                      color: #ededed;
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                      font-size: 12px;
+                    "
+                    >eval/ood_suite.py</span
+                  ><span style="margin-left: auto">06:00</span>
+                </div>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: 14px;
+                  padding: 8px 10px;
+                  border: 1px solid #222222;
+                  border-radius: 8px;
+                  background: #0a0a0a;
+                  font-family: &quot;JetBrains Mono&quot;, monospace;
+                  font-size: 11px;
+                  color: #a3a3a3;
+                "
+              >
+                <span>step 3120/3600</span><span>seed 3/5</span><span>4 GPU</span
+                ><span style="margin-left: auto">eta 6m</span>
+              </div>
+              <div style="color: #a3a3a3">
+                Integrity on run 15: spec unchanged, no leakage, CI excludes zero.
+                <span style="color: #3fb950">Trusted.</span>
+              </div>
+            </div>
+            <div
+              style="
+                margin: 0 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 10px;
+                border: 1px solid #222222;
+                border-radius: 10px;
+                font-size: 12px;
+                color: #a3a3a3;
+              "
+            >
+              1 file changed <span style="color: #3fb950">+9</span
+              ><span style="color: #f85149">−2</span><span style="margin-left: auto">Undo</span
+              ><button
+                type="button"
+                style="
+                  height: 26px;
+                  padding: 0 10px;
+                  border: 0;
+                  border-radius: 6px;
+                  background: #ededed;
+                  color: #000000;
+                  font:
+                    500 12px Inter,
+                    sans-serif;
+                "
+              >
+                Keep
+              </button>
+            </div>
+            <form style="padding: 10px 14px 16px">
+              <label for="k" style="position: absolute; left: -9999px">Add a constraint</label>
+              <div
+                style="
+                  border: 1px solid #262626;
+                  background: #0a0a0a;
+                  border-radius: 14px;
+                  padding: 12px 12px 8px;
+                "
+              >
+                <textarea
+                  id="k"
+                  rows="2"
+                  placeholder="Add a constraint, or let the loop continue"
+                  style="
+                    width: 100%;
+                    box-sizing: border-box;
+                    background: transparent;
+                    border: 0;
+                    outline: none;
+                    resize: none;
+                    color: #ededed;
+                    font:
+                      13px Inter,
+                      sans-serif;
+                  "
+                ></textarea>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    font-size: 12px;
+                    color: #8a8a8a;
+                  "
+                >
+                  <span>Autonomous ▾</span
+                  ><span style="display: flex; align-items: center; gap: 6px"
+                    ><span
+                      style="width: 6px; height: 6px; border-radius: 3px; background: #3fb950"
+                    ></span
+                    >run 16 of 40 · 02:14:08</span
+                  >
+                  <button
+                    type="button"
+                    aria-label="Send"
+                    style="
+                      margin-left: auto;
+                      width: 28px;
+                      height: 28px;
+                      border: 0;
+                      border-radius: 14px;
+                      background: #2a2a2a;
+                      color: #ededed;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.2"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 19V5M5 12l7-7 7 7"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
+</html>

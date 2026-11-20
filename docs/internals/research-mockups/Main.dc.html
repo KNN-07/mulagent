@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Research thread</title>
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap"
+          rel="stylesheet"
+        />
+        <style>
+          body {
+            margin: 0;
+            font-family: Inter, system-ui, sans-serif;
+            background: #000;
+            color: #ededed;
+          }
+          a {
+            color: #ededed;
+          }
+          a:hover {
+            color: #ffffff;
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          min-height: 100vh;
+          background: #000000;
+          color: #ededed;
+          font-size: 14px;
+        "
+      >
+        <nav
+          aria-label="Threads"
+          style="
+            flex: 1 1 280px;
+            border-right: 1px solid #1a1a1a;
+            padding: 10px 8px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 4px 8px 14px;
+              color: #8a8a8a;
+            "
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <path d="M9 4v16"></path>
+            </svg>
+            <span style="color: #ffffff; font-weight: 600">Harness</span>
+          </div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 6px 8px 12px;
+              color: #8a8a8a;
+            "
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M20 20l-4-4"></path>
+            </svg>
+            <span style="flex: 1; color: #ededed">Search</span>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path d="M4 6h16M7 12h10M10 18h4"></path>
+            </svg>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path d="M4 20h16M12 4v12M6 10l6 6 6-6"></path>
+            </svg>
+          </div>
+
+          <a
+            href="Main.dc.html"
+            style="
+              display: block;
+              padding: 10px 10px;
+              border-radius: 10px;
+              background: #161616;
+              text-decoration: none;
+            "
+          >
+            <div
+              style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8a8a"
+            >
+              <span
+                style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 3px;
+                  background: #2a3b66;
+                  color: #c9d6ff;
+                  font-size: 8px;
+                  font-weight: 600;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                >WM</span
+              >world-model-planning<span style="margin-left: auto">now</span>
+            </div>
+            <div style="margin-top: 4px; color: #ffffff; font-weight: 500">
+              Overnight research loop
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+                font-size: 12px;
+                color: #8a8a8a;
+              "
+            >
+              <span>slurm · taisp</span><span style="color: #e3b341">1 question</span>
+            </div>
+          </a>
+          <a
+            href="Experiment.dc.html"
+            style="display: block; padding: 10px 10px; border-radius: 10px; text-decoration: none"
+          >
+            <div
+              style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8a8a"
+            >
+              <span
+                style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 3px;
+                  background: #2a3b66;
+                  color: #c9d6ff;
+                  font-size: 8px;
+                  font-weight: 600;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                >WM</span
+              >world-model-planning<span style="margin-left: auto">2h</span>
+            </div>
+            <div style="margin-top: 4px; color: #ededed; font-weight: 500">
+              Branch A · latent rollouts
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+                font-size: 12px;
+                color: #8a8a8a;
+              "
+            >
+              <span>branch/latent-rollouts</span><span style="color: #6ea8fe">running</span>
+            </div>
+          </a>
+          <a
+            href="Gate.dc.html"
+            style="display: block; padding: 10px 10px; border-radius: 10px; text-decoration: none"
+          >
+            <div
+              style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8a8a"
+            >
+              <span
+                style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 3px;
+                  background: #2a3b66;
+                  color: #c9d6ff;
+                  font-size: 8px;
+                  font-weight: 600;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                >WM</span
+              >world-model-planning<span style="margin-left: auto">41m</span>
+            </div>
+            <div style="margin-top: 4px; color: #ededed; font-weight: 500">Claim C1 · review</div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+                font-size: 12px;
+                color: #8a8a8a;
+              "
+            >
+              <span>gate 3</span><span style="color: #3fb950">ready</span>
+            </div>
+          </a>
+          <a
+            href="#"
+            style="display: block; padding: 10px 10px; border-radius: 10px; text-decoration: none"
+          >
+            <div
+              style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8a8a"
+            >
+              <span
+                style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 3px;
+                  background: #4a3a1a;
+                  color: #f2d9a0;
+                  font-size: 8px;
+                  font-weight: 600;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                >CA</span
+              >credit-assignment<span style="margin-left: auto">3h</span>
+            </div>
+            <div style="margin-top: 4px; color: #ededed; font-weight: 500">
+              Sparse-reward survey
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+                font-size: 12px;
+                color: #8a8a8a;
+              "
+            >
+              <span>local · laptop</span><span>done</span>
+            </div>
+          </a>
+          <a
+            href="#"
+            style="display: block; padding: 10px 10px; border-radius: 10px; text-decoration: none"
+          >
+            <div
+              style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8a8a8a"
+            >
+              <span
+                style="
+                  width: 14px;
+                  height: 14px;
+                  border-radius: 3px;
+                  background: #1f3d2b;
+                  color: #b6f0c8;
+                  font-size: 8px;
+                  font-weight: 600;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+                >RW</span
+              >rule-worlds<span style="margin-left: auto">1d</span>
+            </div>
+            <div style="margin-top: 4px; color: #ededed; font-weight: 500">
+              Hillclimb · 12h budget
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 3px;
+                font-size: 12px;
+                color: #8a8a8a;
+              "
+            >
+              <span>cloud · modal</span><span>done</span>
+            </div>
+          </a>
+
+          <div
+            style="
+              margin-top: auto;
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+              font-size: 13px;
+              color: #8a8a8a;
+            "
+          >
+            <div style="display: flex; justify-content: space-between; padding: 8px 10px">
+              <span>Working</span><span>2 ›</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 10px">
+              <span>Settled</span><span>14 ›</span>
+            </div>
+          </div>
+        </nav>
+
+        <div style="flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column">
+          <header style="display: flex; align-items: center; gap: 8px; padding: 12px 20px">
+            <span
+              style="
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                background: #2a3b66;
+                color: #c9d6ff;
+                font-size: 8px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >WM</span
+            >
+            <span style="color: #8a8a8a">world-model-planning</span
+            ><span style="color: #555555">/</span
+            ><span style="color: #ffffff; font-weight: 500">Overnight research loop</span>
+          </header>
+
+          <div
+            style="
+              flex: 1;
+              display: flex;
+              flex-wrap: wrap;
+              gap: 24px;
+              padding: 8px 20px 0;
+              box-sizing: border-box;
+            "
+          >
+            <main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+              <div
+                style="
+                  flex: 1;
+                  max-width: 700px;
+                  width: 100%;
+                  margin: 0 auto;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 18px;
+                  line-height: 1.6;
+                "
+              >
+                <div
+                  style="
+                    align-self: flex-end;
+                    max-width: 80%;
+                    background: #1c1c1c;
+                    border-radius: 16px;
+                    padding: 10px 14px;
+                  "
+                >
+                  Run the research loop on world-model-planning overnight. Stop at gates.
+                </div>
+
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #1a1a1a;
+                    color: #8a8a8a;
+                    font-size: 13px;
+                  "
+                >
+                  Worked for 8h 12m<span>›</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 13px">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#8A8A8A"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                  >
+                    <circle cx="6" cy="6" r="2.5"></circle>
+                    <circle cx="6" cy="18" r="2.5"></circle>
+                    <circle cx="18" cy="12" r="2.5"></circle>
+                    <path d="M6 8.5v7M8.3 7l7.4 4M8.3 17l7.4-4"></path>
+                  </svg>
+                  <span style="color: #ffffff; font-weight: 500">4 branches</span
+                  ><span style="color: #6ea8fe">2 working</span
+                  ><span style="margin-left: auto; color: #8a8a8a">61 runs</span>
+                </div>
+
+                <p style="margin: 0">
+                  Baseline reproduced within 0.5 pp of the paper. Branch A (latent rollouts) beat it
+                  on the toy and small rungs and is now at target scale. Branch C showed no gain
+                  over seed noise, so I pruned it.
+                </p>
+
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    font-size: 13px;
+                    color: #a3a3a3;
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      aria-hidden="true"
+                    >
+                      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                      <path d="M14 3v5h5"></path></svg
+                    >Edited <span style="color: #ededed">models/latent.py</span
+                    ><span style="color: #3fb950">+28</span><span style="color: #f85149">−6</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      aria-hidden="true"
+                    >
+                      <path d="M4 17l6-5-6-5M12 19h8"></path></svg
+                    >Ran
+                    <span
+                      style="
+                        color: #ededed;
+                        font-family: &quot;JetBrains Mono&quot;, monospace;
+                        font-size: 12px;
+                      "
+                      >eval/ood_suite.py --seeds 0-4</span
+                    ><span style="margin-left: auto">41m 12s</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 12l5 5L20 7"></path></svg
+                    >Proved <span style="color: #ededed">rollout_error_le</span> in Lean<span
+                      style="margin-left: auto"
+                      >12s</span
+                    >
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="8"></circle>
+                      <path d="M8 12h8"></path></svg
+                    >Pruned <span style="color: #ededed">branch C</span> · postmortem saved
+                  </div>
+                </div>
+
+                <p style="margin: 0">
+                  At horizon 32, latent rollouts reach
+                  <strong style="color: #ffffff">77.6%</strong> against
+                  <strong style="color: #ffffff">65.4%</strong> for the baseline (+12.2 pp, 95% CI
+                  +7.9 to +16.1). The gain grows with horizon. Scope: small scale only.
+                </p>
+
+                <div style="overflow-x: auto">
+                  <table
+                    style="
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-size: 13px;
+                      min-width: 420px;
+                    "
+                  >
+                    <thead>
+                      <tr style="color: #8a8a8a; text-align: right">
+                        <th style="text-align: left; font-weight: 400; padding: 6px 0">Horizon</th>
+                        <th style="font-weight: 400; padding: 6px 0">Latent</th>
+                        <th style="font-weight: 400; padding: 6px 0">Recurrent</th>
+                        <th style="font-weight: 400; padding: 6px 0">Δ (pp)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-top: 1px solid #1a1a1a; text-align: right">
+                        <td style="text-align: left; padding: 8px 0">8</td>
+                        <td style="padding: 8px 0">70.9</td>
+                        <td style="padding: 8px 0">70.1</td>
+                        <td style="padding: 8px 0; color: #8a8a8a">+0.8 · noise</td>
+                      </tr>
+                      <tr style="border-top: 1px solid #1a1a1a; text-align: right">
+                        <td style="text-align: left; padding: 8px 0">16</td>
+                        <td style="padding: 8px 0">74.2</td>
+                        <td style="padding: 8px 0">67.9</td>
+                        <td style="padding: 8px 0; color: #3fb950">+6.3</td>
+                      </tr>
+                      <tr style="border-top: 1px solid #1a1a1a; text-align: right">
+                        <td style="text-align: left; padding: 8px 0">32</td>
+                        <td style="padding: 8px 0">77.6</td>
+                        <td style="padding: 8px 0">65.4</td>
+                        <td style="padding: 8px 0; color: #3fb950">+12.2</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <p style="margin: 0">
+                  Claim C1 is ready for you at Gate 3, and the critic couldn't break it.
+                  <a
+                    href="Gate.dc.html"
+                    style="text-decoration: underline; text-decoration-color: #444444"
+                    >Review it</a
+                  >. One decision before I spend compute on the target rung:
+                </p>
+
+                <section
+                  aria-labelledby="q"
+                  style="
+                    border: 1px solid #262626;
+                    background: #0a0a0a;
+                    border-radius: 14px;
+                    padding: 14px 16px;
+                  "
+                >
+                  <div style="font-size: 12px; color: #8a8a8a">Question</div>
+                  <h2
+                    id="q"
+                    style="margin: 2px 0 10px; font-size: 14px; font-weight: 500; color: #ffffff"
+                  >
+                    Which behaviour should be the primary endpoint?
+                  </h2>
+                  <fieldset
+                    style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column"
+                  >
+                    <legend style="position: absolute; left: -9999px">Primary endpoint</legend>
+                    <label style="display: flex; align-items: center; gap: 10px; min-height: 36px"
+                      ><input type="radio" name="ep" checked />Maze success rate</label
+                    >
+                    <label style="display: flex; align-items: center; gap: 10px; min-height: 36px"
+                      ><input type="radio" name="ep" />Plan length vs shortest path</label
+                    >
+                    <label style="display: flex; align-items: center; gap: 10px; min-height: 36px"
+                      ><input type="radio" name="ep" />Both, Holm-corrected<span
+                        style="margin-left: auto; font-size: 12px; color: #8a8a8a"
+                        >recommended</span
+                      ></label
+                    >
+                  </fieldset>
+                  <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px">
+                    <button
+                      type="button"
+                      style="
+                        height: 32px;
+                        padding: 0 12px;
+                        border: 0;
+                        background: transparent;
+                        color: #8a8a8a;
+                        font:
+                          13px Inter,
+                          sans-serif;
+                      "
+                    >
+                      Skip
+                    </button>
+                    <button
+                      type="button"
+                      style="
+                        height: 32px;
+                        padding: 0 14px;
+                        border: 0;
+                        border-radius: 8px;
+                        background: #ededed;
+                        color: #000000;
+                        font:
+                          500 13px Inter,
+                          sans-serif;
+                      "
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </section>
+              </div>
+
+              <form
+                style="max-width: 700px; width: 100%; margin: 20px auto 0; padding-bottom: 18px"
+              >
+                <label for="c" style="position: absolute; left: -9999px">Message</label>
+                <div
+                  style="
+                    border: 1px solid #262626;
+                    background: #0a0a0a;
+                    border-radius: 16px;
+                    padding: 14px 14px 10px;
+                  "
+                >
+                  <textarea
+                    id="c"
+                    rows="2"
+                    placeholder="Ask anything. @ files, $ skills, / commands"
+                    style="
+                      width: 100%;
+                      box-sizing: border-box;
+                      background: transparent;
+                      border: 0;
+                      outline: none;
+                      resize: none;
+                      color: #ededed;
+                      font:
+                        14px Inter,
+                        sans-serif;
+                    "
+                  ></textarea>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 14px;
+                      color: #8a8a8a;
+                      font-size: 13px;
+                    "
+                  >
+                    <button
+                      type="button"
+                      aria-label="Attach"
+                      style="
+                        background: transparent;
+                        border: 0;
+                        color: #8a8a8a;
+                        padding: 0;
+                        width: 24px;
+                        height: 24px;
+                      "
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M21 11l-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"
+                        ></path>
+                      </svg>
+                    </button>
+                    <span style="margin-left: auto">Plan ▾</span>
+                    <span><span style="color: #ededed">Opus 5.5</span> High</span>
+                    <button
+                      type="button"
+                      aria-label="Send"
+                      style="
+                        width: 30px;
+                        height: 30px;
+                        border: 0;
+                        border-radius: 15px;
+                        background: #2a2a2a;
+                        color: #ededed;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 19V5M5 12l7-7 7 7"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 16px;
+                    padding: 8px 6px 0;
+                    font-size: 12px;
+                    color: #8a8a8a;
+                  "
+                >
+                  <span>slurm · taisp</span><span>budget 14.2 / 40 GPU-h</span
+                  ><span style="margin-left: auto">Ask for risky actions</span>
+                </div>
+              </form>
+            </main>
+
+            <aside
+              aria-label="Context"
+              style="flex: 0 1 280px; min-width: 0; align-self: flex-start"
+            >
+              <div
+                style="
+                  border: 1px solid #222222;
+                  background: #0a0a0a;
+                  border-radius: 12px;
+                  padding: 6px;
+                  font-size: 13px;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#A3A3A3"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                  >
+                    <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                    <path d="M8 20h8"></path></svg
+                  >slurm · taisp<span style="margin-left: auto; color: #8a8a8a">4/4 GPU</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#A3A3A3"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9"
+                    ></path></svg
+                  >research.yaml · run 3<span style="margin-left: auto; color: #8a8a8a">5/7</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#A3A3A3"
+                    stroke-width="1.8"
+                    aria-hidden="true"
+                  >
+                    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 3v5h5"></path></svg
+                  >Ledger<span style="margin-left: auto; color: #8a8a8a">61 runs</span>
+                </div>
+                <div style="border-top: 1px solid #1a1a1a; margin: 6px 0"></div>
+                <a
+                  href="Branches.dc.html"
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    padding: 6px 10px;
+                    font-size: 12px;
+                    color: #8a8a8a;
+                    text-decoration: none;
+                  "
+                  ><span>Lineage · 2 running</span><span>Open graph ›</span></a
+                >
+                <a
+                  href="Experiment.dc.html"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 8px 10px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                  "
+                  ><span
+                    style="width: 7px; height: 7px; border-radius: 4px; background: #6ea8fe"
+                  ></span
+                  >A · latent rollouts<span style="margin-left: auto; color: #8a8a8a"
+                    >2h 14m</span
+                  ></a
+                >
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px">
+                  <span
+                    style="width: 7px; height: 7px; border-radius: 4px; background: #6ea8fe"
+                  ></span
+                  >Lean · error bound<span style="margin-left: auto; color: #8a8a8a">38m</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 8px 10px;
+                    color: #a3a3a3;
+                  "
+                >
+                  <span
+                    style="width: 7px; height: 7px; border-radius: 4px; background: #555555"
+                  ></span
+                  >B · value search<span style="margin-left: auto; color: #8a8a8a">done</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 8px 10px;
+                    color: #8a8a8a;
+                  "
+                >
+                  <span
+                    style="
+                      width: 7px;
+                      height: 7px;
+                      border-radius: 4px;
+                      border: 1px solid #555555;
+                      box-sizing: border-box;
+                    "
+                  ></span
+                  >C · bigger latent<span style="margin-left: auto">pruned</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+      class Component extends DCLogic {
+      renderVals() {
+      return {};
+      }
+      }
+    </script>
+  </body>
+</html>
