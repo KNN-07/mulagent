@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MulAgent — Autonomous ML Research Harness</title>
+    <meta
+      name="description"
+      content="Open-source autonomous ML research harness. Agents survey literature, run experiments on any compute backend, cross-examine findings, and pause at human approval gates."
+    />
+    <meta name="theme-color" content="#09090b" />
+    <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="#top" aria-label="MulAgent home">
+          <img src="./assets/icon.svg" width="28" height="28" alt="" class="brand-mark" />
+          <span class="brand-name">MulAgent</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary">
+          <a href="#loop">Loop</a>
+          <a href="#screenshots">Interface</a>
+          <a href="#backends">Backends</a>
+          <a href="#provenance">Provenance</a>
+          <a href="#quickstart">Quickstart</a>
+        </nav>
+
+        <a
+          class="btn btn-ghost btn-sm header-github"
+          href="https://github.com/KNN-07/mulagent"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+            />
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section id="top" class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="container hero-inner">
+          <div class="eyebrow">
+            <span class="dot dot-indigo" aria-hidden="true"></span>
+            <span>Open source · MIT License</span>
+          </div>
+
+          <h1>Autonomous ML research, backed by a ledger.</h1>
+
+          <p class="hero-pitch">
+            Agents survey literature, run experiments on any compute backend, cross-examine claims
+            with an independent critic, and pause at human approval gates.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#quickstart">Quickstart</a>
+            <a
+              class="btn btn-secondary"
+              href="https://github.com/KNN-07/mulagent"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+                />
+              </svg>
+              <span>View on GitHub</span>
+            </a>
+          </div>
+
+          <div class="hero-command" aria-label="Quickstart clone command">
+            <code
+              >git clone https://github.com/KNN-07/mulagent.git &amp;&amp; cd mulagent &amp;&amp; vp
+              i &amp;&amp; vp run dev</code
+            >
+            <button
+              type="button"
+              class="copy-btn"
+              data-copy="git clone https://github.com/KNN-07/mulagent.git && cd mulagent && vp i && vp run dev"
+              aria-label="Copy quickstart command"
+            >
+              Copy
+            </button>
+          </div>
+
+          <figure class="hero-frame">
+            <div class="window-chrome" aria-hidden="true">
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <span class="window-title">MulAgent — Research fleet</span>
+            </div>
+            <button
+              type="button"
+              class="shot-trigger"
+              data-lightbox-src="./assets/fleet.png"
+              data-lightbox-title="Research fleet"
+              data-lightbox-caption="Active autonomous loops, GPU allocation across backends, pending decision questions, and ready-for-review claims."
+              aria-label="Inspect full-size screenshot of the Research fleet"
+            >
+              <img
+                src="./assets/fleet.png"
+                width="2880"
+                height="1800"
+                alt="MulAgent research fleet dashboard showing compute backends (SLURM, Modal, local), pending decision questions, ready-for-review claims, and running experiment branches."
+                decoding="async"
+                fetchpriority="high"
+              />
+            </button>
+            <figcaption class="frame-caption">
+              MulAgent web UI running with sample research data. Web and desktop clients open to the
+              research fleet; coding threads remain available from the sidebar.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- HOW THE LOOP WORKS -->
+      <section id="loop" class="section">
+        <div class="container">
+          <div class="section-head">
+            <p class="section-kicker">Workflow DAG</p>
+            <h2>How the research loop works</h2>
+            <p class="section-lead">
+              Workflows are declarative YAML graphs (<code>research</code>, <code>reproduce</code>,
+              <code>survey</code>, <code>prove</code>, <code>hillclimb</code>). Every loop-back
+              creates new nodes so lineage stays acyclic and resumable from SQLite.
+            </p>
+          </div>
+
+          <ol class="loop-grid">
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">01</span>
+                <span class="tag">goal</span>
+              </div>
+              <h3>Set the goal &amp; budget</h3>
+              <p>
+                Enter a research goal, pick a workflow YAML, and configure your approval policy and
+                compute budget.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">02</span>
+                <span class="tag">scout · surveyor</span>
+              </div>
+              <h3>Survey papers</h3>
+              <p>
+                Literature agents query Semantic Scholar, arXiv, and OpenAlex to synthesize
+                baselines, datasets, and open problems.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">03</span>
+                <span class="tag tag-amber">tournament · gate</span>
+              </div>
+              <h3>Idea tournament</h3>
+              <p>
+                The ideator runs an Elo tournament across candidate hypotheses. You choose which
+                directions advance at the first gate.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">04</span>
+                <span class="tag">planner · specHash</span>
+              </div>
+              <h3>Freeze the plan</h3>
+              <p>
+                The planner produces an <code>ExperimentSpec</code> whose metric, split, seeds,
+                baseline, and locked eval are hashed before any run begins.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">05</span>
+                <span class="tag tag-sky">fanout · worktrees</span>
+              </div>
+              <h3>Run branches on any compute</h3>
+              <p>
+                Experiment branches reproduce the baseline and fan out in isolated Git worktrees on
+                local, SSH, HPC, or cloud GPUs, alongside optional Lean proof branches.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">06</span>
+                <span class="tag tag-green">integrity · critic</span>
+              </div>
+              <h3>Integrity checks &amp; cross-family critic</h3>
+              <p>
+                Automated checks verify spec hashes, data leakage, sanity, and bootstrap CIs. A
+                critic from a different model family tries to break every claim in a fresh context.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">07</span>
+                <span class="tag tag-amber">gate: claims</span>
+              </div>
+              <h3>Approve claims at gates</h3>
+              <p>
+                Review run-level evidence, critic attacks, caveats, and Lean axiom checks. Approve
+                with notes, send back for more runs, or reject.
+              </p>
+            </li>
+
+            <li class="loop-card">
+              <div class="loop-card-top">
+                <span class="step-num">08</span>
+                <span class="tag tag-indigo">writer · ledger</span>
+              </div>
+              <h3>Assemble provenance report</h3>
+              <p>
+                Generate a sandboxed, self-contained HTML report with findings, run tables, inline
+                SVG best-so-far charts, and lineage—every number queried from the ledger.
+              </p>
+            </li>
+          </ol>
+
+          <div class="workflow-panel">
+            <div class="workflow-panel-copy">
+              <p class="panel-label">Default workflow · <code>research.yaml</code></p>
+              <h3>Plain YAML, acyclic history, zero hidden state</h3>
+              <p>
+                Each node declares its agent role, upstream dependencies, optional human
+                <code>gate</code>, and execution mode (<code>fanout</code>, <code>tournament</code>,
+                <code>join</code>). Workflow agents execute as T3 threads on Claude, Codex, or
+                Gemini providers, while direct role calls use <code>@oh-my-pi/pi-ai</code>.
+              </p>
+              <div class="workflow-pills" aria-label="Built-in workflows">
+                <span class="pill">research.yaml</span>
+                <span class="pill">reproduce.yaml</span>
+                <span class="pill">survey.yaml</span>
+                <span class="pill">prove.yaml</span>
+                <span class="pill">hillclimb.yaml</span>
+              </div>
+            </div>
+            <div class="code-card">
+              <div class="code-card-head">
+                <span>packages/research-core/workflows/research.yaml</span>
+              </div>
+              <pre><code>name: research
+nodes:
+  search: { agent: scout, out: sources }
+  survey: { agent: surveyor, needs: [search], out: survey }
+  ideas: { agent: ideator, needs: [survey], mode: tournament, gate: pick-ideas, out: ranked-ideas }
+  plan: { agent: planner, needs: [ideas], out: specs }
+  repro: { agent: experimenter, needs: [plan] }
+  preflight: { agent: experimenter, needs: [repro] }
+  experiment: { agent: experimenter, needs: [preflight], mode: fanout }
+  prove: { agent: prover, needs: [plan] }
+  analyze: { agent: analyst, needs: [experiment], mode: join, k: 1 }
+  merge: { agent: analyst, needs: [analyze, prove], mode: join }
+  review: { agent: critic, needs: [merge] }
+  report: { agent: writer, needs: [review], gate: claims, out: report }</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCT SCREENSHOTS -->
+      <section id="screenshots" class="section section-alt">
+        <div class="container">
+          <div class="section-head">
+            <p class="section-kicker">Interface</p>
+            <h2>Every view from fleet to report</h2>
+            <p class="section-lead">
+              Captured directly from MulAgent’s UI with sample research data. Select a view or click
+              any screenshot to inspect it full size.
+            </p>
+          </div>
+
+          <div class="filter-bar" role="tablist" aria-label="Filter product screenshots">
+            <button
+              type="button"
+              class="filter-btn is-active"
+              role="tab"
+              aria-selected="true"
+              data-filter="all"
+            >
+              All views (6)
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="fleet"
+            >
+              Fleet
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="thread"
+            >
+              Research thread
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="workspace"
+            >
+              Branch workspace
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="gate"
+            >
+              Gate review
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="lineage"
+            >
+              Lineage
+            </button>
+            <button
+              type="button"
+              class="filter-btn"
+              role="tab"
+              aria-selected="false"
+              data-filter="report"
+            >
+              Report
+            </button>
+          </div>
+
+          <div class="gallery-grid" id="gallery-grid">
+            <article class="shot-card" data-view="fleet">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/fleet.png"
+                data-lightbox-title="Research fleet"
+                data-lightbox-caption="Monitor active autonomous loops, GPU allocation and queue depth across backends, waiting decision questions, and ready-for-review claims."
+                aria-label="Open full-size Research fleet screenshot"
+              >
+                <img
+                  src="./assets/fleet.png"
+                  width="2880"
+                  height="1800"
+                  alt="Research fleet view showing compute backends, GPU utilization, pending questions, ready claims, and active branches."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Research fleet</h3>
+                  <span class="tag">overview</span>
+                </div>
+                <p>
+                  Monitor active autonomous loops, GPU allocation and queue depth across backends,
+                  waiting decision questions, and claims ready for review.
+                </p>
+              </div>
+            </article>
+
+            <article class="shot-card" data-view="thread">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/research-thread.png"
+                data-lightbox-title="Research thread"
+                data-lightbox-caption="Steer overnight loops from one thread with inline metric deltas, Lean proof completions, pruned branch notes, and structured gate questions."
+                aria-label="Open full-size Research thread screenshot"
+              >
+                <img
+                  src="./assets/research-thread.png"
+                  width="2880"
+                  height="1800"
+                  alt="Research thread view showing agent progress summary, metric comparison table, branch sidebar, and a structured decision question."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Research thread</h3>
+                  <span class="tag">control</span>
+                </div>
+                <p>
+                  Steer overnight loops from one thread with inline metric deltas, Lean proof
+                  completions, pruned branch postmortems, and structured decision questions.
+                </p>
+              </div>
+            </article>
+
+            <article class="shot-card" data-view="workspace">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/branch-workspace.png"
+                data-lightbox-title="Branch workspace"
+                data-lightbox-caption="Inspect each branch's isolated Git worktree, locked evaluation files, live results table, best-so-far progression chart, and active agent session."
+                aria-label="Open full-size Branch workspace screenshot"
+              >
+                <img
+                  src="./assets/branch-workspace.png"
+                  width="2880"
+                  height="1800"
+                  alt="Branch workspace showing Git worktree files with a locked evaluation script, run results table, best-so-far chart, and live agent panel."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Branch workspace</h3>
+                  <span class="tag tag-sky">worktree</span>
+                </div>
+                <p>
+                  Inspect each branch’s isolated Git worktree, locked evaluation files, run
+                  verdicts, best-so-far progression chart, and live agent session.
+                </p>
+              </div>
+            </article>
+
+            <article class="shot-card" data-view="gate">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/gate-review.png"
+                data-lightbox-title="Gate review"
+                data-lightbox-caption="Audit a claim backed by ledger run IDs, cross-family critic attacks and caveats, Lean verification axioms, and venue checklist before approving."
+                aria-label="Open full-size Gate review screenshot"
+              >
+                <img
+                  src="./assets/gate-review.png"
+                  width="2880"
+                  height="1800"
+                  alt="Gate review screen displaying a ledger-backed claim, four fresh-context critic checks, Lean theorem statuses, and approve or reject controls."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Gate review</h3>
+                  <span class="tag tag-amber">approval</span>
+                </div>
+                <p>
+                  Audit each claim alongside ledger run IDs, fresh-context critic attacks and
+                  caveats, Lean formal verification axioms, and approve/send-back/reject actions.
+                </p>
+              </div>
+            </article>
+
+            <article class="shot-card" data-view="lineage">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/lineage.png"
+                data-lightbox-title="Lineage graph"
+                data-lightbox-caption="Trace every stage from literature survey and idea tournament through baseline reproduction, fan-out branches, scale-ladder promotion, and pruning."
+                aria-label="Open full-size Lineage graph screenshot"
+              >
+                <img
+                  src="./assets/lineage.png"
+                  width="2880"
+                  height="1800"
+                  alt="Lineage DAG view tracing literature survey, idea tournament, frozen plan, baseline reproduction, four branches, pruning, and merge gate."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Lineage graph</h3>
+                  <span class="tag">dag</span>
+                </div>
+                <p>
+                  Trace every stage from literature survey and tournament through baseline
+                  reproduction, fan-out branches, scale-ladder promotion, pruning, and merge.
+                </p>
+              </div>
+            </article>
+
+            <article class="shot-card" data-view="report">
+              <button
+                type="button"
+                class="shot-trigger"
+                data-lightbox-src="./assets/report.png"
+                data-lightbox-title="Provenance report"
+                data-lightbox-caption="Sandboxed, self-contained HTML report rendered from ledger queries with findings, critic defenses, run-ID links, and full branch tables."
+                aria-label="Open full-size Provenance report screenshot"
+              >
+                <img
+                  src="./assets/report.png"
+                  width="2880"
+                  height="1800"
+                  alt="Sandboxed HTML provenance report displaying budget summary, critic-checked findings with linked run IDs, and branch run tables."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <div class="shot-meta">
+                <div class="shot-title-row">
+                  <h3>Provenance report</h3>
+                  <span class="tag tag-green">sandboxed html</span>
+                </div>
+                <p>
+                  Sandboxed, self-contained HTML report generated directly from ledger runs with
+                  critic verdicts, run-ID-linked evidence, and complete branch and run tables.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPUTE BACKENDS -->
+      <section id="backends" class="section">
+        <div class="container">
+          <div class="section-head">
+            <p class="section-kicker">Compute adapters</p>
+            <h2>Run experiments on any backend</h2>
+            <p class="section-lead">
+              Every backend implements the same <code>Backend</code> interface
+              (<code>describe</code>, <code>submit</code>, <code>status</code>, <code>logs</code>,
+              <code>cancel</code>, <code>fetch</code>). A scheduler matches each
+              <code>ResourceRequest</code> by cost, queue wait, and priority.
+            </p>
+          </div>
+
+          <div class="backend-grid">
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>Local</h3>
+                <span class="tag tag-green">process · container</span>
+              </div>
+              <p>
+                Run directly as a local process or inside Docker/Podman containers. Workspaces are
+                staged cleanly via <code>rsync</code> into an isolated <code>workRoot</code>.
+              </p>
+            </article>
+
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>SSH</h3>
+                <span class="tag">remote host</span>
+              </div>
+              <p>
+                Dispatch experiment jobs directly to remote GPU workstations and servers over SSH
+                with zero cluster control plane required.
+              </p>
+            </article>
+
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>SLURM &amp; PBS</h3>
+                <span class="tag tag-sky">multi-node hpc</span>
+              </div>
+              <p>
+                Generates HPC batch scripts with multi-node allocation (<code>--nodes</code> /
+                <code>select=</code>), checks queues via <code>squeue</code>, <code>sacct</code>,
+                and <code>qstat</code>, and supports preemption-safe checkpoints.
+              </p>
+            </article>
+
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>Kubernetes</h3>
+                <span class="tag">cluster jobs</span>
+              </div>
+              <p>
+                Submit, stream logs from, and cancel containerized training and evaluation workloads
+                on Kubernetes GPU clusters.
+              </p>
+            </article>
+
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>Modal</h3>
+                <span class="tag tag-indigo">serverless cloud</span>
+              </div>
+              <p>
+                Launch on-demand cloud GPU jobs through the Modal cloud backend adapter alongside
+                local or institutional compute.
+              </p>
+            </article>
+
+            <article class="backend-card">
+              <div class="backend-head">
+                <h3>RunPod</h3>
+                <span class="tag tag-indigo">cloud gpu</span>
+              </div>
+              <p>
+                Schedule cost-tracked GPU workers on RunPod through the unified cloud adapter and
+                cost-aware scheduler.
+              </p>
+            </article>
+          </div>
+
+          <div class="sdk-strip">
+            <div>
+              <h3>One job entrypoint &amp; Python SDK</h3>
+              <p>
+                Jobs run through <code>mulagent-job</code> and log metrics with the zero-dependency
+                <code>mulagent</code> Python SDK. Runs emit <code>METRIC name=value</code> lines
+                (compatible with <code>oh-my-pi</code>’s <code>autoresearch</code> protocol) and
+                post signed receipts over HTTP to the ledger, with optional W&amp;B and MLflow
+                mirroring.
+              </p>
+            </div>
+            <div class="sdk-tokens" aria-label="SDK capabilities">
+              <code>mulagent-job</code>
+              <code>METRIC name=value</code>
+              <code>MULAGENT_LEDGER_URL</code>
+              <code>W&amp;B · MLflow optional</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROVENANCE RULES -->
+      <section id="provenance" class="section section-alt">
+        <div class="container">
+          <div class="section-head">
+            <p class="section-kicker">Non-negotiable rules</p>
+            <h2>Agents never type numbers.</h2>
+            <p class="section-lead">
+              Every module in MulAgent enforces six provenance invariants so autonomous loops remain
+              auditable, reproducible, and honest about failures.
+            </p>
+          </div>
+
+          <div class="rules-grid">
+            <article class="rule-card rule-card-featured">
+              <span class="rule-num">RULE 01</span>
+              <h3>Ledger-only provenance</h3>
+              <p>
+                Agents never type a result. Every number in a finding, UI table, or HTML report
+                comes from a <code>RunMetric</code> row in SQLite with its
+                <code>ResearchRunId</code>.
+              </p>
+            </article>
+
+            <article class="rule-card">
+              <span class="rule-num">RULE 02</span>
+              <h3>Doer and judge are separate</h3>
+              <p>
+                A critic in a fresh context from the opposite model family attempts to break each
+                finding—challenging seeds, baselines, leakage, and scope—before you see it.
+              </p>
+            </article>
+
+            <article class="rule-card">
+              <span class="rule-num">RULE 03</span>
+              <h3>Frozen, hashed specs</h3>
+              <p>
+                Approved <code>ExperimentSpec</code> records are hashed (<code>specHash</code>). The
+                integrity checker flags any run that altered the metric, split, seeds, baseline, or
+                pinned evaluation blob.
+              </p>
+            </article>
+
+            <article class="rule-card">
+              <span class="rule-num">RULE 04</span>
+              <h3>Every run is reported</h3>
+              <p>
+                Kept, discarded, crashed, and pruned runs are all recorded in the ledger and
+                rendered in reports—no silent cherry-picking.
+              </p>
+            </article>
+
+            <article class="rule-card">
+              <span class="rule-num">RULE 05</span>
+              <h3>3+ seeds and a confidence interval</h3>
+              <p>
+                Claims remain labelled preliminary until the integrity checker verifies all planned
+                seeds, at least three distinct seeds, and a bootstrap CI excluding zero.
+              </p>
+            </article>
+
+            <article class="rule-card">
+              <span class="rule-num">RULE 06</span>
+              <h3>State lives in the ledger</h3>
+              <p>
+                Never rely on an agent’s ephemeral context window. Workflow progress, runs, gates,
+                and receipts live in SQLite so any agent can crash and resume cleanly.
+              </p>
+            </article>
+          </div>
+
+          <div class="provenance-flow" aria-label="Provenance data flow">
+            <div class="flow-node">
+              <span class="flow-label">Job environment</span>
+              <code>seed · codeHash · dataHash · splitHash</code>
+            </div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div class="flow-node">
+              <span class="flow-label">SDK receipt</span>
+              <code>METRIC name=value + run bearer token</code>
+            </div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div class="flow-node">
+              <span class="flow-label">SQLite ledger</span>
+              <code>RunMetric + ResearchRunId</code>
+            </div>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <div class="flow-node">
+              <span class="flow-label">Gate &amp; HTML report</span>
+              <code>Ledger queries only · scripts disabled</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUICKSTART -->
+      <section id="quickstart" class="section">
+        <div class="container">
+          <div class="section-head">
+            <p class="section-kicker">Quickstart</p>
+            <h2>Run MulAgent locally</h2>
+            <p class="section-lead">
+              Requires Node 26, <code>vp</code>, and Python 3.10+ in your experiment environment.
+              Open <strong>Research → New project</strong> in the web or desktop client once
+              running.
+            </p>
+          </div>
+
+          <div class="quickstart-grid">
+            <div class="qs-step">
+              <div class="qs-step-head">
+                <span class="step-num">01</span>
+                <h3>Install Vite+, clone, and start</h3>
+              </div>
+              <div class="code-card">
+                <div class="code-card-head">
+                  <span>bash</span>
+                  <button
+                    type="button"
+                    class="copy-btn"
+                    data-copy="curl -fsSL https://vite.plus | bash
+git clone https://github.com/KNN-07/mulagent.git
+cd mulagent
+vp i
+vp run dev"
+                    aria-label="Copy install commands"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <pre><code>curl -fsSL https://vite.plus | bash
+git clone https://github.com/KNN-07/mulagent.git
+cd mulagent
+vp i
+vp run dev</code></pre>
+              </div>
+              <p class="qs-note">
+                Install Vite+ (<code>vp</code>) on Linux or macOS, then start the MulAgent server
+                and web UI against isolated local state and open the printed URL.
+              </p>
+            </div>
+
+            <div class="qs-step">
+              <div class="qs-step-head">
+                <span class="step-num">02</span>
+                <h3>Install the Python SDK in your job env</h3>
+              </div>
+              <div class="code-card">
+                <div class="code-card-head">
+                  <span>bash</span>
+                  <button
+                    type="button"
+                    class="copy-btn"
+                    data-copy='pip install -e ./python/mulagent
+# Optional W&B and MLflow mirroring:
+pip install -e "./python/mulagent[wandb,mlflow]"'
+                    aria-label="Copy Python SDK install commands"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <pre><code>pip install -e ./python/mulagent
+# Optional W&amp;B and MLflow mirroring:
+pip install -e "./python/mulagent[wandb,mlflow]"</code></pre>
+              </div>
+              <p class="qs-note">
+                Provides <code>mulagent-job</code> plus <code>init</code>, <code>log_metric</code>,
+                <code>log_params</code>, <code>seed_everything</code>, and code/data hashing
+                helpers.
+              </p>
+            </div>
+
+            <div class="qs-step qs-step-wide">
+              <div class="qs-step-head">
+                <span class="step-num">03</span>
+                <h3>Add a compute backend (<code>research-backends.yaml</code>)</h3>
+              </div>
+              <div class="code-card">
+                <div class="code-card-head">
+                  <span>research-backends.yaml (beside settings.json)</span>
+                  <button
+                    type="button"
+                    class="copy-btn"
+                    data-copy="backends:
+  - description:
+      id: local
+      kind: local
+      label: Local CPU
+      gpusTotal: 0
+      usdPerGpuHour: 0
+      healthy: true
+      preemptible: false
+    workRoot: /var/tmp/mulagent-jobs
+    maxConcurrent: 2
+    spendCapUsd: 0"
+                    aria-label="Copy research-backends.yaml example"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <pre><code>backends:
+  - description:
+      id: local
+      kind: local
+      label: Local CPU
+      gpusTotal: 0
+      usdPerGpuHour: 0
+      healthy: true
+      preemptible: false
+    workRoot: /var/tmp/mulagent-jobs
+    maxConcurrent: 2
+    spendCapUsd: 0</code></pre>
+              </div>
+              <p class="qs-note">
+                Restart the server after adding <code>research-backends.yaml</code>. For workers on
+                another host or inside a container, set <code>MULAGENT_LEDGER_URL</code> in the
+                server environment to an HTTP(S) origin reachable from the worker.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <div class="brand">
+            <img src="./assets/icon.svg" width="24" height="24" alt="" class="brand-mark" />
+            <span class="brand-name">MulAgent</span>
+          </div>
+          <p class="footer-credits">
+            Open-source under the
+            <a
+              href="https://github.com/KNN-07/mulagent/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              >MIT License</a
+            >. Forked from
+            <a href="https://github.com/pingdotgg/t3code" target="_blank" rel="noopener noreferrer"
+              >T3 Code</a
+            >
+            (T3 Tools Inc.) and built on
+            <a
+              href="https://www.npmjs.com/package/@oh-my-pi/pi-ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              >oh-my-pi</a
+            >.
+          </p>
+        </div>
+
+        <nav class="footer-links" aria-label="Project links">
+          <a href="https://github.com/KNN-07/mulagent" target="_blank" rel="noopener noreferrer"
+            >GitHub</a
+          >
+          <a
+            href="https://github.com/KNN-07/mulagent/blob/main/docs/internals/research-harness.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Architecture</a
+          >
+          <a
+            href="https://github.com/KNN-07/mulagent/blob/main/docs/user/research.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            >User guide</a
+          >
+          <a
+            href="https://github.com/KNN-07/mulagent/blob/main/NOTICE"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Notice</a
+          >
+          <a
+            href="https://github.com/KNN-07/mulagent/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            >MIT License</a
+          >
+        </nav>
+      </div>
+    </footer>
+
+    <dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title">
+      <div class="lightbox-inner">
+        <div class="lightbox-head">
+          <div>
+            <h2 id="lightbox-title" class="lightbox-title"></h2>
+            <p id="lightbox-caption" class="lightbox-caption"></p>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost btn-sm"
+            id="lightbox-close"
+            aria-label="Close preview"
+          >
+            Close
+          </button>
+        </div>
+        <div class="lightbox-stage">
+          <img id="lightbox-img" alt="" width="2880" height="1800" />
+        </div>
+      </div>
+    </dialog>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
