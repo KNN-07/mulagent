@@ -1,3 +1,4 @@
+import { ModelRouter } from "@t3tools/research-agents/modelRouter";
 import { ComputeBackend, parseConfig, execute } from "@t3tools/research-backends";
 import { it, expect } from "@effect/vitest";
 import {
@@ -30,6 +31,23 @@ import * as Workflow from "./ResearchWorkflowService.ts";
 import * as Report from "./ResearchReportService.ts";
 import * as Agent from "./ResearchAgentService.ts";
 import * as Http from "./http.ts";
+
+it.each([
+  ["autonomous", "full-access"],
+  ["ask-risky", "auto-accept-edits"],
+  ["ask-always", "approval-required"],
+] as const)("launches %s projects with %s", (approval, mode) => {
+  expect(Workflow.runtimeForApproval[approval]).toBe(mode);
+});
+it.each([
+  ["planner", "reasoningEffort", "high"],
+  ["ideator", "effort", "high"],
+  ["surveyor", "thought_level", "low"],
+] as const)("maps the reasoning level for %s", (role, id, value) => {
+  expect(Workflow.nativeModelSelection(new ModelRouter().select(role)).options).toEqual([
+    { id, value },
+  ]);
+});
 
 it.live(
   "records both SDK hillclimb jobs, checks their evidence, and renders their linked results",
@@ -197,12 +215,30 @@ with mulagent.init(sinks=[]) as run:
         approvalMode: "autonomous",
         budget: { usd: 0, gpuHours: 0, llmUsdPerWeek: 0 },
       });
+      expect(projections.get(p.threadId!)?.thread).toMatchObject({
+        providerInstanceId: "codex",
+        modelSelection: {
+          instanceId: "codex",
+          model: "gpt-6.2-astra",
+          options: [{ id: "reasoningEffort", value: "high" }],
+        },
+        runtimeMode: "full-access",
+      });
       yield* flow.finishTurn(p.threadId!, false);
       const preflight = store.db
         .prepare("SELECT thread FROM research_sessions WHERE project=? ORDER BY rowid DESC LIMIT 1")
         .get(p.id)!;
       yield* flow.finishTurn(ThreadId.make(String(preflight.thread)), false);
       const branch = store.snapshot(p.id).branches[0]!;
+      expect(projections.get(branch.threadId!)?.thread).toMatchObject({
+        providerInstanceId: "antigravity",
+        modelSelection: {
+          instanceId: "antigravity",
+          model: "gemini-4-neon",
+          options: [{ id: "thought_level", value: "high" }],
+        },
+        runtimeMode: "full-access",
+      });
       const spec: ExperimentSpec = {
         hypothesis: "test",
         metric: "score",

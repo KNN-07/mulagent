@@ -1233,7 +1233,7 @@ describe("AcpRegistryAdapterV2", () => {
           setup: { configOptions: [sessionModel("default")] },
           storedModel: "named",
           storedOptions: [
-            { id: "thinking", value: "high" },
+            { id: "thought_level", value: "high" },
             { id: "unavailable", value: "x" },
           ],
           failsConfiguration: true,

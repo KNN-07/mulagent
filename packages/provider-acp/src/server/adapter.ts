@@ -150,7 +150,7 @@ const ACP_BUSY_PROMPT_RETRY_INTERVAL: Duration.Input = "1 second";
 const ACP_PROMPT_INACTIVITY_SLICE_MILLIS = 60_000;
 const ACP_HOST_SLEEP_TOLERANCE_MILLIS = 10_000;
 
-// pi-agent-core agents (oh-my-pi) end a turn while background work runs and reject
+// Some agents end a turn while background work runs and reject
 // prompts until it finishes; the prompt is resent rather than failing the turn.
 function isAgentBusyPromptError(error: EffectAcpErrors.AcpError): boolean {
   return (
@@ -8112,7 +8112,15 @@ export const makeAcpAdapterV2 = Effect.fn("makeAcpAdapterV2")(function* (
                 : undefined;
             return granted !== undefined && !isRuntimeModeAbove(granted, ceiling);
           };
-          const explicitSelections = modelSelection.options ?? [];
+          const explicitSelections = (modelSelection.options ?? []).map((selection) => {
+            if (
+              selection.id !== "thought_level" ||
+              configOptions.some((option) => option.id === selection.id)
+            )
+              return selection;
+            const thinking = configOptions.find((option) => option.category === "thought_level");
+            return thinking ? { ...selection, id: thinking.id } : selection;
+          });
           const implicitSelections = unsetOptionDefaults.filter(
             (implicit) => !explicitSelections.some((selection) => selection.id === implicit.id),
           );
