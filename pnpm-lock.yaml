@@ -1055,6 +1055,9 @@ importers:
       '@t3tools/provider-core':
         specifier: workspace:*
         version: link:../../packages/provider-core
+      '@t3tools/research-report':
+        specifier: workspace:*
+        version: link:../../packages/research-report
       '@t3tools/secret-provider-definitions':
         specifier: workspace:*
         version: link:../../packages/secret-provider-definitions

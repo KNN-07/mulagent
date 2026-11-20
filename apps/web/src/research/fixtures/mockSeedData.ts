@@ -780,7 +780,7 @@ function buildWorldModelSnapshot(
       },
     ],
     caveats: ["One maze family shows no gain, so the claim should not say the effect is uniform."],
-    criticModel: "claude-opus-4-6",
+    criticModel: "claude-fable-5-2",
   };
 
   const leanClaims: ReadonlyArray<LeanClaim> = [
@@ -1620,110 +1620,4 @@ export function createPrunedNodeRecord(branch: ResearchBranch, reason?: string):
     startedAt: nowIso,
     endedAt: nowIso,
   };
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-export function buildPlaceholderReportHtml(snapshot: ResearchWorkspaceSnapshot): string {
-  const findingRows =
-    snapshot.findings.length > 0
-      ? snapshot.findings
-          .map(
-            (finding) => `
-          <section class="card">
-            <div class="meta">Claim ${escapeHtml(finding.label)} · ${escapeHtml(finding.status)} · ${finding.evidenceRunIds.length} ledger runs</div>
-            <blockquote>${escapeHtml(finding.claim)}</blockquote>
-            <p class="muted">Scope: ${escapeHtml(finding.scope)}. Critic attacks: ${finding.critic.length} (${finding.critic.filter((a) => a.landed).length} landed).</p>
-            ${
-              finding.caveats.length > 0
-                ? `<p class="caveat">Caveat: ${escapeHtml(finding.caveats.join(" "))}</p>`
-                : ""
-            }
-          </section>`,
-          )
-          .join("")
-      : `<section class="card"><p class="muted">No formal findings promoted yet. All ${snapshot.runs.length} runs remain recorded in the ledger.</p></section>`;
-
-  const branchRows = snapshot.branches
-    .map((branch) => {
-      const count = snapshot.runs.filter((run) => run.branchId === branch.id).length;
-      return `<tr>
-        <td><strong>${escapeHtml(branch.label)}</strong> · ${escapeHtml(branch.title)}</td>
-        <td>${escapeHtml(branch.rung)}</td>
-        <td>${escapeHtml(branch.status)}</td>
-        <td class="num">${count}</td>
-        <td class="num">${branch.spentGpuHours.toFixed(1)} / ${branch.budgetGpuHours} GPU-h</td>
-      </tr>`;
-    })
-    .join("");
-
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>${escapeHtml(snapshot.project.title)} report</title>
-    <style>
-      :root { color-scheme: dark; }
-      body {
-        margin: 0;
-        padding: 28px 32px 48px;
-        font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
-        background: #09090b;
-        color: #e4e4e7;
-        line-height: 1.6;
-        max-width: 820px;
-        margin-inline: auto;
-      }
-      h1 { font-size: 24px; margin: 0 0 6px; color: #fafafa; }
-      h2 { font-size: 15px; margin: 28px 0 10px; color: #fafafa; border-bottom: 1px solid #27272a; padding-bottom: 6px; }
-      .meta { font-size: 12px; color: #a1a1aa; margin-bottom: 8px; }
-      .muted { color: #a1a1aa; font-size: 13px; margin: 6px 0; }
-      .caveat { color: #fbbf24; font-size: 13px; margin: 8px 0 0; }
-      .card { background: #111114; border: 1px solid #27272a; border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
-      blockquote { margin: 8px 0; padding-left: 14px; border-left: 2px solid #52525b; color: #fafafa; font-size: 15px; }
-      table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
-      th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #27272a; }
-      th { color: #a1a1aa; font-weight: 500; }
-      .num { text-align: right; font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-      .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #18181b; border: 1px solid #27272a; font-size: 11px; color: #a1a1aa; margin-right: 6px; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="meta">MulAgent Provenance Report · Generated from ResearchSnapshot ledger</div>
-      <h1>${escapeHtml(snapshot.project.title)}</h1>
-      <p class="muted">${escapeHtml(snapshot.project.goal)}</p>
-      <div>
-        <span class="pill">Workflow: ${escapeHtml(snapshot.project.workflow)}</span>
-        <span class="pill">Runs: ${snapshot.runs.length}</span>
-        <span class="pill">Compute: ${snapshot.project.spent.gpuHours.toFixed(1)} / ${snapshot.project.budget.gpuHours} GPU-h</span>
-        <span class="pill">Spend: $${snapshot.project.spent.usd.toFixed(2)}</span>
-      </div>
-    </header>
-    <h2>Findings</h2>
-    ${findingRows}
-    <h2>Branch Summary</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Branch</th>
-          <th>Rung</th>
-          <th>Status</th>
-          <th class="num">Runs</th>
-          <th class="num">Budget</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${branchRows}
-      </tbody>
-    </table>
-    <p class="muted" style="margin-top: 24px">Every numeric entry in this placeholder HTML report is rendered directly from ledger RunMetric and ResearchSnapshot state.</p>
-  </body>
-</html>`;
 }
