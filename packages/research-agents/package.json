@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./literature": "./src/literature.ts"
+    "./literature": "./src/literature.ts",
+    "./roles": "./src/roles.ts",
+    "./modelRouter": "./src/modelRouter.ts",
+    "./runner": "./src/runner.ts",
+    "./tournament": "./src/tournament.ts"
   },
   "scripts": {
     "typecheck": "effect-tsgo tsrs --noEmit",
