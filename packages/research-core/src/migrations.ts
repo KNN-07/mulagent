@@ -1,4 +1,4 @@
-import type { DatabaseSync } from "node:sqlite";
+import type * as NodeSqlite from "node:sqlite";
 
 const projectTable = (name: string, extra = "") => `
   CREATE TABLE ${name} (
@@ -36,7 +36,7 @@ const migrations = [
     gpuHours REAL NOT NULL CHECK(gpuHours>=0), usd REAL NOT NULL CHECK(usd>=0));`,
 ];
 
-export function migrateLedger(db: DatabaseSync) {
+export function migrateLedger(db: NodeSqlite.DatabaseSync) {
   db.exec("PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000; BEGIN IMMEDIATE");
   try {
     const version = Number(db.prepare("PRAGMA user_version").get()!.user_version);
