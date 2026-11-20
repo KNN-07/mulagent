@@ -1,7 +1,7 @@
 import { workspaceAreaProps } from "../lib/workspaceFocus";
 import { RefreshIcon } from "~/components/ui/refresh-icon";
 import { scopeProjectRef } from "@t3tools/client-runtime/environment";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Navigate, useRouter } from "@tanstack/react-router";
 import { T, useGT } from "gt-react";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
@@ -24,6 +24,7 @@ import { useEnvironments } from "../state/environments";
 
 function ChatIndexRouteView() {
   const { authGateState } = Route.useRouteContext();
+  const { mode } = Route.useSearch();
   const { environments, isReady } = useEnvironments();
 
   if (authGateState.status === "hosted-static") {
@@ -31,7 +32,7 @@ function ChatIndexRouteView() {
     if (environments.length === 0) return <HostedEmptyState />;
   }
 
-  return <IndexDraftLanding />;
+  return mode === "coding" ? <IndexDraftLanding /> : <Navigate to="/research" replace />;
 }
 
 function IndexDraftLanding() {
@@ -122,5 +123,7 @@ function DraftStartError({ onRetry }: { readonly onRetry: () => void }) {
 }
 
 export const Route = createFileRoute("/_chat/")({
+  validateSearch: (search): { mode?: "coding" } =>
+    search.mode === "coding" ? { mode: "coding" } : {},
   component: ChatIndexRouteView,
 });

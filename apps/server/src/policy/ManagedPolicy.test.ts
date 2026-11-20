@@ -320,19 +320,6 @@ it.layer(NodeServices.layer)("ManagedPolicy.load", (it) => {
           [...(codexHome.summary?.limits?.providers?.lockedInstanceFields?.[codex] ?? [])],
           ["config.homePath", "config.shadowHomePath"],
         );
-        // A server URL makes OpenCode skip the local launch a pin sets, so the pin owns it too.
-        const opencode = ProviderDriverKind.make("opencode");
-        const opencodePinned = yield* ManagedPolicy.fromDocument("/test/policy.json", {
-          schemaVersion: 1,
-          organization: "Example Corp",
-          limits: {
-            providers: { instances: { [opencode]: { locked: true, binaryPath: "/opt/opencode" } } },
-          },
-        });
-        assert.include(
-          opencodePinned.summary?.limits?.providers?.lockedInstanceFields?.[opencode] ?? [],
-          "config.serverUrl",
-        );
         // The same override from the environment that starts the server is ignored too.
         const host = { PATH: "/usr/bin", T3CODE_CODEX_LAUNCH_ARGS: "--yolo" };
         assert.deepEqual(providerHostEnvironment((yield* policyOn("linux")).summary, host), {
@@ -407,8 +394,8 @@ it.layer(NodeServices.layer)("ManagedPolicy.load", (it) => {
         },
       });
       assert.equal(
-        disallowedDriverReason(policy.summary, ProviderDriverKind.make("cursor")),
-        "Example Corp's policy does not allow the Cursor provider.",
+        disallowedDriverReason(policy.summary, ProviderDriverKind.make("antigravity")),
+        "Example Corp's policy does not allow the Antigravity provider.",
       );
       assert.isUndefined(disallowedDriverReason(policy.summary, ProviderDriverKind.make("codex")));
     }),
@@ -426,7 +413,6 @@ it.layer(NodeServices.layer)("ManagedPolicy.load", (it) => {
         [
           withProviders({ allowedDrivers: ["claudeAgent", "notAProvider"] }),
           withProviders({ instances: { notAProvider: { locked: true, binaryPath: "/x" } } }),
-          // Cursor has no launch arguments setting to pin.
           withProviders({ instances: { cursor: { locked: true, launchArgs: "--x" } } }),
           withProviders({ instances: { codex: { locked: true, homePath: "/x" } } }),
           withProviders({
@@ -444,7 +430,7 @@ it.layer(NodeServices.layer)("ManagedPolicy.load", (it) => {
       assert.lengthOf(reasons, 6);
       assert.include(reasons[0], "notAProvider");
       assert.include(reasons[1], "notAProvider");
-      assert.include(reasons[2], "launchArgs");
+      assert.include(reasons[2], "cursor");
     }),
   );
 

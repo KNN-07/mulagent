@@ -1824,7 +1824,7 @@ function acpPostSettleMonitorPromptShouldSuppress(
   return mutation?.status === "running";
 }
 
-export function acpCompletedTurnShouldTerminalizeTool(
+function acpCompletedTurnShouldTerminalizeTool(
   tool: AcpToolCallState & { readonly backgroundCommandTaskId?: string },
   flavor: Pick<AcpAdapterV2Flavor, "extractBackgroundTaskId" | "extractSubagentUpdate">,
 ): boolean {

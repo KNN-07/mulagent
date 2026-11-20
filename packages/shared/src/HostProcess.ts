@@ -16,13 +16,6 @@ export const Architecture = Context.Reference<NodeJS.Architecture>(
   },
 );
 
-export const KernelRelease = Context.Reference<string>(
-  "@t3tools/shared/HostProcess/KernelRelease",
-  {
-    defaultValue: () => NodeOS.release(),
-  },
-);
-
 export const LinuxLibc = Context.Reference<"gnu" | "musl">(
   "@t3tools/shared/HostProcess/LinuxLibc",
   {

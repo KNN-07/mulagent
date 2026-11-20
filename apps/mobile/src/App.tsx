@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { installPermissionUpdateNotice } from "./features/connection/permissionUpdateNotice";
 import { installComposerAttachmentUploads } from "./state/composer-attachment-uploads";
 import { installThreadOutboxDelivery } from "./state/threadOutboxDelivery";
@@ -143,7 +144,9 @@ const appLinking = {
     "t3code://",
     "t3code-dev://",
     "t3code-preview://",
-    DEFAULT_HOSTED_APP_URL,
+    ...(Constants.expoConfig?.extra?.hostedAppLinksEnabled === true
+      ? [DEFAULT_HOSTED_APP_URL]
+      : []),
   ],
   config: { initialRouteName: "Home" },
   filter: (url: string) => shouldHandleAppLink(url, hasCloudPublicConfig()),

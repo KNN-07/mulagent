@@ -209,7 +209,7 @@ const threadRef = scopeThreadRef(environmentId, ThreadId.make("thread"));
 
 it.each([
   ["github.com", "pull/9339/commits"],
-  ["code.example.com:8443", "commit"],
+  ["github.example.com:8443", "commit"],
 ])("opens a %s/%s commit in the active thread's Diff pane after discovery", async (host, path) => {
   setup();
   state.routeParams = { environmentId: "local", threadId: "thread" };
@@ -271,7 +271,7 @@ it("opens a plain commit the workspace lacks like any other delivered link", asy
   const plainCommitUrl = `https://github.com/Effect-TS/effect/commit/${sha}`;
   await using _coordinator = await mount(plainCommitUrl);
   await vi.waitFor(() => expect(state.openScratchProject).toHaveBeenCalledOnce());
-  // Handing it to the OS browser would loop when T3 Code is the default browser.
+  // Handing it to the OS browser would loop when MulAgent is the default browser.
   expect(state.openLink).not.toHaveBeenCalled();
   expect(useDiffPanelStore.getState().byThreadKey).toEqual({});
   expect(useRightPanelStore.getState().byThreadKey).toEqual({});

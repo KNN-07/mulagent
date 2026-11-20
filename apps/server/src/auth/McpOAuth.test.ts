@@ -1,3 +1,4 @@
+import * as ConfigProvider from "effect/ConfigProvider";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import {
@@ -113,11 +114,12 @@ const withRoutes = <A, E>(
 ) =>
   Effect.gen(function* () {
     const random = yield* SecureRandom.SecureRandom;
+    const config = yield* ConfigProvider.ConfigProvider;
     const context = Context.make(SecureRandom.SecureRandom, random);
     let routerAuth: EnvironmentAuth.EnvironmentAuth["Service"] | undefined;
     const layerRoutes = makeLayerRoutes((auth) => {
       routerAuth = auth;
-    }, linkState);
+    }, linkState).pipe(Layer.provide(ConfigProvider.layer(config)));
     return yield* Effect.acquireUseRelease(
       Effect.sync(() => HttpRouter.toWebHandler(layerRoutes, { disableLogger: true })),
       (web) =>
@@ -714,7 +716,7 @@ it.effect(
   "sends an app sign-in on the linked tunnel to the hosted app, and a link to its own page",
   () =>
     Effect.gen(function* () {
-      const handoff = (tunnelHostname: string, peerLink = false) =>
+      const handoff = (tunnelHostname: string, peerLink = false, useHostedApp = true) =>
         withRoutes(
           (handler) =>
             Effect.gen(function* () {
@@ -737,6 +739,14 @@ it.effect(
               return { location: response.headers.get("location")!, query: query.toString() };
             }),
           { ...notLinked, linked: true, cloudUserId: "user_1", tunnelHostname },
+        ).pipe(
+          Effect.provide(
+            ConfigProvider.layer(
+              ConfigProvider.fromEnv({
+                env: useHostedApp ? { T3CODE_HOSTED_APP_URL: "https://app.t3.codes" } : {},
+              }),
+            ),
+          ),
         );
 
       const onTunnel = yield* handoff("box.example.ts.net");
@@ -745,6 +755,9 @@ it.effect(
       expect(hosted.searchParams.get("environment")).toEqual(expect.any(String));
       hosted.searchParams.delete("environment");
       expect(hosted.searchParams.toString()).toBe(onTunnel.query);
+
+      const hostedOff = yield* handoff("box.example.ts.net", false, false);
+      expect(hostedOff.location).toBe(`/connect-agent?${hostedOff.query}`);
 
       const elsewhere = yield* handoff("other.t3coderelay.com");
       expect(elsewhere.location).toBe(`/connect-agent?${elsewhere.query}`);

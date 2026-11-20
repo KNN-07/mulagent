@@ -10,8 +10,15 @@ export interface HostedPairingRequest {
 
 export type HostedAppChannel = "latest" | "nightly";
 
+function explicitlyHostedAppUrl(): string {
+  return (
+    import.meta.env.VITE_HOSTED_APP_URL?.trim() ||
+    (configuredHostedAppChannel() ? DEFAULT_HOSTED_APP_URL : "")
+  );
+}
+
 export function configuredHostedAppUrl(): string {
-  return import.meta.env.VITE_HOSTED_APP_URL?.trim() || DEFAULT_HOSTED_APP_URL;
+  return explicitlyHostedAppUrl() || window.location.origin;
 }
 
 function configuredBackendUrl(): string {
@@ -44,7 +51,7 @@ export function isHostedStaticApp(url?: URL): boolean {
     return false;
   }
 
-  const hostedOrigin = originFromUrl(configuredHostedAppUrl());
+  const hostedOrigin = originFromUrl(explicitlyHostedAppUrl());
   return hostedOrigin !== null && (url ?? new URL(window.location.href)).origin === hostedOrigin;
 }
 

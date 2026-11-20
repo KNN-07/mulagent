@@ -203,7 +203,7 @@ export function FleetView({ onOpenNewProject }: FleetViewProps) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-lg font-semibold text-foreground">
-              <T>Research fleet</T>
+              {snapshots.length === 0 ? <T>What should we research?</T> : <T>Research fleet</T>}
             </h1>
             <p className="text-xs text-muted-foreground">
               <T>
@@ -212,10 +212,19 @@ export function FleetView({ onOpenNewProject }: FleetViewProps) {
               </T>
             </p>
           </div>
-          <Button size="sm" variant="default" onClick={onOpenNewProject}>
-            <PlusIcon aria-hidden="true" />
-            <T>New research project</T>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              render={<Link to="/" search={{ mode: "coding" }} />}
+            >
+              <T>Start a coding thread</T>
+            </Button>
+            <Button size="sm" variant="default" onClick={onOpenNewProject}>
+              <PlusIcon aria-hidden="true" />
+              <T>New research project</T>
+            </Button>
+          </div>
         </div>
 
         <section

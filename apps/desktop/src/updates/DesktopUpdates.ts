@@ -481,7 +481,10 @@ export const make = Effect.gen(function* () {
         platform: environment.platform,
         appImage: Option.getOrUndefined(config.appImagePath),
         isDebPackage,
-        disabledByEnv: config.disableAutoUpdate,
+        disabledByEnv: Option.getOrElse(
+          config.disableAutoUpdate,
+          () => !mockUpdates && policy.feedUrl === undefined,
+        ),
         hasUpdateFeedConfig: hasFeedConfig,
       }),
     );
@@ -1346,7 +1349,7 @@ export const make = Effect.gen(function* () {
       if (Option.isSome(channelBlockedReason(nextChannel))) {
         return yield* new DesktopUpdateChannelManagedError({
           channel: nextChannel,
-          policyMessage: policy.message ?? "Your administrator manages T3 Code updates.",
+          policyMessage: policy.message ?? "Your administrator manages MulAgent updates.",
         });
       }
       // A background check holds the updater only briefly, so wait it out instead of refusing.

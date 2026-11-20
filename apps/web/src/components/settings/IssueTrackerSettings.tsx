@@ -3,7 +3,7 @@ import { issueTrackerSummary } from "@t3tools/client-runtime/state/issue-tracker
 import { squashAtomCommandFailure } from "@t3tools/client-runtime/state/runtime";
 import { T, useGT, useMessages } from "gt-react";
 import { ChevronDownIcon, ExternalLinkIcon, XIcon } from "lucide-react";
-import { useState, type ElementType } from "react";
+import { useState } from "react";
 import type {
   EnvironmentId,
   IssueTrackerConnection,
@@ -15,7 +15,6 @@ import { useEnvironmentQuery } from "../../state/query";
 import { issueTrackerEnvironment } from "../../state/issueTrackers";
 import { useProjects } from "../../state/entities";
 import { useAtomCommand } from "../../state/use-atom-command";
-import { LinearIcon } from "../Icons";
 import { cn } from "~/lib/utils";
 
 import { Badge } from "../ui/badge";
@@ -27,19 +26,12 @@ import { SecretInput } from "./SecretInput";
 import { SettingsRow, SettingsSection } from "./settingsLayout";
 import { useSearchableSetting } from "./settingsSearch";
 
-type TrackerIcon = ElementType<{ className?: string }>;
-
-/** Web art per tracker kind; the server supplies everything else about a tracker. */
-const TRACKER_ICONS: Partial<Record<string, TrackerIcon>> = {
-  linear: LinearIcon,
-};
-
 const UNBOUND = "";
 
 /**
  * Standalone issue trackers for one environment: connect each with a credential, and bind the
  * environment's projects to one of the tracker's scopes so their issues list beside the git
- * host's. Generic over the trackers the server reports; nothing here names Linear but its icon.
+ * host's. The server supplies the available trackers.
  */
 export function IssueTrackerSettings({ environmentId }: { readonly environmentId: EnvironmentId }) {
   const gt = useGT();
@@ -101,7 +93,6 @@ function TrackerRow({
 }) {
   const gt = useGT();
   const messages = useMessages();
-  const Icon = TRACKER_ICONS[tracker.tracker];
   const canEdit = useAtomValue(issueTrackerEnvironment.connect.permissionAtom(environmentId));
   const connect = useAtomCommand(issueTrackerEnvironment.connect, {
     label: `connect ${tracker.displayName}`,
@@ -133,7 +124,6 @@ function TrackerRow({
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="relative inline-flex size-5 shrink-0 items-center justify-center">
-              {Icon ? <Icon className="size-4.5 text-foreground/80" /> : null}
               <span
                 aria-hidden
                 className={cn(

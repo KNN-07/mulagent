@@ -5,12 +5,8 @@ import { providerColors } from "./providerColors";
 export const PROVIDER_ORDER: readonly UsageProviderKind[] = [
   "codex",
   "claude",
-  "grok",
-  "cursor",
-  "opencode",
   "antigravity",
   "pi",
-  "muse",
 ];
 
 export function usageProviderKind(driver: string): UsageProviderKind | null {

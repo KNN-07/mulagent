@@ -3994,25 +3994,6 @@ it.layer(layerTest)("OrchestrationV2LayerLive lifecycle", (it) => {
         (yield* orchestrator.getThreadShell(threadId))?.pullRequests?.map((link) => link.number),
         [2, 3, 4],
       );
-      for (const [index, route] of ["pull", "pulls"].entries()) {
-        yield* orchestrator.dispatch({
-          type: "thread.pull-request.link",
-          commandId: CommandId.make(`gitcafe-pr-link-${index}`),
-          threadId,
-          host: "git.cafe",
-          repository: "pingdotgg/t3code",
-          number: 21353 + index,
-          url: `https://git.cafe/pingdotgg/t3code/${route}/${21353 + index}`,
-          source: "manual",
-        });
-      }
-      assert.isTrue((yield* maintenance.rebuild).valid);
-      assert.deepEqual(
-        (yield* orchestrator.getThreadShell(threadId))?.pullRequests
-          ?.filter((link) => link.host === "git.cafe")
-          .map((link) => link.url),
-        [21353, 21354].map((number) => `https://git.cafe/pingdotgg/t3code/pulls/${number}`),
-      );
     }),
   );
 
@@ -7606,7 +7587,7 @@ it.layer(layerTest)("OrchestrationV2LayerLive lifecycle", (it) => {
           notification: {
             source: { kind: "system" as const },
             outcome: "updated" as const,
-            summary: "T3 Code restarted and resumed this turn",
+            summary: "MulAgent restarted and resumed this turn",
             detail: "Continue where you left off.",
           },
           attachments: [],
@@ -7627,7 +7608,7 @@ it.layer(layerTest)("OrchestrationV2LayerLive lifecycle", (it) => {
           continuationItems.flatMap((item) =>
             item.type === "notification" ? [[item.summary, item.detail]] : [],
           ),
-          ["T3 Code restarted and resumed this turn", "Continue where you left off."],
+          ["MulAgent restarted and resumed this turn", "Continue where you left off."],
         );
         yield* orchestrator.dispatch({
           ...command,

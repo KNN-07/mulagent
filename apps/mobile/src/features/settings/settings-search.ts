@@ -130,8 +130,6 @@ const SETTINGS_SEARCH_TERMS = {
     msg("provider accounts", { $context: "settings search keyword" }),
     "codex",
     "claude",
-    "cursor",
-    "opencode",
     msg("sign in", { $context: "settings search keyword" }),
     msg("login", { $context: "settings search keyword" }),
     msg("auth", { $context: "settings search keyword" }),

@@ -108,11 +108,17 @@ export function makeRelayUrlConfig(fallback = buildTimeRelayUrl) {
   );
 }
 
-export const relayUrlConfig = makeRelayUrlConfig();
+export const cloudConnectEnabled = ["1", "true"].includes(
+  process.env.T3CODE_CLOUD_CONNECT_ENABLED?.trim().toLowerCase() ?? "",
+);
+
+export const relayUrlConfig = cloudConnectEnabled
+  ? makeRelayUrlConfig()
+  : Config.succeed("").pipe(Config.mapEffect(validateRelayUrl));
 
 export const hostedAppUrlConfig = makePublicValueConfig(
   "T3CODE_HOSTED_APP_URL",
-  DEFAULT_HOSTED_APP_URL,
+  cloudConnectEnabled ? DEFAULT_HOSTED_APP_URL : "",
 ).pipe(Config.mapEffect(validateHostedAppUrl));
 
 const NIGHTLY_HOSTED_APP_URL = "https://nightly.app.t3.codes";
@@ -123,9 +129,11 @@ const NIGHTLY_HOSTED_APP_URL = "https://nightly.app.t3.codes";
  */
 export const agentApprovalAppUrlConfig = makePublicValueConfig(
   "T3CODE_HOSTED_APP_URL",
-  typeof __T3CODE_BUILD_CHANNEL__ !== "undefined" && __T3CODE_BUILD_CHANNEL__ === "nightly"
-    ? NIGHTLY_HOSTED_APP_URL
-    : DEFAULT_HOSTED_APP_URL,
+  !cloudConnectEnabled
+    ? ""
+    : typeof __T3CODE_BUILD_CHANNEL__ !== "undefined" && __T3CODE_BUILD_CHANNEL__ === "nightly"
+      ? NIGHTLY_HOSTED_APP_URL
+      : DEFAULT_HOSTED_APP_URL,
 ).pipe(Config.mapEffect(validateHostedAppUrl));
 
 function validateHostedAppUrl(value: string) {
@@ -218,8 +226,10 @@ export function makeCloudCliOAuthConfig({
 
 export const cloudCliOAuthConfig = makeCloudCliOAuthConfig();
 
-export const hasCloudPublicConfig = Boolean(
-  (normalizeSecureRelayUrl(process.env.T3CODE_RELAY_URL ?? "") ?? buildTimeRelayUrl) &&
-  (process.env.T3CODE_CLERK_PUBLISHABLE_KEY?.trim() || buildTimeClerkPublishableKey) &&
-  (process.env.T3CODE_CLERK_CLI_OAUTH_CLIENT_ID?.trim() || buildTimeClerkCliOAuthClientId),
-);
+export const hasCloudPublicConfig =
+  cloudConnectEnabled &&
+  Boolean(
+    (normalizeSecureRelayUrl(process.env.T3CODE_RELAY_URL ?? "") ?? buildTimeRelayUrl) &&
+    (process.env.T3CODE_CLERK_PUBLISHABLE_KEY?.trim() || buildTimeClerkPublishableKey) &&
+    (process.env.T3CODE_CLERK_CLI_OAUTH_CLIENT_ID?.trim() || buildTimeClerkCliOAuthClientId),
+  );

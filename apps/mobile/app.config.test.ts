@@ -6,7 +6,10 @@ import assetLinks from "../web/public/.well-known/assetlinks.json";
 
 // Keep config parsing independent of local env files and build credentials.
 vi.mock("../../scripts/lib/public-config.ts", () => ({
-  loadRepoEnv: () => ({ APP_VARIANT: process.env.APP_VARIANT }),
+  loadRepoEnv: () => ({
+    APP_VARIANT: process.env.APP_VARIANT,
+    T3CODE_HOSTED_APP_LINKS_ENABLED: process.env.T3CODE_HOSTED_APP_LINKS_ENABLED,
+  }),
 }));
 
 afterEach(() => {
@@ -25,12 +28,22 @@ it.each(["prod", ""])("rejects APP_VARIANT=%j before selecting production IDs", 
   );
 });
 
+it("ships without hosted app links or automatic updates", async () => {
+  const config = await loadConfig(undefined);
+  expect(config.ios?.associatedDomains).not.toContain(
+    `applinks:${new URL(DEFAULT_HOSTED_APP_URL).host}`,
+  );
+  expect(config.android?.intentFilters).toEqual([]);
+  expect(config.updates?.enabled).toBe(false);
+});
+
 it.each([
   [undefined, "com.t3tools.t3code"],
   ["development", "com.t3tools.t3code.dev"],
   ["preview", "com.t3tools.t3code.preview"],
   ["production", "com.t3tools.t3code"],
 ])("keeps the iOS and Android identifiers for APP_VARIANT=%j", async (value, identifier) => {
+  vi.stubEnv("T3CODE_HOSTED_APP_LINKS_ENABLED", "1");
   const config = await loadConfig(value);
   expect(config.ios?.bundleIdentifier).toBe(identifier);
   expect(config.android?.package).toBe(identifier);

@@ -56,49 +56,6 @@ const provider: ServerProvider = {
 };
 
 describe("provider compatibility", () => {
-  it("keeps releases before V2 on the OpenCode 1 policy they shipped with", () => {
-    // Older builds fetch main's manifest; their V1 orchestrator cannot drive OpenCode 2.
-    const opencode = ProviderDriverKind.make("opencode");
-    for (const [version, expected] of [
-      ["1.14.19", "supported"],
-      ["2.0.18", "broken"],
-      ["1.14.18", "broken"],
-    ] as const) {
-      const advisory = resolveProviderCompatibility(
-        ModelManifest.BUNDLED_MODEL_MANIFEST.compatibility,
-        opencode,
-        version,
-        "0.0.45",
-      );
-      assert.strictEqual(advisory?.status, expected, `OpenCode ${version} on 0.0.45`);
-      assert.strictEqual(advisory?.recommendedVersion, "1.14.19");
-    }
-    // The current policy rates a prerelease or build by its base version.
-    for (const [version, expected] of [
-      ["1.13.0-beta.1", "broken"],
-      ["1.13.0+abc123", "broken"],
-      ["2.1.0-rc.1", "supported"],
-    ] as const) {
-      assert.strictEqual(
-        resolveProviderCompatibility(
-          ModelManifest.BUNDLED_MODEL_MANIFEST.compatibility,
-          opencode,
-          version,
-        )?.status,
-        expected,
-        `OpenCode ${version}`,
-      );
-    }
-    assert.isUndefined(
-      resolveProviderCompatibility(
-        ModelManifest.BUNDLED_MODEL_MANIFEST.compatibility,
-        ProviderDriverKind.make("pi"),
-        "1.0.0",
-        "0.0.45",
-      ),
-    );
-  });
-
   it("compares Cursor build dates without treating semver prereleases as stable", () => {
     const cursor = ProviderDriverKind.make("cursor");
     const cursorPolicy: ProviderCompatibilityPolicy = {
@@ -168,7 +125,7 @@ describe("provider compatibility", () => {
     }
   });
 
-  it("applies policies only within their T3 Code version range", () => {
+  it("applies policies only within their MulAgent version range", () => {
     const scopedPolicy = { ...policy, t3CodeRange: ">=0.0.42 <0.1.0" };
     for (const version of ["0.0.42", "0.0.45"]) {
       assert.strictEqual(
