@@ -72,7 +72,7 @@ or use a package manager:
 | Windows            | `winget install T3Tools.T3Code`                              |
 | Windows (Scoop)    | `scoop install extras/t3code`                                |
 | macOS              | `brew install --cask t3-code`                                |
-| Debian, Ubuntu     | `sudo apt install ./MulAgent-Code-*.deb`                     |
+| Debian, Ubuntu     | `sudo apt install ./package.deb`                             |
 | Arch Linux         | `yay -S t3code-bin`                                          |
 | Arch Linux nightly | `yay -S t3code-nightly-bin`                                  |
 | Nix                | `nix profile add github:NixOS/nixpkgs/nixos-unstable#t3code` |
@@ -85,11 +85,11 @@ architecture with `uname -m`: for `x86_64`, choose a file ending in
 `arm64.deb`.
 
 To launch an AppImage, open a terminal in its download folder. Replace
-`MulAgent-Code.AppImage` below with the exact filename you downloaded:
+`package.AppImage` below with the exact filename you downloaded:
 
 ```bash
-chmod +x ./MulAgent-Code.AppImage
-./MulAgent-Code.AppImage
+chmod +x ./package.AppImage
+./package.AppImage
 ```
 
 The `.deb` updates itself like the other desktop builds. It asks for your
