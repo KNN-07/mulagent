@@ -138,10 +138,9 @@
   "0cb7a36802fe8089": "Фильтру {number} нужен путь в body, headers или query.",
   "1fa38fb049c6b56e": "Фильтру {number} нужен путь в body, headers или query и хотя бы одно значение.",
   "31ec02bdcb3920d1": "Фильтру {number} нужен путь в body, headers или query и значение.",
+  "62ae4688ece05590": "Хранится надёжно, агенту никогда не показывается",
   "81f613bb68d85bb7": "Не попадает в чат: хранится в закрытом файле, который команды этого агента могут читать 24 часа",
   "07b56c0c12bd2de1": "Не попадает в чат: хранится в закрытых файлах, которые команды этого агента могут читать 24 часа",
-  "6435447ce7656f13": "Показать {label}",
-  "62ae4688ece05590": "Хранится надёжно, агенту никогда не показывается",
   "8c2d901183b4e219": "Вставьте секрет",
   "610aea624f895a78": "Сохранено надёжно и скрыто",
   "329b7854b7e0546e": "Используйте ссылку 1Password, например {example}.",
@@ -2921,6 +2920,794 @@
   "5e4a0e56a0788d86": "Записанное содержимое после",
   "6d5a8b471a561b9d": "Проводник",
   "83a174f9e78fe2f1": "Файлы",
+  "4e7d82c6c733ff8e": "Best {metric} after each run: {best} across {total} runs, {kept} kept, {crashed} crashed.",
+  "b85bbb5c5356a8f5": "baseline {value}",
+  "499f5b6994ee7e6e": "kept",
+  "0186bda8705b1304": "discarded",
+  "3962ea64f09d31b9": "crash",
+  "df917fa6e4061e35": [
+    "baseline ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "29604fbbb60e45e7": [
+    "Run ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    ":",
+    " ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    }
+  ],
+  "d0d4e15d4981aae5": [
+    "Best ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " after each run · ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " runs,",
+    " ",
+    {
+      "i": 3,
+      "k": "_gt_value_3",
+      "v": "v"
+    },
+    " kept, ",
+    {
+      "i": 4,
+      "k": "_gt_value_4",
+      "v": "v"
+    },
+    " crashed · scope:",
+    " ",
+    {
+      "i": 5,
+      "k": "_gt_value_5",
+      "v": "v"
+    }
+  ],
+  "eec5848ce4440d7e": [
+    "Best ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " after each run · ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " runs,",
+    " ",
+    {
+      "i": 3,
+      "k": "_gt_value_3",
+      "v": "v"
+    },
+    " kept, ",
+    {
+      "i": 4,
+      "k": "_gt_value_4",
+      "v": "v"
+    },
+    " crashed"
+  ],
+  "b64f4ae3b0576b83": "Sessions and files",
+  "9822344d1614e368": "File preview is populated from the workspace checkout.",
+  "644655faaee35b35": "Branch agent panel",
+  "1c0cd3ca710ea831": "Add a constraint, or let the loop continue",
+  "f190976b68de20d0": "Send constraint",
+  "ddb4354ee7d8c632": "No branch found for this research project.",
+  "dbd3ef8b36ad1390": "Results",
+  "066217798e6896ad": "Agent",
+  "5745c0bb499d004d": "Sessions & files",
+  "f9d25f824d1751b1": "Branches",
+  "185e29153da33222": "Graph",
+  "cc179544336c9988": "Sessions",
+  "8002064d08dcf901": [
+    "Active rung: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "b3d4d9cba499b048": "spec",
+  "ce6dc3745ca14ec2": "locked",
+  "aae2ffe4742b42de": [
+    "Branch ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " · ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    }
+  ],
+  "178abe9fcc7fd522": [
+    "Edits only",
+    " ",
+    {
+      "t": "code",
+      "i": 1,
+      "c": {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    },
+    "."
+  ],
+  "f1fb3ff677131489": [
+    {
+      "t": "code",
+      "i": 1,
+      "c": {
+        "i": 2,
+        "k": "_gt_value_2",
+        "v": "v"
+      }
+    },
+    " ",
+    "locked at",
+    " ",
+    {
+      "t": "code",
+      "i": 3,
+      "c": {
+        "i": 4,
+        "k": "_gt_value_4",
+        "v": "v"
+      }
+    },
+    "."
+  ],
+  "e099cbf0dc08fa54": [
+    "Baseline ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "."
+  ],
+  "4e87e902dffe3485": "Run",
+  "8536c096408c9e01": "Change",
+  "f078b124742231de": "Verdict",
+  "1eed498862a3ecfa": "Show recent runs",
+  "d203f16f2c0dd8f4": [
+    "Show all ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " runs"
+  ],
+  "2405038ee966951c": "Best so far",
+  "d459e5c15923ee6a": "Locked by frozen spec",
+  "4264da428576fbe2": [
+    "Thought for ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "02dbda915d7d9ad3": [
+    "Run ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " · ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    }
+  ],
+  "6bc41acb5b61c631": [
+    "step ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "/",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    }
+  ],
+  "57b3a5e9009ec417": [
+    "seed ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "/",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    }
+  ],
+  "eb65242bdca8097e": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " GPU"
+  ],
+  "8dff99053e3f7916": [
+    "eta ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "m"
+  ],
+  "64f455c2a2710b82": "Trusted.",
+  "2d09c43c66cac175": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " file changed"
+  ],
+  "f510356291976f4f": "Undo",
+  "f81370897dcc6703": "Keep",
+  "a111ad961e15972c": "Add a constraint",
+  "7cd0d48e18403ea4": [
+    "run ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " of ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " ",
+    "· ",
+    {
+      "i": 3,
+      "k": "_gt_value_3",
+      "v": "v"
+    }
+  ],
+  "91968fafa5813449": "Loading branch workspace…",
+  "8b83bc9bddbb5350": [
+    "Could not load branch workspace: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "109e7655a39c10cf": "Optional note or constraint",
+  "c10e27b7eb0535ee": "Decision recorded",
+  "868cf870dcb75675": "Answered",
+  "f4baf8deafbb227d": "Пропущено",
+  "0fe42a21631bfcee": [
+    "Selected: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "e4c374b2541c77b4": [
+    "Note: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "6cb24609520cffac": "Question",
+  "b983f6d19fd370e2": "Select one or more",
+  "2901e2de068612af": "recommended",
+  "e4f6bf7dedff01c9": "Optional note for the agent",
+  "025538a612b475ea": "Skip",
+  "7ac4455553fe632a": "Продолжить",
+  "979dbf62511c514a": "Waiting on a question",
+  "12969a434884d7a0": "Готов к ревью",
+  "642bd44ba7287788": "Running",
+  "02089920fd67bec1": "Done",
+  "1eea566233282725": "Fleet throughput and spend",
+  "19a4bfb1fa4a0da0": "{label} GPU utilization",
+  "c722636243288fb6": "Loading research fleet…",
+  "96bc0f1ddbf7abe0": [
+    "Could not load research fleet: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "9bfd499749e42054": "Research fleet",
+  "d6b6fd2ccdd506bd": "Active autonomous loops, decision gates, claim reviews, and compute backends across projects.",
+  "472d59e9d93263b1": "New research project",
+  "f33c790a7c3cae51": "Experiments / hr",
+  "4a000b8f2719d686": "Trailing 24h ledger rate",
+  "d37aaadf637be72f": "GPUs in use",
+  "69379ed5c40a08a6": [
+    "Across ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " backends"
+  ],
+  "ab992a021085f286": "Spend today",
+  "4154a5ba36d23dfd": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " GPU-h · $",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " LLM"
+  ],
+  "33a45ca9b782988b": "Active sessions",
+  "926c57fa9d9ee9a9": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " waiting ·",
+    " ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " review"
+  ],
+  "7e8ab7236f1bece0": "Compute backends",
+  "95ef05eb705b96eb": "GPU allocation and queue depth",
+  "2375c8dc02fd9506": "healthy",
+  "02dbf1a102373137": "degraded",
+  "1627fd92880b3b73": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "/",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " GPU"
+  ],
+  "aab032335a3b42ec": [
+    "Queue depth: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "4f221c2b8279c5e8": [
+    "$",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    "/GPU-h"
+  ],
+  "f95b86bd10781176": "No sessions in this state.",
+  "3d0a02e2e7599888": "Add the critic's caveat: {caveat}",
+  "9f6559737f644e40": "Add caveats, scope limits, or follow-up instructions for the writer",
+  "19d4785bc066457f": "Approve with note",
+  "d0264b6329449ec6": "Evidence and venue checklist",
+  "7f7ea4217967fe79": [
+    "Claim ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "15bafb2427531a60": [
+    "Here is claim ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " as the writer would state it. Every number comes from the ledger; nothing was typed by an agent."
+  ],
+  "105d0f4ec64ad308": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " runs"
+  ],
+  "a6ed4f9862fdb2bc": [
+    "scope: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "264d54babe19d12c": [
+    "integrity: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "7aa489ace64801a2": [
+    "Critic · fresh context (",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    ")"
+  ],
+  "932e9ba11e301f79": "Critic · fresh context, different model family",
+  "7a347b7f8aad91e1": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " attacks · ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " landed"
+  ],
+  "47aac1fa83812722": "landed",
+  "b70fd46bc571dd5d": "held",
+  "b093225a8dc7fa8c": [
+    "Caveat from the critic: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "adb4b6b523cfe710": "Lean · formal verification",
+  "70d3b1f1e3562604": "Approve with note",
+  "719f44a70a233a9d": "Send back for more runs",
+  "b8cdfff5c128f754": "Reject",
+  "4b63a0423be17f32": "Note to the writer",
+  "650f3f0a61521290": "Note to writer",
+  "b8f345fb9292959e": [
+    "Evidence · ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " runs"
+  ],
+  "bf9817c6a4b41ca5": "ledger",
+  "ace3070cbeb32e31": "Show fewer",
+  "45db8733255932bb": [
+    "+ ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " more"
+  ],
+  "ad57f6d2c19cb1d9": "Venue checklist",
+  "5ea6a9568af55e19": "from ledger",
+  "ef97c7e7cd6901a4": "yes",
+  "5ab46634ae3517e2": "your call",
+  "bc9f0c11018eadf5": "missing",
+  "3845cff97fc2691d": "Loading claim review…",
+  "9e0c834f410eebc5": [
+    "Could not load claim review: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "be7f3e31e09d3d58": "No claims are waiting at a review gate for this project yet.",
+  "2bb631c9ce9d2974": "Return to research thread",
+  "ac2766bdb8ecbc34": "Lineage display mode",
+  "a869c06de5d37100": "Selected branch details",
+  "30a1db5673f2a57d": "Scale ladder rungs",
+  "dc6de46021f4f9ec": "List",
+  "e8aaaaf788c44f71": "Review gate",
+  "3b8acdb14b33d855": "Node",
+  "8747248ce40d33be": "Ветка",
+  "204167c06dc9fb6e": "Status",
+  "87594c45b64b92a3": "Age",
+  "ad878dd68f58b736": "Best",
+  "55c16b90d148827c": "Runs",
+  "1c607d2af51bd4c4": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " ·",
+    " ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " kept"
+  ],
+  "1afc8aaa7cc4022c": "Budget",
+  "754f2772df55f3b6": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " /",
+    " ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " GPU-h"
+  ],
+  "614ddb432a8aeb97": "Backend",
+  "05ed0b0856c466ce": "Kill rule",
+  "86a341a094d78a82": "Open workspace",
+  "686e52be5ecaf910": "Fork a branch from here",
+  "0214eed0bd345bc9": "Prune branch",
+  "4fcb43ff79f8ffd2": "Loading branch lineage…",
+  "9cfa041c31e1b966": [
+    "Could not load branch lineage: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "6b8eeddb155142a6": "research.yaml (full survey, ideas, fan-out, critic, report)",
+  "f87a01f882c31e3b": "hillclimb.yaml (fixed-budget autoresearch loop)",
+  "33fef31ed54fb9e4": "reproduce.yaml (paper baseline reproduction and audit)",
+  "fa45ca9eb133d216": "survey.yaml (literature synthesis and taxonomy)",
+  "cc364881de25a40f": "prove.yaml (Lean 4 formal verification loop)",
+  "52d1c04d33ff78ec": "Ask at every gate",
+  "a2f1db180e7fd2d7": "Pause before specs, scale promotions, and every finding.",
+  "ffd59b5f22cc789f": "Ask for risky actions",
+  "2a7f4cdeb704d0d0": "Run toy and small rungs automatically; pause at budget and claim gates.",
+  "0f992dac11e2c0cf": "Autonomous within budget",
+  "5d468380f78eb1d6": "Execute until the budget cap or stop rule is reached, then deliver report.",
+  "7d6189ddf818cc67": "e.g. world-model-planning",
+  "b02baf0e14870874": "Describe the hypothesis, benchmark, baseline, or theorem to investigate",
+  "b17f3f21dc385341": "Define the research goal, workflow DAG, approval policy, and compute budget caps.",
+  "3323080ce0901a72": "Project slug (optional)",
+  "938dc64bca7c5283": "Research goal",
+  "28b7ac035bab5c5c": "Workflow preset",
+  "5156cea202c7aafd": "Approval mode",
+  "8dea48b9ead521ee": "GPU-hours cap",
+  "3609aa7c5c92b6ef": "Compute USD cap",
+  "4e2010dab8bdc5de": "LLM USD / week",
+  "9bc28986d9a93431": "Start research loop",
+  "35e28e7bd155cd2f": "Research report for {title}",
+  "b669dccbfcb11dcb": "Generating HTML report from ledger…",
+  "0e749592368d74ea": [
+    "Could not load HTML report: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "9bbecec926c3b695": "Повторить",
+  "173a84b10f7d287d": [
+    "Sandboxed HTML report generated from ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " ledger runs"
+  ],
+  "76ceda83cb063680": "scripts disabled",
+  "d95518df257be572": "Refresh report",
+  "2fc5b68ca8f0bd8e": "Back to thread",
+  "af63dca2a0714c89": "Gate review",
+  "105acf5788aa04fa": "Lineage",
+  "30e39ebb386f0636": "Report",
+  "a3c2c15584026726": "Research breadcrumb",
+  "ada7b9a4d96959d2": "Тред",
+  "659303d4c1d2ae49": "Gate review",
+  "d19570d0b256a5fb": "Lineage",
+  "d0d24bc0d96e0055": "Report",
+  "a6d5427c15b8a764": "Research",
+  "e6122b91f64e4143": "Fleet",
+  "ce9a4284583ec40b": "New project",
+  "4a9c7e5c18475784": "Steer the research loop, add a constraint, or ask about a run",
+  "95ee62a0d6968b89": "Отправить сообщение",
+  "88293e2afdf64a19": "Research context",
+  "4226008fe7749198": [
+    "Worked for ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "2ff5374936df3a3c": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " branches"
+  ],
+  "1c383546ae7350ec": [
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " working"
+  ],
+  "3128c600570e4cfa": "Review it",
+  "43327e5f20dcd255": "Edited",
+  "51d8979d0f97d033": "Ran",
+  "0c9edb966e5ca699": "Proved",
+  "d7459d0f4ffbf930": "in Lean",
+  "fe259cdad2f03ccb": "Pruned",
+  "47562cbf33f18e9a": "Horizon",
+  "0aa9439dd189c92a": "Latent",
+  "ed6da36cefa2b790": "Recurrent",
+  "f70e37f0cc8213a5": "Delta (pp)",
+  "a9dc4c41db43b441": [
+    "+",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " · noise"
+  ],
+  "387583034d89628a": "Send instructions to the research loop",
+  "c1d1a7ce55a628e3": [
+    "Workflow: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "578dd449b4da43e4": [
+    "budget ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " /",
+    " ",
+    {
+      "i": 2,
+      "k": "_gt_value_2",
+      "v": "v"
+    },
+    " GPU-h"
+  ],
+  "c1e474c8f8ed087d": "Ledger",
+  "a33df1497c9fa65b": [
+    "Lineage · ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    },
+    " running"
+  ],
+  "5f659f53a3820e99": "Open graph",
+  "aed960f1fc29dd09": [
+    "Review claim ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "d47988dbb47e3f71": "Open HTML report",
+  "db23f7ad485489cd": "Loading research thread…",
+  "03993f6fcdaac33b": [
+    "Could not load research project: ",
+    {
+      "i": 1,
+      "k": "_gt_value_1",
+      "v": "v"
+    }
+  ],
+  "174e35c23baf91d0": "{count} options",
+  "86d069b0a0ce13b8": "Claim {label}",
+  "2b33455f2c20a855": "{runs} runs · {landed} attacks landed",
+  "651e66e910fb5867": "run {run}/{total} · eta {eta}m",
+  "933ffa76a20bc029": "{rung} rung · {runs} runs",
+  "1fae137c7ebb5bb2": "{runs} runs · {hours} GPU-h",
+  "21d204c55597c811": "Ask at every step",
+  "d45b317f4688628a": "Autonomous",
+  "ac557dc5ecf89d30": "Running",
+  "ed4beb48f08e2b30": "Promoted",
+  "ba60a572e55b9547": "Done",
+  "9f17d26561353f96": "Pruned",
+  "40b66b5121fde830": "Failed",
+  "ab23f47b20926153": "toy",
+  "4844b1fc5993821b": "small",
+  "6f33060398c59898": "target",
+  "da9328374e6ae99a": "keep",
+  "c97ada5da8fa7d01": "discard",
+  "897adbfea8b02904": "crash",
+  "6594d4e5940275fa": "checks failed",
+  "9346e95ffccea412": "running",
+  "1690f48181ca40f4": "Draft",
+  "542af812973ebbc5": "Ready for review",
+  "7ccc307c89f2ca2a": "Critic broke claim",
+  "2617910c43a0e80b": "Approved",
+  "97c62d4bcfb77f93": "Rejected",
+  "573e3ed92652e35d": "Sent back",
+  "c2659100a0870903": "trusted",
+  "afd3064c4ed7c6ba": "preliminary",
+  "ba09d26c4aa444ce": "rejected",
+  "1df11854f258f17d": "unchecked",
+  "be864b75a5c3214b": "open",
+  "5bc9953d6fbb5814": "proven",
+  "85cee48d186e59d1": "disproved",
+  "582eea0934d2521e": "rejected",
   "9c867852bab1ce60": "API буфера обмена недоступен при копировании отчёта об ошибке.",
   "a270f51c3f95de49": "Не удалось скопировать отчёт об ошибке в буфер обмена.",
   "09675b4ac9f858dc": "Непредвиденная ошибка маршрутизатора.",
@@ -3225,7 +4012,6 @@
   "536a820f2ff726da": "Выберите хотя бы одну модель.",
   "fbafbe78b5e37966": "Возобновить тред",
   "bcd7eb979dd38dae": "Откройте поле ввода, чтобы сжать и отправить",
-  "95ee62a0d6968b89": "Отправить сообщение",
   "164d3295a763dbad": "Снимок больше недоступен.",
   "f77ce9bc81a68882": "Снимок ещё не готов к копированию.",
   "68a4461e56df0896": "Подготовка голосового ввода",
@@ -3673,7 +4459,6 @@
       "v": "v"
     }
   ],
-  "9bbecec926c3b695": "Повторить",
   "4fd8927b7afc2a92": "Копировать сообщение",
   "6f8651e48261911a": "Размышление",
   "ac511f991a3c1fab": "Поиск в интернете",
@@ -3919,6 +4704,7 @@
   "90062342f04966ff": "Обновите сервер T3 Code этого окружения, чтобы просматривать пул-реквесты.",
   "5e7157db126f1641": "Issue недоступны",
   "42ade0e14ff6af94": "Обновите сервер T3 Code в этом окружении, чтобы просматривать issue.",
+  "6435447ce7656f13": "Показать {label}",
   "993dcd04611f9571": "Сохранить безопасно",
   "ccbe48efc8e30c52": "Удалить боковой чат «{title}»?",
   "3a859b690f41e899": "Его история беседы будет удалена безвозвратно.",
@@ -4559,7 +5345,6 @@
   "6657de14eaa305f3": "Настройка рабочего дерева отменена",
   "1600a13f16305896": "пропущено",
   "c2a1ccfd0e37bae4": "Настройка рабочего дерева",
-  "8747248ce40d33be": "Ветка",
   "6769d95831ddd2d2": "База",
   "8a26eab2f53bfc4e": "Путь",
   "dc60a55261658ce6": "Настройка",
@@ -4648,6 +5433,7 @@
   "82d82cdbe3b0f975": "{size} · {shortcut} — оставить большую вставку в тексте.",
   "247cd77b35ddb586": "''{name}'' не удалось прочитать как изображение.",
   "7eccb44d5449e777": "''{name}'' слишком большой для прикрепления даже после сжатия.",
+  "d07dd6dfd269680a": "{names} не удалось восстановить: в поле ввода достигнут лимит вложений ({limit}).",
   "1d4059658a0ab500": "Удалить {name} из сообщения?\nНа него есть ссылки в тексте; при удалении все ссылки тоже будут удалены.",
   "86261d5bd0651358": "Удалить это изображение из сообщения?\nНа него есть ссылки в тексте; при удалении все ссылки тоже будут удалены.",
   "f70c49e9f30807a3": "Вставленный текст слишком велик для этого сообщения",
@@ -4720,7 +5506,6 @@
   "c809a3c353e67a28": "Хранилище браузера отклонило обновление, поэтому запись может остаться после перезагрузки.",
   "1a4bc01f0ca772c2": "{names} превысили лимит размера тайника при сохранении этого промпта.",
   "bb3b4ad32b596e11": "{names} не удалось прочитать при сохранении этого промпта.",
-  "d07dd6dfd269680a": "{names} не удалось восстановить: в поле ввода достигнут лимит вложений ({limit}).",
   "7e4a6a2c84d34a80": "{names}: спрятанные файлы хранятся 24 часа, срок этой загрузки истёк. Прикрепите файл снова.",
   "1e3ede33afee71ba": "Некоторые вложения не восстановлены",
   "98c76143d9aae871": "Запись тайника может вернуться",
@@ -5088,7 +5873,6 @@
     ". T3 Code передаёт ваш ответ локальному процессу SSH и хранит его в памяти для повторного использования с этим хостом. На диск T3 Code его не записывает."
   ],
   "1c26f62937f27d39": "SSH-ключи могут заменить пароль, но сервер всё равно может требовать код проверки.",
-  "7ac4455553fe632a": "Продолжить",
   "7f8953447668d0be": "Истекло время команды складывания.",
   "650a0c4c97430f03": "Не удалось изменить положение складывания.",
   "7bf0984b4aa3005b": "Управление складыванием Android",
@@ -5782,14 +6566,13 @@
   "b6a29fff7c7c0808": "Нет",
   "54420465784bb1bd": "Загрузить старые комментарии",
   "9d82ebf35bfb4043": "Здесь пока ничего не происходило.",
-  "1cf216566c1ee064": "Проект недоступен",
   "b5ddadeb0810688c": "Состояние",
   "93c1fc19d9bf1db0": "Участие",
   "d5a8b335d88b65bc": "Скрыто: {hidden}",
   "2160067266a61dd8": "Любая",
   "cd4ec4acf33c65b9": "{count, plural, one {{count} метка} few {{count} метки} many {{count} меток} other {{count} метки}}",
   "bfd20acb8b7dee6b": "Любой",
-  "ad208e3e32c85029": "Скрывать все",
+  "aead644e2cf1233f": "Показать все",
   "77ce79d865716719": "Нет подходящих проектов.",
   "af7eb4f9c7f0f575": "Фильтры",
   "08247dd39b0c85ff": "Исполнитель",
@@ -6387,7 +7170,6 @@
   "792d71b95721d7a7": "Написать гайд",
   "4d7635a2bf1f5816": "Переписать гайд",
   "ffd49822d34cbd30": "Разрешить правки мейнтейнерам",
-  "12969a434884d7a0": "Готов к ревью",
   "e236dc6c81d05785": "Перевести в черновик",
   "73cf6bce3d3fe576": "Подтвердить слияние?",
   "762e66d1ba8d1f48": "Слить сейчас",
@@ -6465,7 +7247,6 @@
   "64d0189be492147c": "Не удалось открыть подробности проверки",
   "600347ca50400a54": "Загрузка проверок…",
   "1b381201aba745c2": "Нет проверок",
-  "aead644e2cf1233f": "Показать все",
   "a6d75a4380173c60": "Открыть проверки: {summary}",
   "be3d1766bad18693": "Проверки: {summary}",
   "425e4a3d6c5c2867": "{count, plural, one {Ошибок: {count}} few {Ошибок: {count}} many {Ошибок: {count}} other {Ошибок: {count}}}",
@@ -9748,6 +10529,7 @@
   "51497bd401292062": "Удержание",
   "9d6cc6ac23312071": "Двойное нажатие",
   "f001fa7b329c8fbf": "Скрывать успешные",
+  "ad208e3e32c85029": "Скрывать все",
   "c80e4bb3201efd71": "Дзен",
   "0cb9ffcd1fb46b0c": "Только статус",
   "cf0f7fc3df26fa75": "Статус и сообщения",
@@ -9957,6 +10739,7 @@
   "573ea5fdf293a9d6": "Все копии",
   "470ad8c54049d1e1": "Поиск копий",
   "7e2dfdd9f97fc027": "Область проектов",
+  "1cf216566c1ee064": "Проект недоступен",
   "c1b8c351aa90f319": [
     {
       "t": "span",
@@ -10800,7 +11583,6 @@
   "8e73b883d41d4102": "Выкл.",
   "80d58a3fd4e4212a": "Проект",
   "de770505be25f1ff": "Папка",
-  "ada7b9a4d96959d2": "Тред",
   "ceab58aa6cb191f3": [
     {
       "i": 1,
@@ -11698,6 +12480,7 @@
   "2a50e229df85d553": "Вперёд",
   "8aa6404c8018ea67": "Главная T3 Code",
   "8e9626aa27cb188a": "Issues",
+  "1738f499d0c9cf60": "Research",
   "9d2fc1003e82feb1": "Использование",
   "20283eb1dd6119f9": "{count, plural, one {{count} вложение} few {{count} вложения} many {{count} вложений} other {{count} вложения}}",
   "ffedb03b620f97a9": "Неотправленный черновик",
@@ -11809,7 +12592,6 @@
   "0576c87870fb6389": "Обновить",
   "948185631ef288e6": "{count, plural, one {Выполняется: {count}} few {Выполняется: {count}} many {Выполняется: {count}} other {Выполняется: {count}}}",
   "3d9a2f6b9c114039": "Провайдеры",
-  "f4baf8deafbb227d": "Пропущено",
   "f938bb483eb3d189": "перезапуск последним",
   "9bca02be2b4d612a": "не подключено",
   "2dcc418b6a13b83c": "нужно обновить вручную",
