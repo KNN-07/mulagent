@@ -5,16 +5,14 @@ extensions, skills, context files, and native session history.
 
 ## Set Up Pi
 
-1. Install [Pi](https://pi.dev) on the machine running the MulAgent server. Pi requires Node.js
-   22.19 or newer; its platform installers can install Node if needed. MulAgent supports Pi
-   0.84.3 or newer.
+1. Install [Pi by Mario Zechner](https://www.npmjs.com/package/@mariozechner/pi-coding-agent) on the server machine. MulAgent supports version 0.73.1.
 2. Run `pi` in a terminal, then `/login` to connect your model provider or configure its API key.
 3. Open MulAgent Settings, enable Pi, and refresh the provider.
 
 For an npm installation, use:
 
 ```sh
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @mariozechner/pi-coding-agent
 ```
 
 If `pi` is not on the server's `PATH`, set Pi's binary path to the executable. Provider environment
@@ -29,9 +27,7 @@ paste the final redirect URL or authorization code back into Pi when prompted. Y
 set your model provider's API-key environment variable in the Pi instance's settings; mark
 secret values as sensitive.
 
-Update installer-managed Pi with `pi update`. If another package manager owns the installation,
-update it through that manager instead. For example, a Nix profile installation uses
-`nix profile upgrade pi`.
+Update Pi using the package manager that installed it.
 
 ## What Carries Over
 
@@ -83,12 +79,6 @@ threads.
 - If no models appear, open Pi directly and confirm its authentication and model configuration.
 - If discovery cannot complete, MulAgent keeps Pi available with the `Pi default` model. Start a
   thread to let the interactive Pi session handle any startup prompt.
-- If Pi skips project settings, extensions, skills, prompts, MCP servers, or system prompt files
-  because the folder is not trusted, the thread shows a notice on the first turn of the Pi session.
-  Run the configured Pi binary in that folder on the server machine, using the same provider
-  environment, including `PI_CODING_AGENT_DIR` if set. Trust the folder or its parent with `/trust`,
-  then start a new thread using that same worktree. Launch arguments with `--no-approve` keep
-  project files off without the notice.
 - To see context usage on web and desktop, turn on **Context window** in **Settings → Appearance →
   Thread details**. It appears once Pi reports usage for the thread. Some model providers only
   report usage when a response completes, so it can wait for the first reply.

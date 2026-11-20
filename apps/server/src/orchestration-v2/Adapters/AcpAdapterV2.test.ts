@@ -97,11 +97,6 @@ import {
 
 const DROID_SETTINGS = Schema.decodeSync(AcpRegistrySettings)({ agentId: "factory-droid" });
 const DEVIN_SETTINGS = Schema.decodeSync(AcpRegistrySettings)({ agentId: "devin" });
-const OMP_SETTINGS = Schema.decodeSync(AcpRegistrySettings)({
-  source: "local",
-  commandPath: "/usr/local/bin/omp",
-  commandArgs: ["acp"],
-});
 const DROID_LOCAL_SETTINGS = Schema.decodeSync(AcpRegistrySettings)({
   source: "local",
   commandPath: "/opt/droid/bin/droid",
@@ -2010,63 +2005,8 @@ describe("AcpAdapterV2", () => {
     },
   ];
 
-  // regression: #20417 Droid answers were sent as a cancel; #23505 OMP header and question were swapped
+  // regression: #20417 Droid answers were sent as a cancel.
   it.live.each([
-    ...[
-      { scenario: "OMP selected option", answers: { q0: "Approve" }, content: { q0: "Approve" } },
-      {
-        scenario: "OMP custom answer",
-        answers: { q0: "Please wait" },
-        content: { q0__other: "Please wait" },
-      },
-    ].map((fixture) => ({
-      ...fixture,
-      settings: OMP_SETTINGS,
-      schema: {
-        type: "object",
-        properties: {
-          q0: {
-            type: "string",
-            title: "Approve this exact code-only commit?",
-            description: "Safety-hook false positive",
-            oneOf: [
-              { const: "Approve", title: "Approve", description: "Commit the verified fix." },
-              { const: "Hold", title: "Hold" },
-            ],
-            default: "Approve",
-          },
-          q0__other: { type: "string", title: "Other (type your own)" },
-        },
-      },
-      questions: [
-        {
-          id: "q0",
-          header: "Safety-hook false positive",
-          question: "Approve this exact code-only commit?",
-          options: [
-            { label: "Approve", value: "Approve", description: "Commit the verified fix." },
-            { label: "Hold", value: "Hold", description: "Hold" },
-          ],
-        },
-      ],
-      result: { action: "accept", content: fixture.content },
-    })),
-    {
-      scenario: "OMP unrelated form uses generic mapping",
-      settings: OMP_SETTINGS,
-      schema: { type: "object", properties: { name: { type: "string" } } },
-      questions: [
-        {
-          id: "name",
-          header: "Question 1",
-          question: "Your answer?",
-          options: [],
-          required: false,
-        },
-      ],
-      answers: { name: "Ada" },
-      result: { action: "accept", content: { name: "Ada" } },
-    },
     {
       scenario: "preserves selected IDs and encodes custom answers",
       schema: droidSchema,
@@ -5645,7 +5585,7 @@ describe("AcpAdapterV2", () => {
       const rejected = yield* Deferred.make<void>();
       const harness = yield* makePromptInactivityHarness({
         environment: () => ({}),
-        // pi-agent-core based agents (oh-my-pi) end a turn but keep background work running.
+        // Some agents end a turn but keep background work running.
         wrapPrompt: (prompt) => (payload, options) => {
           promptCalls += 1;
           return promptCalls === 2

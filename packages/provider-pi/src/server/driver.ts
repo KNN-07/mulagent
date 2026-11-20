@@ -44,9 +44,9 @@ const decodePiSettings = Schema.decodeSync(PiSettings);
 const DRIVER_KIND = ProviderDriverKind.make("pi");
 const UPDATE = makePackageManagedProviderMaintenanceResolver({
   provider: DRIVER_KIND,
-  npmPackageName: "@earendil-works/pi-coding-agent",
+  npmPackageName: "@mariozechner/pi-coding-agent",
   mise: { tool: "pi" },
-  nativeUpdate: { args: ["update", "--self"] },
+  nativeUpdate: null,
 });
 
 export type PiDriverEnv =

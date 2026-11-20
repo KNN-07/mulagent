@@ -128,8 +128,7 @@ runs are very welcome.
 
 ## Built on
 
-MulAgent is a fork of [T3 Code](https://github.com/pingdotgg/t3code) and uses tooling from
-[oh-my-pi](https://github.com/can1357/oh-my-pi). Coding threads, providers, worktrees and remote
+MulAgent is a fork of [T3 Code](https://github.com/pingdotgg/t3code). Coding threads, providers, worktrees and remote
 access come from T3 Code.
 
 ## License

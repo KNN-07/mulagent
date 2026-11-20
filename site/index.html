@@ -252,7 +252,7 @@
                 Each node declares its agent role, upstream dependencies, optional human
                 <code>gate</code>, and execution mode (<code>fanout</code>, <code>tournament</code>,
                 <code>join</code>). Workflow agents execute as T3 threads on Claude, Codex, or
-                Gemini providers, while direct role calls use <code>@oh-my-pi/pi-ai</code>.
+                Gemini providers.
               </p>
               <div class="workflow-pills" aria-label="Built-in workflows">
                 <span class="pill">research.yaml</span>
@@ -635,8 +635,7 @@ nodes:
               <h3>One job entrypoint &amp; Python SDK</h3>
               <p>
                 Jobs run through <code>mulagent-job</code> and log metrics with the zero-dependency
-                <code>mulagent</code> Python SDK. Runs emit <code>METRIC name=value</code> lines
-                (compatible with <code>oh-my-pi</code>’s <code>autoresearch</code> protocol) and
+                <code>mulagent</code> Python SDK. Runs emit <code>METRIC name=value</code> lines and
                 post signed receipts over HTTP to the ledger, with optional W&amp;B and MLflow
                 mirroring.
               </p>
@@ -892,13 +891,7 @@ pip install -e "./python/mulagent[wandb,mlflow]"</code></pre>
             <a href="https://github.com/pingdotgg/t3code" target="_blank" rel="noopener noreferrer"
               >T3 Code</a
             >
-            (T3 Tools Inc.) and built on
-            <a
-              href="https://www.npmjs.com/package/@oh-my-pi/pi-ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              >oh-my-pi</a
-            >.
+            (T3 Tools Inc.).
           </p>
         </div>
 

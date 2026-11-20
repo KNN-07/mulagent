@@ -1,7 +1,7 @@
 import { BranchId, ResearchProjectId, ResearchRunId } from "@t3tools/contracts";
 import { describe, expect, it, vi } from "vite-plus/test";
-import { defaultModelRouterConfig, ModelRouter } from "./modelRouter.ts";
-import type { Complete } from "./modelRouter.ts";
+import { defaultModelRouterConfig, ModelRouter, routerFromJson } from "./modelRouter.ts";
+import type { Complete } from "./runner.ts";
 import { createRoleRunner } from "./runner.ts";
 import type { RoleInput } from "./roles.ts";
 
@@ -18,18 +18,29 @@ const frozenSpec = {
 describe("research model router", () => {
   it("routes cheap and strong roles and switches families for the critic", () => {
     const router = new ModelRouter();
-    expect(router.select("scout").model.id).toBe("gpt-6.2-sol");
-    expect(router.select("debug").model.id).toBe("gpt-6.2-sol");
-    expect(router.select("noveltySearch").model.id).toBe("gemini-4-hydrogen");
-    expect(router.select("planner").model.id).toBe("gpt-6.2-astra");
-    expect(router.select("critic", "openai").model.id).toBe("claude-fable-5-2");
-    expect(router.select("critic", "anthropic").model.id).toBe("gpt-6.2-astra");
+    expect(router.select("scout").model).toBe("gpt-6.2-sol");
+    expect(router.select("hardCoder").model).toBe("gpt-6.2-astra");
+    expect(router.select("coder").model).toBe("gemini-4-neon");
+    expect(router.select("debug").model).toBe("gpt-6.2-sol");
+    expect(router.select("noveltySearch").model).toBe("gemini-4-hydrogen");
+    expect(router.select("planner").model).toBe("gpt-6.2-astra");
+    expect(router.select("critic", "openai").model).toBe("claude-fable-5-2");
+    expect(router.select("critic", "anthropic").model).toBe("gpt-6.2-astra");
     expect(() => router.select("critic")).toThrow("author's model family");
   });
 
   it("honors configured routes and rejects same-family critics", () => {
     const config = defaultModelRouterConfig;
     const route = config.roles.noveltySearch;
+    const configured = routerFromJson(
+      JSON.stringify({ roles: { coder: route }, critics: { anthropic: route } }),
+    );
+    expect(configured.select("coder")).toEqual(route);
+    expect(configured.select("critic", "anthropic")).toEqual(route);
+    expect(() =>
+      routerFromJson(JSON.stringify({ roles: { coder: { ...route, instanceId: "pi" } } })),
+    ).toThrow();
+    expect(() => routerFromJson(JSON.stringify({ roles: { unknown: route } }))).toThrow();
     expect(
       new ModelRouter({ ...config, roles: { ...config.roles, scout: route } }).select("scout"),
     ).toEqual(route);

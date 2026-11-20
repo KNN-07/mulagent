@@ -57,10 +57,6 @@ export const PI_ARGUMENTS_WITH_VALUES = new Set([
 ]);
 
 const PI_ARGUMENTS_WITHOUT_VALUES = new Set([
-  "--approve",
-  "-a",
-  "--no-approve",
-  "-na",
   "--no-builtin-tools",
   "-nbt",
   "--no-context-files",

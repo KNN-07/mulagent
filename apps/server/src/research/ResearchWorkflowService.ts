@@ -23,7 +23,8 @@ import {
   type ResearchProject,
 } from "@t3tools/contracts";
 import { rolePrompt } from "@t3tools/research-agents/prompt";
-import { ModelRouter } from "@t3tools/research-agents/modelRouter";
+import { ServerConfig } from "../config.ts";
+import { ModelRouter, routerFromJson, type ModelRoute } from "@t3tools/research-agents/modelRouter";
 import { roleSchemas, type Role } from "@t3tools/research-agents/roles";
 import {
   advanceWorkflow,
@@ -44,6 +45,23 @@ import * as ThreadManagementService from "../orchestration-v2/ThreadManagementSe
 import * as ManagedProjectFolders from "../project/ManagedProjectFolders.ts";
 import * as OrchestrationEventStore from "../persistence/OrchestrationEventStore.ts";
 
+export const runtimeForApproval = {
+  autonomous: "full-access",
+  "ask-risky": "auto-accept-edits",
+  "ask-always": "approval-required",
+} as const satisfies Record<ApprovalMode, string>;
+
+export function nativeModelSelection(route: ModelRoute) {
+  const option = { openai: "reasoningEffort", anthropic: "effort", google: "thought_level" }[
+    route.family
+  ];
+  return {
+    instanceId: ProviderInstanceId.make(route.instanceId),
+    model: route.model,
+    options: [{ id: option, value: route.effort }],
+  };
+}
+
 const make = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -54,7 +72,11 @@ const make = Effect.gen(function* () {
   const launcher = yield* ThreadLaunchService.ThreadLaunchService;
   const folders = yield* ManagedProjectFolders.ManagedProjectFolders;
   const events = yield* OrchestrationEventStore.OrchestrationEventStore;
-  const router = new ModelRouter();
+  const config = yield* ServerConfig;
+  const routesFile = path.join(path.dirname(config.settingsPath), "research-routes.json");
+  const router = (yield* fs.exists(routesFile))
+    ? routerFromJson(yield* fs.readFileString(routesFile))
+    : new ModelRouter();
   const cache = new Map<string, ReturnType<typeof parseWorkflow>>();
   const compute = yield* Compute.ResearchComputeService;
   const ledger = store.ledger,
@@ -192,25 +214,39 @@ const make = Effect.gen(function* () {
       const snapshot = ledger.snapshot(id);
       const node = snapshot.nodes.find((n) => n.id === row.node);
       if (node?.status !== "running") continue;
-      const branch =
-        snapshot.branches.find((b) => b.id === node.branchId) ??
-        (node.agent === "experimenter" ? snapshot.branches[0] : undefined);
-      const role = node.agent === "experimenter" ? "debug" : node.agent;
-      if (!role || !Object.hasOwn(roleSchemas, role)) throw Error("Unknown workflow agent");
-      const author = snapshot.findings.at(-1)?.authorModelFamily ?? "openai";
-      const route = router.select(role as Role, author);
-      const instructions =
-        node.agent === "experimenter"
-          ? "Run the frozen experiment in the branch worktree. Submit the job with research_submit_job. The job must log its holdout score, matched baseline, training loss and split evidence through the Python SDK."
-          : yield* Effect.tryPromise({
-              try: () => rolePrompt(role as Role),
-              catch: () => new ResearchOperationError({ operation: "load role prompt" }),
-            });
+      const branch = snapshot.branches.find((b) => b.id === node.branchId) ?? snapshot.branches[0];
+      const coding = node.agent === "experimenter" || node.agent === "coder";
+      const role = coding ? "coder" : node.agent;
+      if (!role || !(role === "coder" || Object.hasOwn(roleSchemas, role)))
+        throw Error("Unknown workflow agent");
+      const parentFamily =
+        role === "critic" &&
+        db
+          .prepare(
+            "SELECT family FROM research_routes JOIN research_sessions USING(thread) JOIN json_each(?) AS parent ON parent.value=node ORDER BY parent.key DESC LIMIT 1",
+          )
+          .get(canonicalJson(node.parentIds))?.family;
+      const author =
+        snapshot.findings.at(-1)?.authorModelFamily ??
+        (parentFamily === "anthropic" || parentFamily === "google" ? parentFamily : "openai");
+      const codingRole =
+        node.key === "preflight"
+          ? "debug"
+          : branch && branch.rung !== "toy"
+            ? "hardCoder"
+            : "coder";
+      const route = router.select(coding ? codingRole : (role as Role), author);
+      const instructions = coding
+        ? "Run the frozen experiment in the branch worktree. Submit the job with research_submit_job. The job must log its holdout score, matched baseline, training loss and split evidence through the Python SDK."
+        : yield* Effect.tryPromise({
+            try: () => rolePrompt(role as Role),
+            catch: () => new ResearchOperationError({ operation: "load role prompt" }),
+          });
       const threadId = ThreadId.make(String(row.thread));
       db.prepare("INSERT OR REPLACE INTO research_routes VALUES(?,?,?)").run(
         threadId,
         route.family,
-        route.model.id,
+        route.model,
       );
       const prior =
         branch &&
@@ -227,16 +263,8 @@ const make = Effect.gen(function* () {
         commandId: CommandId.make("research-" + threadId),
         threadId,
         title: node.title,
-        modelSelection: {
-          instanceId: ProviderInstanceId.make(
-            { openai: "codex", anthropic: "claudeAgent", google: "antigravity" }[route.family],
-          ),
-          model: route.model.id,
-          ...(route.family !== "google"
-            ? { options: [{ id: "effort", value: route.reasoning }] }
-            : {}),
-        },
-        runtimeMode: "approval-required",
+        modelSelection: nativeModelSelection(route),
+        runtimeMode: runtimeForApproval[snapshot.project.approvalMode],
         interactionMode: "default",
         workspaceStrategy: existingWorkspace
           ? { type: "existing_worktree", worktreePath: String(existingWorkspace) }

@@ -21,7 +21,6 @@ import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
 import * as Option from "effect/Option";
 import * as Result from "effect/Result";
-import * as Schema from "effect/Schema";
 import * as HttpClient from "effect/http/HttpClient";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
@@ -37,7 +36,6 @@ import {
 import * as ProviderLatestVersions from "@t3tools/provider-core/server/ProviderLatestVersions";
 import {
   buildServerProvider,
-  DEFAULT_TIMEOUT_MS,
   isCommandMissingCause,
   parseCliVersionResult,
   providerModelsFromSettings,
@@ -66,10 +64,6 @@ const PI_PRESENTATION = {
 const VERSION_PROBE_TIMEOUT_MS = 10_000;
 const PI_RPC_DISCOVERY_TIMEOUT_MS = 30_000;
 const PI_TEXT_GENERATION_DISCOVERY_TIMEOUT_MS = 5_000;
-
-const decodePiAuthCheck = Schema.decodeUnknownOption(
-  Schema.fromJsonString(Schema.Struct({ reason: Schema.optional(Schema.String) })),
-);
 
 const PI_DEFAULT_MODEL: ServerProviderModel = {
   slug: "default",
@@ -183,8 +177,6 @@ const PI_LOGGED_RPC_OPERATIONS = new Set([
   "get_commands",
 ]);
 
-const PI_PROJECT_TRUST_ARGUMENTS = new Set(["--approve", "-a", "--no-approve", "-na"]);
-
 const readPiInventory = Effect.fn("PiProviderStatus.readPiInventory")(function* (
   piSettings: PiSettings,
   environment: NodeJS.ProcessEnv,
@@ -257,18 +249,6 @@ const discoverPiViaRpc = Effect.fn("PiProviderStatus.discoverPiViaRpc")(function
     launchArgs,
     timeoutMs,
     cwd,
-  ).pipe(
-    // Pi's RPC mode reads stdin only after session_start, so a startup dialog (an MCP adapter asking
-    // to approve a project server) can never be answered and Pi exits. Retry declining project trust
-    // unless the user chose a trust mode, so trusted projects keep their project-local models.
-    Effect.catchIf(
-      (error) =>
-        error._tag === "PiRpcError" &&
-        (error.operation === "read" || error.operation === "exit") &&
-        !launchArgs.some((arg) => PI_PROJECT_TRUST_ARGUMENTS.has(arg)),
-      () =>
-        readPiInventory(piSettings, environment, [...launchArgs, "--no-approve"], timeoutMs, cwd),
-    ),
   );
   const discoveredModels = yield* Effect.fromResult(parseDiscoveredModels(modelsData, stateData));
   const { slashCommands, skills } = parsePiDiscoveredCommands(commandsData);
@@ -350,52 +330,6 @@ export const runPiVersionCommand = Effect.fn("PiProviderStatus.runPiVersionComma
     }),
   );
 });
-
-/**
- * Explains why Pi's active model cannot start a turn. Asks `pi auth check` whether credentials
- * are missing, without refreshing or printing them. That command cannot see
- * extension providers or a runtime --api-key, so it only refines Pi's own unavailable verdict,
- * and is skipped when launch args supply the key.
- */
-const describeUnavailablePiModel = Effect.fn("PiProviderStatus.describeUnavailablePiModel")(
-  function* (
-    piSettings: PiSettings,
-    environment: NodeJS.ProcessEnv,
-    launchArgs: ReadonlyArray<string>,
-    model: { readonly provider: string; readonly id: string },
-  ) {
-    const label = `Pi default (${model.provider}/${model.id})`;
-    const unavailable = `${label} uses ${model.provider}, which has no available models in Pi. Choose another model, or check that provider's setup and the Pi launch arguments.`;
-    if (launchArgs.includes("--api-key")) {
-      return unavailable;
-    }
-    const command = piSettings.binaryPath || "pi";
-    const output = yield* resolveSpawnCommand(
-      command,
-      ["auth", "check", "--provider", model.provider, "--json", "--no-refresh"],
-      { env: environment },
-    ).pipe(
-      Effect.flatMap((spawnCommand) =>
-        spawnAndCollect(
-          command,
-          ChildProcess.make(spawnCommand.command, spawnCommand.args, {
-            env: environment,
-            shell: spawnCommand.shell,
-          }),
-        ),
-      ),
-      Effect.timeout(resolveProviderProbeTimeoutMs("pi", DEFAULT_TIMEOUT_MS, environment)),
-      Effect.option,
-    );
-    const missingCredentials = Option.exists(
-      Option.flatMap(output, (result) => decodePiAuthCheck(result.stdout)),
-      (check) => check.reason === "credentials_not_configured",
-    );
-    return missingCredentials
-      ? `${label} has no credentials configured for ${model.provider}. Choose another model, or run \`pi\` in a terminal and use /login or configure its API key.`
-      : unavailable;
-  },
-);
 
 export const buildInitialPiProviderSnapshot = Effect.fn(
   "PiProviderStatus.buildInitialPiProviderSnapshot",
@@ -479,7 +413,7 @@ export const checkPiProviderStatus = Effect.fn("checkPiProviderStatus")(function
         status: "error",
         auth: { status: "unknown" },
         message: isCommandMissingCause(error)
-          ? "Pi CLI (`pi`) is not installed or not on PATH. Install with `npm install -g --ignore-scripts @earendil-works/pi-coding-agent`."
+          ? "Pi CLI (`pi`) is not installed or not on PATH. Install with `npm install -g --ignore-scripts @mariozechner/pi-coding-agent`."
           : "Failed to execute Pi CLI health check.",
       },
     });
@@ -632,12 +566,7 @@ export const checkPiProviderStatus = Effect.fn("checkPiProviderStatus")(function
     ? "Pi has no usable models. Run `pi` in a terminal and use /login, or configure an API key in ~/.pi/agent."
     : discovery.unavailableActiveModel === undefined
       ? undefined
-      : yield* describeUnavailablePiModel(
-          piSettings,
-          probeEnvironment,
-          resolvedLaunchArgs.args,
-          discovery.unavailableActiveModel,
-        );
+      : `Pi default (${discovery.unavailableActiveModel.provider}/${discovery.unavailableActiveModel.id}) uses ${discovery.unavailableActiveModel.provider}, which has no available models in Pi. Choose another model or configure credentials with /login.`;
   return {
     ...buildServerProvider({
       presentation: PI_PRESENTATION,
