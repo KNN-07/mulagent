@@ -1,0 +1,5 @@
+name: prove
+nodes:
+  plan: { agent: planner, gate: lean-statement }
+  prove: { agent: prover, needs: [plan] }
+  review: { agent: critic, needs: [prove] }

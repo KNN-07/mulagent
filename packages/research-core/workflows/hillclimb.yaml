@@ -1,0 +1,7 @@
+name: hillclimb
+nodes:
+  plan: { agent: planner }
+  preflight: { agent: experimenter, needs: [plan] }
+  hillclimb: { agent: experimenter, needs: [preflight], mode: fanout }
+  review: { agent: critic, needs: [hillclimb], mode: join }
+  report: { agent: writer, needs: [review], gate: claims }

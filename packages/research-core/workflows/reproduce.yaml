@@ -1,0 +1,6 @@
+name: reproduce
+nodes:
+  plan: { agent: planner }
+  repro: { agent: experimenter, needs: [plan] }
+  review: { agent: critic, needs: [repro] }
+  report: { agent: writer, needs: [review], gate: claims }

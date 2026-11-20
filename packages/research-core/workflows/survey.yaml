@@ -1,0 +1,6 @@
+name: survey
+nodes:
+  search: { agent: scout }
+  survey: { agent: surveyor, needs: [search] }
+  review: { agent: critic, needs: [survey] }
+  report: { agent: writer, needs: [review], gate: claims }
